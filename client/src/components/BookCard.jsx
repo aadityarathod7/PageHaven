@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Card, Badge } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { FaEye, FaDownload, FaBookmark, FaStar } from 'react-icons/fa';
+import { FaEye, FaDownload, FaHeart, FaRegHeart, FaStar } from 'react-icons/fa';
 import styled from 'styled-components';
 import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
+import { AuthContext } from '../context/AuthContext';
+import { toast } from 'react-toastify';
 
 const StyledCard = styled(Card)`
   ${props => props.theme.commonStyles?.cardStyle || `
@@ -244,8 +246,8 @@ const StatItem = styled.div`
   }
 `;
 
-const BookmarkButton = styled.button`
-  background: rgba(60, 216, 143, 0.1);
+const FavoriteButton = styled.button`
+  background: rgba(255, 99, 132, 0.1);
   border: none;
   width: 42px;
   height: 42px;
@@ -253,7 +255,7 @@ const BookmarkButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${colors.secondary};
+  color: ${props => props.isFavorite ? '#ff6384' : colors.text.secondary};
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -266,7 +268,7 @@ const BookmarkButton = styled.button`
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, ${colors.secondary}, #3cd88f);
+    background: linear-gradient(135deg, #ff6384, #ff8c94);
     opacity: 0;
     transition: all 0.3s ease;
   }
@@ -279,7 +281,7 @@ const BookmarkButton = styled.button`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(60, 216, 143, 0.3);
+    box-shadow: 0 4px 12px rgba(255, 99, 132, 0.3);
 
     &:before {
       opacity: 1;
@@ -309,6 +311,43 @@ const Rating = styled.div`
 `;
 
 const BookCard = ({ book }) => {
+  const { authAxios, userInfo } = useContext(AuthContext);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    const checkFavoriteStatus = async () => {
+      if (userInfo) {
+        try {
+          const { data } = await authAxios.get(`/api/books/${book._id}/progress`);
+          setIsFavorite(data.isFavorite);
+        } catch (error) {
+          console.error('Error checking favorite status:', error);
+        }
+      }
+    };
+
+    checkFavoriteStatus();
+  }, [book._id, authAxios, userInfo]);
+
+  const handleFavoriteClick = async (e) => {
+    e.preventDefault();
+    if (!userInfo) {
+      toast.error('Please login to add favorites');
+      return;
+    }
+
+    try {
+      await authAxios.post(`/api/books/${book._id}/progress`, {
+        isFavorite: !isFavorite
+      });
+      setIsFavorite(!isFavorite);
+      toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites');
+    } catch (error) {
+      toast.error('Error updating favorite status');
+      console.error('Error updating favorite status:', error);
+    }
+  };
+
   return (
     <StyledCard>
       <Link to={`/book/${book._id}`}>
@@ -347,9 +386,12 @@ const BookCard = ({ book }) => {
               <FaDownload /> {book.downloads}
             </StatItem>
           </div>
-          <BookmarkButton>
-            <FaBookmark />
-          </BookmarkButton>
+          <FavoriteButton 
+            onClick={handleFavoriteClick}
+            isFavorite={isFavorite}
+          >
+            {isFavorite ? <FaHeart /> : <FaRegHeart />}
+          </FavoriteButton>
         </StatsContainer>
       </CardBody>
     </StyledCard>
