@@ -2,7 +2,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Navbar, Nav, Container, NavDropdown, Form } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FaUser, FaBook, FaSignOutAlt, FaCog, FaList, FaUsers, FaPlus, FaSearch, FaHeart, FaBell } from 'react-icons/fa';
 import styled from 'styled-components';
 import { AuthContext } from '../context/AuthContext';
@@ -327,10 +327,14 @@ const IconButton = styled.button`
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { userInfo, logout } = useContext(AuthContext);
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [hasNotifications] = useState(true);
+
+  // Check if we're on login or signup pages
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -362,19 +366,21 @@ const Header = () => {
         
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Form onSubmit={handleSearch} className="d-flex flex-grow-1 mx-lg-4">
-            <SearchContainer>
-              <SearchInput
-                type="text"
-                placeholder="Search books..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <SearchIcon>
-                <FaSearch />
-              </SearchIcon>
-            </SearchContainer>
-          </Form>
+          {!isAuthPage && (
+            <Form onSubmit={handleSearch} className="d-flex flex-grow-1 mx-lg-4">
+              <SearchContainer>
+                <SearchInput
+                  type="text"
+                  placeholder="Search books..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <SearchIcon>
+                  <FaSearch />
+                </SearchIcon>
+              </SearchContainer>
+            </Form>
+          )}
 
           {userInfo && (
             <NavIcons>
@@ -445,7 +451,7 @@ const Header = () => {
                   Logout
                 </NavDropdown.Item>
               </StyledDropdown>
-            ) : (
+            ) : !isAuthPage && (
               <LinkContainer to="/login">
                 <NavLink>
                   <FaUser />

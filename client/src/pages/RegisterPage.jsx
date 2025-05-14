@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+import { Form } from 'react-bootstrap';
 import { FaUser, FaEnvelope, FaLock, FaUserPlus } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
@@ -8,71 +9,74 @@ import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
 const PageContainer = styled.div`
-  min-height: calc(100vh - 140px);
-  background: ${colors.background.secondary};
-  padding: 4rem 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, ${colors.background.primary} 0%, ${colors.background.secondary} 100%);
+  padding: 2rem;
 `;
 
 const FormContainer = styled.div`
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 2.5rem;
-  background: ${colors.background.primary};
+  width: 100%;
+  max-width: 420px;
+  background: ${colors.background.primary}CC;
+  backdrop-filter: blur(10px);
   border-radius: ${borderRadius.xl};
-  box-shadow: ${shadows.lg};
+  box-shadow: ${shadows.xl};
+  padding: 2rem 2rem;
+  animation: ${fadeIn} 0.6s ease-out;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+  }
 `;
 
 const FormHeader = styled.div`
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 
-  h1 {
+  h2 {
     font-family: ${typography.fonts.heading};
     font-weight: ${typography.fontWeights.bold};
     color: ${colors.text.primary};
-    font-size: 2rem;
-    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
   }
 
   p {
     color: ${colors.text.secondary};
-    font-size: 1.1rem;
+    font-size: 1rem;
     line-height: ${typography.lineHeights.relaxed};
-  }
-`;
-
-const StyledForm = styled.form`
-  .form-group {
-    margin-bottom: 1.5rem;
-  }
-`;
-
-const FormGroup = styled.div`
-  margin-bottom: 1.5rem;
-
-  label {
-    display: block;
-    font-weight: ${typography.fontWeights.medium};
-    color: ${colors.text.primary};
-    margin-bottom: 0.5rem;
   }
 `;
 
 const InputGroup = styled.div`
   position: relative;
+  margin-bottom: 1rem;
 
   input {
     width: 100%;
-    padding: 0.75rem 1rem;
-    padding-left: 2.75rem;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    background: ${colors.background.secondary}80;
     border: 2px solid ${colors.background.accent};
     border-radius: ${borderRadius.lg};
-    font-size: 1rem;
-    transition: ${transitions.default};
-    background: ${colors.background.secondary};
     color: ${colors.text.primary};
-    font-family: ${typography.fonts.body};
+    font-size: 0.95rem;
+    transition: ${transitions.default};
 
     &::placeholder {
       color: ${colors.text.light};
@@ -81,18 +85,18 @@ const InputGroup = styled.div`
     &:focus {
       outline: none;
       border-color: ${colors.secondary};
-      background: ${colors.background.primary};
+      background: ${colors.background.secondary};
       box-shadow: 0 0 0 4px ${colors.secondary}15;
     }
   }
 
   svg {
     position: absolute;
-    left: 1rem;
+    left: 0.85rem;
     top: 50%;
     transform: translateY(-50%);
     color: ${colors.text.light};
-    font-size: 1.1rem;
+    font-size: 1rem;
     pointer-events: none;
     transition: ${transitions.default};
   }
@@ -104,43 +108,49 @@ const InputGroup = styled.div`
 
 const SubmitButton = styled.button`
   width: 100%;
-  background: ${colors.secondary};
+  padding: 0.75rem;
+  background: linear-gradient(135deg, ${colors.secondary}, ${colors.primary});
   color: white;
   border: none;
-  font-size: 1.1rem;
-  padding: 1rem;
   border-radius: ${borderRadius.lg};
   font-weight: ${typography.fontWeights.semibold};
-  display: inline-flex;
+  font-size: 1rem;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  transition: ${transitions.default};
+  gap: 0.75rem;
   cursor: pointer;
+  transition: ${transitions.default};
+  margin-top: 1.5rem;
 
   &:hover {
-    background: ${colors.primary};
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: ${shadows.lg};
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   &:disabled {
-    background: ${colors.text.light};
+    opacity: 0.7;
     cursor: not-allowed;
     transform: none;
   }
 
   svg {
-    font-size: 1.2rem;
+    font-size: 1rem;
   }
 `;
 
 const LoginLink = styled(Link)`
   display: block;
   text-align: center;
-  margin-top: 1.5rem;
+  margin-top: 1.25rem;
   color: ${colors.text.secondary};
   text-decoration: none;
   font-weight: ${typography.fontWeights.medium};
+  font-size: 0.95rem;
   transition: ${transitions.default};
 
   &:hover {
@@ -187,79 +197,63 @@ const RegisterPage = () => {
     <PageContainer>
       <FormContainer>
         <FormHeader>
-          <h1>Create Account</h1>
+          <h2>Create Account</h2>
           <p>Join our community of book lovers</p>
         </FormHeader>
 
         {error && <Message variant="danger">{error}</Message>}
         {loading && <Loader />}
 
-        <StyledForm onSubmit={submitHandler}>
-          <FormGroup>
-            <label htmlFor="name">Full Name</label>
-            <InputGroup>
-              <input
-                id="name"
-                type="text"
-                placeholder="Enter your full name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-              <FaUser />
-            </InputGroup>
-          </FormGroup>
+        <Form onSubmit={submitHandler}>
+          <InputGroup>
+            <Form.Control
+              type="text"
+              placeholder="Enter your full name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <FaUser />
+          </InputGroup>
 
-          <FormGroup>
-            <label htmlFor="email">Email Address</label>
-            <InputGroup>
-              <input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <FaEnvelope />
-            </InputGroup>
-          </FormGroup>
+          <InputGroup>
+            <Form.Control
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <FaEnvelope />
+          </InputGroup>
 
-          <FormGroup>
-            <label htmlFor="password">Password</label>
-            <InputGroup>
-              <input
-                id="password"
-                type="password"
-                placeholder="Create a password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <FaLock />
-            </InputGroup>
-          </FormGroup>
+          <InputGroup>
+            <Form.Control
+              type="password"
+              placeholder="Create a password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <FaLock />
+          </InputGroup>
 
-          <FormGroup>
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <InputGroup>
-              <input
-                id="confirmPassword"
-                type="password"
-                placeholder="Confirm your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-              <FaLock />
-            </InputGroup>
-          </FormGroup>
+          <InputGroup>
+            <Form.Control
+              type="password"
+              placeholder="Confirm your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+            <FaLock />
+          </InputGroup>
 
           <SubmitButton type="submit" disabled={loading}>
             <FaUserPlus />
             {loading ? 'Creating Account...' : 'Create Account'}
           </SubmitButton>
-        </StyledForm>
+        </Form>
 
         <LoginLink to={redirect ? `/login?redirect=${redirect}` : '/login'}>
           Already have an account? Sign in here
