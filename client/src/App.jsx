@@ -1,0 +1,116 @@
+// client/src/App.jsx
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Container } from 'react-bootstrap';
+import { ToastContainer } from 'react-toastify';
+import { AuthProvider } from './context/AuthContext';
+
+// Bootstrap and custom styles
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-toastify/dist/ReactToastify.css';
+import './App.css';
+
+// Components
+import Header from './components/Header';
+import Footer from './components/Footer';
+import PrivateRoute from './components/PrivateRoute';
+import AdminRoute from './components/AdminRoute';
+
+// Pages
+import HomePage from './pages/HomePage';
+import BookPage from './pages/BookPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import ReadBookPage from './pages/ReadBookPage';
+import ProfilePage from './pages/ProfilePage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
+import AdminBookListPage from './pages/AdminBookListPage';
+import AdminBookEditPage from './pages/AdminBookEditPage';
+import AdminBookCreatePage from './pages/AdminBookCreatePage';
+import AdminUserListPage from './pages/AdminUserListPage';
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Header />
+        <main className="py-3">
+          <Container>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/search/:keyword" element={<HomePage />} />
+              <Route path="/page/:pageNumber" element={<HomePage />} />
+              <Route path="/search/:keyword/page/:pageNumber" element={<HomePage />} />
+              <Route path="/book/:id" element={<BookPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              
+              {/* Private Routes */}
+              <Route 
+                path="/read/:id" 
+                element={
+                  <PrivateRoute>
+                    <ReadBookPage />
+                  </PrivateRoute>
+                } 
+              />
+              <Route 
+                path="/profile" 
+                element={
+                  <PrivateRoute>
+                    <ProfilePage />
+                  </PrivateRoute>
+                } 
+              />
+              
+              {/* Admin Routes */}
+              <Route 
+                path="/admin/dashboard" 
+                element={
+                  <AdminRoute>
+                    <AdminDashboardPage />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/books" 
+                element={
+                  <AdminRoute>
+                    <AdminBookListPage />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/book/create" 
+                element={
+                  <AdminRoute>
+                    <AdminBookCreatePage />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/book/:id/edit" 
+                element={
+                  <AdminRoute>
+                    <AdminBookEditPage />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/users" 
+                element={
+                  <AdminRoute>
+                    <AdminUserListPage />
+                  </AdminRoute>
+                } 
+              />
+            </Routes>
+          </Container>
+        </main>
+        <Footer />
+        <ToastContainer />
+      </Router>
+    </AuthProvider>
+  );
+}
+
+export default App;

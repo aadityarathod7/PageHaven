@@ -1,0 +1,116 @@
+import { createContext, useState, useEffect } from 'react';
+import axios from 'axios';
+
+export const AuthContext = createContext();
+
+export const AuthProvider = ({ children }) => {
+  const [userInfo, setUserInfo] = useState(() => {
+    const savedUser = localStorage.getItem('userInfo');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+  
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Login
+  const login = async (email, password) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+      
+      const { data } = await axios.post(
+        '/api/users/login',
+        { email, password },
+        config
+      );
+      
+      setUserInfo(data);
+      localStorage.setItem('userInfo', JSON.stringify(data));
+      setLoading(false);
+      return data;
+    } catch (error) {
+      setError(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+      setLoading(false);
+      throw error;
+    }
+  };
+
+  // Register
+  const register = async (name, email, password) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+      
+      const { data } = await axios.post(
+        '/api/users',
+        { name, email, password },
+        config
+      );
+      
+      setUserInfo(data);
+      localStorage.setItem('userInfo', JSON.stringify(data));
+      setLoading(false);
+      return data;
+    } catch (error) {
+      setError(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+      );
+      setLoading(false);
+      throw error;
+    }
+  };
+
+  // Logout
+  const logout = () => {
+    localStorage.removeItem('userInfo');
+    setUserInfo(null);
+  };
+
+  // Create axios instance with authentication
+  const authAxios = axios.create();
+  
+  // Request interceptor for adding auth token
+  authAxios.interceptors.request.use(
+    (config) => {
+      if (userInfo && userInfo.token) {
+        config.headers.Authorization = `Bearer ${userInfo.token}`;
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
+
+  return (
+    <AuthContext.Provider
+      value={{
+        userInfo,
+        loading,
+        error,
+        login,
+        register,
+        logout,
+        authAxios,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};

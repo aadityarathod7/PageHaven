@@ -1,0 +1,434 @@
+import { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import { FaBook, FaUser, FaDownload, FaEye, FaChartLine } from 'react-icons/fa';
+import { AuthContext } from '../context/AuthContext';
+import Loader from '../components/Loader';
+import Message from '../components/Message';
+import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
+
+const PageContainer = styled.div`
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+const PageHeader = styled.div`
+  margin-bottom: 2rem;
+  
+  h1 {
+    font-family: ${typography.fonts.heading};
+    color: ${colors.text.primary};
+    font-size: 2rem;
+    font-weight: ${typography.fontWeights.bold};
+    margin-bottom: 0.5rem;
+  }
+`;
+
+const StatsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+`;
+
+const StatCard = styled.div`
+  background: ${colors.background.primary};
+  border-radius: ${borderRadius.xl};
+  padding: 1.5rem;
+  box-shadow: ${shadows.md};
+  transition: ${transitions.default};
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: ${shadows.lg};
+  }
+`;
+
+const StatHeader = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  .icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: ${borderRadius.lg};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    background: ${props => 
+      props.$variant === 'success' ? `${colors.success}15` :
+      props.$variant === 'warning' ? `${colors.warning}15` :
+      props.$variant === 'info' ? `${colors.secondary}15` :
+      `${colors.primary}15`
+    };
+    color: ${props => 
+      props.$variant === 'success' ? colors.success :
+      props.$variant === 'warning' ? colors.warning :
+      props.$variant === 'info' ? colors.secondary :
+      colors.primary
+    };
+  }
+`;
+
+const StatTitle = styled.h6`
+  color: ${colors.text.secondary};
+  font-size: 0.875rem;
+  margin: 0;
+  font-weight: ${typography.fontWeights.medium};
+`;
+
+const StatValue = styled.h3`
+  color: ${colors.text.primary};
+  font-size: 1.75rem;
+  font-weight: ${typography.fontWeights.bold};
+  margin: 0;
+  font-family: ${typography.fonts.heading};
+`;
+
+const StatFooter = styled.div`
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid ${colors.background.accent};
+
+  a {
+    color: ${props => 
+      props.$variant === 'success' ? colors.success :
+      props.$variant === 'warning' ? colors.warning :
+      props.$variant === 'info' ? colors.secondary :
+      colors.primary
+    };
+    text-decoration: none;
+    font-weight: ${typography.fontWeights.medium};
+    font-size: 0.875rem;
+    transition: ${transitions.default};
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+`;
+
+const ContentGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const ContentCard = styled.div`
+  background: ${colors.background.primary};
+  border-radius: ${borderRadius.xl};
+  box-shadow: ${shadows.md};
+  overflow: hidden;
+`;
+
+const CardHeader = styled.div`
+  padding: 1.5rem;
+  border-bottom: 1px solid ${colors.background.accent};
+
+  h5 {
+    font-family: ${typography.fonts.heading};
+    color: ${colors.text.primary};
+    font-size: 1.25rem;
+    font-weight: ${typography.fontWeights.bold};
+    margin: 0;
+  }
+`;
+
+const CardBody = styled.div`
+  padding: 1.5rem;
+`;
+
+const BookList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+`;
+
+const BookItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid ${colors.background.accent};
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  img {
+    width: 60px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: ${borderRadius.md};
+    box-shadow: ${shadows.sm};
+    transition: ${transitions.default};
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+`;
+
+const BookInfo = styled.div`
+  flex: 1;
+
+  h6 {
+    margin: 0 0 0.25rem;
+    font-weight: ${typography.fontWeights.semibold};
+
+    a {
+      color: ${colors.text.primary};
+      text-decoration: none;
+      transition: ${transitions.default};
+
+      &:hover {
+        color: ${colors.secondary};
+      }
+    }
+  }
+
+  small {
+    color: ${colors.text.secondary};
+    font-size: 0.875rem;
+  }
+`;
+
+const BookStats = styled.div`
+  display: flex;
+  gap: 1rem;
+  color: ${colors.text.secondary};
+  font-size: 0.875rem;
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+`;
+
+const StatusBadge = styled.span`
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: ${borderRadius.full};
+  font-size: 0.75rem;
+  font-weight: ${typography.fontWeights.medium};
+  background: ${props => props.$status === 'published' ? `${colors.success}15` : `${colors.warning}15`};
+  color: ${props => props.$status === 'published' ? colors.success : colors.warning};
+  margin-top: 0.5rem;
+`;
+
+const AdminDashboardPage = () => {
+  const { authAxios } = useContext(AuthContext);
+  
+  const [stats, setStats] = useState({
+    totalBooks: 0,
+    totalUsers: 0,
+    totalReads: 0,
+    totalDownloads: 0,
+    recentBooks: [],
+    topBooks: [],
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const [booksResponse, usersResponse] = await Promise.all([
+          authAxios.get('/api/books/admin/books'),
+          authAxios.get('/api/users'),
+        ]);
+        
+        const books = booksResponse.data;
+        const users = usersResponse.data;
+        
+        const totalBooks = books.length;
+        const totalUsers = users.length;
+        const totalReads = books.reduce((sum, book) => sum + book.readCount, 0);
+        const totalDownloads = books.reduce((sum, book) => sum + book.downloads, 0);
+        
+        const recentBooks = [...books]
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 5);
+        
+        const topBooks = [...books]
+          .sort((a, b) => b.readCount - a.readCount)
+          .slice(0, 5);
+        
+        setStats({
+          totalBooks,
+          totalUsers,
+          totalReads,
+          totalDownloads,
+          recentBooks,
+          topBooks,
+        });
+        
+        setLoading(false);
+      } catch (error) {
+        setError(
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
+        );
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [authAxios]);
+
+  return (
+    <PageContainer>
+      <PageHeader>
+        <h1>Admin Dashboard</h1>
+      </PageHeader>
+
+      {loading ? (
+        <Loader />
+      ) : error ? (
+        <Message variant="danger">{error}</Message>
+      ) : (
+        <>
+          <StatsGrid>
+            <StatCard>
+              <StatHeader>
+                <div className="icon-wrapper">
+                  <FaBook size={24} />
+                </div>
+                <div>
+                  <StatTitle>Total Books</StatTitle>
+                  <StatValue>{stats.totalBooks}</StatValue>
+                </div>
+              </StatHeader>
+              <StatFooter>
+                <Link to="/admin/books">View all books</Link>
+              </StatFooter>
+            </StatCard>
+
+            <StatCard>
+              <StatHeader variant="success">
+                <div className="icon-wrapper">
+                  <FaUser size={24} />
+                </div>
+                <div>
+                  <StatTitle>Total Users</StatTitle>
+                  <StatValue>{stats.totalUsers}</StatValue>
+                </div>
+              </StatHeader>
+              <StatFooter variant="success">
+                <Link to="/admin/users">View all users</Link>
+              </StatFooter>
+            </StatCard>
+
+            <StatCard>
+              <StatHeader variant="info">
+                <div className="icon-wrapper">
+                  <FaEye size={24} />
+                </div>
+                <div>
+                  <StatTitle>Total Reads</StatTitle>
+                  <StatValue>{stats.totalReads}</StatValue>
+                </div>
+              </StatHeader>
+              <StatFooter variant="info">
+                <span>All time reads</span>
+              </StatFooter>
+            </StatCard>
+
+            <StatCard>
+              <StatHeader $variant="warning">
+                <div className="icon-wrapper">
+                  <FaDownload size={24} />
+                </div>
+                <div>
+                  <StatTitle>Total Downloads</StatTitle>
+                  <StatValue>{stats.totalDownloads}</StatValue>
+                </div>
+              </StatHeader>
+              <StatFooter $variant="warning">
+                <span>All time downloads</span>
+              </StatFooter>
+            </StatCard>
+          </StatsGrid>
+
+          <ContentGrid>
+            <ContentCard>
+              <CardHeader>
+                <h5>Recently Added Books</h5>
+              </CardHeader>
+              <CardBody>
+                {stats.recentBooks.length > 0 ? (
+                  <BookList>
+                    {stats.recentBooks.map((book) => (
+                      <BookItem key={book._id}>
+                        <img src={book.coverImage} alt={book.title} />
+                        <BookInfo>
+                          <h6>
+                            <Link to={`/book/${book._id}`}>{book.title}</Link>
+                          </h6>
+                          <small>
+                            Added {new Date(book.createdAt).toLocaleDateString()}
+                          </small>
+                          <StatusBadge $status={book.status}>
+                            {book.status}
+                          </StatusBadge>
+                        </BookInfo>
+                      </BookItem>
+                    ))}
+                  </BookList>
+                ) : (
+                  <p>No books added yet</p>
+                )}
+              </CardBody>
+            </ContentCard>
+
+            <ContentCard>
+              <CardHeader>
+                <h5>Top Books by Reads</h5>
+              </CardHeader>
+              <CardBody>
+                {stats.topBooks.length > 0 ? (
+                  <BookList>
+                    {stats.topBooks.map((book) => (
+                      <BookItem key={book._id}>
+                        <img src={book.coverImage} alt={book.title} />
+                        <BookInfo>
+                          <h6>
+                            <Link to={`/book/${book._id}`}>{book.title}</Link>
+                          </h6>
+                          <small>By {book.author.name}</small>
+                        </BookInfo>
+                        <BookStats>
+                          <div>
+                            <FaEye /> {book.readCount}
+                          </div>
+                          <div>
+                            <FaDownload /> {book.downloads}
+                          </div>
+                        </BookStats>
+                      </BookItem>
+                    ))}
+                  </BookList>
+                ) : (
+                  <p>No books read yet</p>
+                )}
+              </CardBody>
+            </ContentCard>
+          </ContentGrid>
+        </>
+      )}
+    </PageContainer>
+  );
+};
+
+export default AdminDashboardPage;
