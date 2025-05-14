@@ -243,28 +243,28 @@ const AdminBookEditPage = () => {
       const bookData = {
         title,
         description,
+        authorName: author,
         categories: categories.split(',').map(cat => cat.trim()).filter(cat => cat),
         tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
         status,
         chapters: chapters.map(chapter => ({
           title: chapter.title,
           content: chapter.content,
-          order: chapter.order
-        }))
+          order: chapter.order,
+        })),
       };
 
-      const { data } = await authAxios.put(`/api/books/${id}`, bookData);
-      if (data) {
-        toast.success('Book updated successfully');
-        setSaving(false);
-        navigate('/admin/books');
-      }
-    } catch (error) {
-      const errorMessage = error.response && error.response.data.message
-        ? error.response.data.message
-        : 'Error updating book';
-      toast.error(errorMessage);
+      await authAxios.put(`/api/books/${id}`, bookData);
       setSaving(false);
+      toast.success('Book updated successfully');
+      navigate('/admin/books');
+    } catch (error) {
+      setSaving(false);
+      toast.error(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : 'Error updating book'
+      );
     }
   };
 
@@ -291,6 +291,18 @@ const AdminBookEditPage = () => {
               placeholder="Enter book title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <label htmlFor="author">Author Name</label>
+            <input
+              type="text"
+              id="author"
+              placeholder="Enter author name"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
               required
             />
           </FormGroup>

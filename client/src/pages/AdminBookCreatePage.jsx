@@ -146,6 +146,7 @@ const AdminBookCreatePage = () => {
   const { authAxios } = useContext(AuthContext);
 
   const [title, setTitle] = useState('');
+  const [authorName, setAuthorName] = useState('');
   const [description, setDescription] = useState('');
   const [categories, setCategories] = useState('');
   const [tags, setTags] = useState('');
@@ -175,6 +176,7 @@ const AdminBookCreatePage = () => {
       // First create the book without cover image
       const bookData = {
         title,
+        authorName,
         description,
         categories: categories.split(',').map(cat => cat.trim()).filter(cat => cat),
         tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
@@ -231,6 +233,18 @@ const AdminBookCreatePage = () => {
               placeholder="Enter book title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <label htmlFor="authorName">Author Name</label>
+            <input
+              type="text"
+              id="authorName"
+              placeholder="Enter author name"
+              value={authorName}
+              onChange={(e) => setAuthorName(e.target.value)}
               required
             />
           </FormGroup>

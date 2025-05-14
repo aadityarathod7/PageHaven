@@ -9,12 +9,13 @@ import { toast } from 'react-toastify';
 
 const StyledCard = styled(Card)`
   ${props => props.theme.commonStyles?.cardStyle || `
-    background: ${colors.background.primary};
+    background: rgba(255, 255, 255, 0.05);
     border-radius: ${borderRadius.xl};
     box-shadow: ${shadows.md};
     transition: all 0.3s ease-in-out;
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   `}
   height: 100%;
   overflow: hidden;
@@ -23,8 +24,9 @@ const StyledCard = styled(Card)`
   position: relative;
 
   &:hover {
-    transform: translateY(-5px) rotateX(2deg);
+    transform: translateY(-5px);
     box-shadow: ${shadows.lg};
+    background: rgba(255, 255, 255, 0.08);
 
     .card-img-wrapper:before {
       opacity: 1;
@@ -49,7 +51,7 @@ const StyledCard = styled(Card)`
     bottom: 0;
     border-radius: ${borderRadius.xl};
     border: 2px solid transparent;
-    background: linear-gradient(45deg, ${colors.secondary}, #3cd88f, ${colors.secondary});
+    background: linear-gradient(45deg, ${colors.secondary}50, #3cd88f50, ${colors.secondary}50);
     -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -139,7 +141,15 @@ const CardBody = styled(Card.Body)`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.05), transparent);
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    transparent 100%
+  );
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 `;
 
 const BookTitle = styled(Link)`
@@ -160,21 +170,28 @@ const BookTitle = styled(Link)`
 `;
 
 const AuthorName = styled.p`
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: ${colors.text.secondary};
   margin-bottom: 1rem;
   font-weight: ${typography.fontWeights.medium};
   display: flex;
   align-items: center;
   gap: 0.5rem;
-
+  
   &:before {
-    content: '';
-    display: inline-block;
-    width: 3px;
-    height: 3px;
-    background: ${colors.secondary};
-    border-radius: 50%;
+    content: 'by';
+    color: ${colors.text.light};
+    font-size: 0.85rem;
+    font-style: italic;
+  }
+
+  span {
+    color: ${colors.text.primary};
+    transition: ${transitions.default};
+    
+    &:hover {
+      color: ${colors.secondary};
+    }
   }
 `;
 
@@ -217,8 +234,14 @@ const StatsContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: auto;
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 0 0 ${borderRadius.xl} ${borderRadius.xl};
+  padding: 1rem 1.75rem;
+  margin: 1.75rem -1.75rem -1.75rem -1.75rem;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 `;
 
 const StatItem = styled.div`
@@ -231,7 +254,7 @@ const StatItem = styled.div`
   padding: 0.5rem 0.75rem;
   border-radius: ${borderRadius.lg};
   transition: all 0.2s ease;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
 
   svg {
     color: ${colors.secondary};
@@ -239,9 +262,11 @@ const StatItem = styled.div`
   }
 
   &:hover {
-    background: rgba(60, 216, 143, 0.1);
+    background: rgba(60, 216, 143, 0.08);
+    transform: translateY(-1px);
     svg {
       transform: scale(1.1);
+      color: ${colors.primary};
     }
   }
 `;
@@ -353,9 +378,9 @@ const BookCard = ({ book }) => {
       <Link to={`/book/${book._id}`}>
         <ImageWrapper className="card-img-wrapper">
           <CoverImage variant="top" src={book.coverImage} alt={book.title} className="card-img-top" />
-          <BookBadge>
-            New Release
-          </BookBadge>
+          {book.status === 'draft' && (
+            <BookBadge>Draft</BookBadge>
+          )}
           <Rating>
             <FaStar /> 4.5
           </Rating>
@@ -363,7 +388,9 @@ const BookCard = ({ book }) => {
       </Link>
       <CardBody>
         <BookTitle to={`/book/${book._id}`}>{book.title}</BookTitle>
-        <AuthorName>by {book.author.name}</AuthorName>
+        <AuthorName>
+          <span>{book.author?.name || 'Unknown Author'}</span>
+        </AuthorName>
         
         {book.categories && book.categories.length > 0 && (
           <div className="mb-3">
@@ -380,10 +407,10 @@ const BookCard = ({ book }) => {
         <StatsContainer>
           <div className="d-flex gap-2">
             <StatItem>
-              <FaEye /> {book.readCount}
+              <FaEye /> {book.readCount || 0}
             </StatItem>
             <StatItem>
-              <FaDownload /> {book.downloads}
+              <FaDownload /> {book.downloads || 0}
             </StatItem>
           </div>
           <FavoriteButton 

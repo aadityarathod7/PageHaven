@@ -9,12 +9,15 @@ const Progress = require('../models/progressModel');
 // @route   POST /api/books
 // @access  Private/Admin
 const createBook = asyncHandler(async (req, res) => {
-  const { title, description, categories, tags, status, coverImage } = req.body;
+  const { title, description, categories, tags, status, coverImage, authorName } = req.body;
 
   const book = await Book.create({
-    author: req.user._id,
     title,
     description,
+    author: {
+      _id: req.user._id,
+      name: authorName || req.user.name // Use provided author name or fall back to user's name
+    },
     categories: categories ? categories : [],
     tags: tags ? tags : [],
     status: status || 'draft',
@@ -110,6 +113,7 @@ const updateBook = asyncHandler(async (req, res) => {
   const {
     title,
     description,
+    authorName,
     categories,
     tags,
     status,
@@ -135,6 +139,14 @@ const updateBook = asyncHandler(async (req, res) => {
     // Update basic fields
     book.title = title;
     book.description = description;
+
+    // Update author name if provided
+    if (authorName) {
+      book.author = {
+        ...book.author,
+        name: authorName
+      };
+    }
 
     // Handle categories
     book.categories = Array.isArray(categories)

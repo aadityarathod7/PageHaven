@@ -23,9 +23,15 @@ const chapterSchema = mongoose.Schema(
 const bookSchema = mongoose.Schema(
   {
     author: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: 'User',
+      _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User',
+      },
+      name: {
+        type: String,
+        required: true,
+      }
     },
     title: {
       type: String,
