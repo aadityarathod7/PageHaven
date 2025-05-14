@@ -13,6 +13,8 @@ const {
   downloadBookAsPDF,
   trackReadingProgress,
   getReadingProgress,
+  searchBooks,
+  getFavoriteBooks,
 } = require('../controllers/bookController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
@@ -50,8 +52,10 @@ const upload = multer({
 
 // Public routes
 router.get('/', getBooks);
+router.get('/search', searchBooks);
 
 // Protected routes
+router.get('/favorites', protect, getFavoriteBooks);
 router.get('/:id', protect, getBookById);
 router.post('/:id/progress', protect, trackReadingProgress);
 router.get('/:id/progress', protect, getReadingProgress);

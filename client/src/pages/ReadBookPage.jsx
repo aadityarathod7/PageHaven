@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Row, Col, Button, Pagination, Navbar, Container } from 'react-bootstrap';
-import { FaArrowLeft, FaArrowRight, FaBookmark, FaRegBookmark, FaHome } from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight, FaHeart, FaRegHeart, FaHome } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
 import Loader from '../components/Loader';
@@ -17,7 +17,7 @@ const ReadBookPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentChapter, setCurrentChapter] = useState(0);
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const [fontSize, setFontSize] = useState(16);
   const [theme, setTheme] = useState('light');
 
@@ -34,7 +34,7 @@ const ReadBookPage = () => {
         try {
           const { data: progressData } = await authAxios.get(`/api/books/${id}/progress`);
           setCurrentChapter(progressData.currentChapter || 0);
-          setIsBookmarked(progressData.isBookmarked || false);
+          setIsFavorite(progressData.isFavorite || false);
         } catch (err) {
           // If no progress exists, use defaults
           console.log('No reading progress found');
@@ -61,7 +61,7 @@ const ReadBookPage = () => {
         try {
           await authAxios.post(`/api/books/${id}/progress`, {
             currentChapter,
-            isBookmarked,
+            isFavorite,
           });
         } catch (error) {
           console.error('Error saving progress', error);
@@ -70,7 +70,7 @@ const ReadBookPage = () => {
       
       saveProgress();
     }
-  }, [currentChapter, isBookmarked, book, id, authAxios]);
+  }, [currentChapter, isFavorite, book, id, authAxios]);
 
   const goToNextChapter = () => {
     if (book && currentChapter < book.chapters.length - 1) {
@@ -86,9 +86,9 @@ const ReadBookPage = () => {
     }
   };
 
-  const toggleBookmark = () => {
-    setIsBookmarked(!isBookmarked);
-    toast.success(isBookmarked ? 'Bookmark removed' : 'Bookmark added');
+  const toggleFavorite = () => {
+    setIsFavorite(!isFavorite);
+    toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites');
   };
 
   const increaseFontSize = () => {
@@ -139,10 +139,10 @@ const ReadBookPage = () => {
           </div>
           
           <Button 
-            variant="outline-warning" 
-            onClick={toggleBookmark}
+            variant="outline-danger" 
+            onClick={toggleFavorite}
           >
-            {isBookmarked ? <FaBookmark /> : <FaRegBookmark />}
+            {isFavorite ? <FaHeart /> : <FaRegHeart />}
           </Button>
         </Container>
       </Navbar>

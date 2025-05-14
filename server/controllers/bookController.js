@@ -306,13 +306,9 @@ const downloadBookAsPDF = asyncHandler(async (req, res) => {
 
 // @desc    Track reading progress
 // @route   POST /api/books/:id/progress
-// Continuing from server/controllers/bookController.js
-
-// @desc    Track reading progress
-// @route   POST /api/books/:id/progress
 // @access  Private
 const trackReadingProgress = asyncHandler(async (req, res) => {
-  const { currentChapter, currentPosition, isBookmarked } = req.body;
+  const { currentChapter, currentPosition, isFavorite } = req.body;
 
   // Find existing progress or create new
   let progress = await Progress.findOne({
@@ -323,7 +319,7 @@ const trackReadingProgress = asyncHandler(async (req, res) => {
   if (progress) {
     progress.currentChapter = currentChapter || progress.currentChapter;
     progress.currentPosition = currentPosition || progress.currentPosition;
-    progress.isBookmarked = isBookmarked !== undefined ? isBookmarked : progress.isBookmarked;
+    progress.isFavorite = isFavorite !== undefined ? isFavorite : progress.isFavorite;
     await progress.save();
   } else {
     progress = await Progress.create({
@@ -331,7 +327,7 @@ const trackReadingProgress = asyncHandler(async (req, res) => {
       book: req.params.id,
       currentChapter,
       currentPosition,
-      isBookmarked: isBookmarked || false,
+      isFavorite: isFavorite || false,
     });
   }
 
@@ -353,9 +349,59 @@ const getReadingProgress = asyncHandler(async (req, res) => {
     res.json({
       currentChapter: 0,
       currentPosition: 0,
-      isBookmarked: false,
+      isFavorite: false,
     });
   }
+});
+
+// @desc    Search books
+// @route   GET /api/books/search
+// @access  Public
+const searchBooks = asyncHandler(async (req, res) => {
+  const { query } = req.query;
+
+  if (!query) {
+    res.status(400);
+    throw new Error('Search query is required');
+  }
+
+  const searchQuery = {
+    status: 'published',
+    $or: [
+      { title: { $regex: query, $options: 'i' } },
+      { description: { $regex: query, $options: 'i' } },
+      { categories: { $regex: query, $options: 'i' } },
+      { tags: { $regex: query, $options: 'i' } }
+    ]
+  };
+
+  const books = await Book.find(searchQuery)
+    .populate('author', 'name')
+    .sort({ createdAt: -1 })
+    .limit(20);
+
+  res.json(books);
+});
+
+// @desc    Get user's favorite books
+// @route   GET /api/books/favorites
+// @access  Private
+const getFavoriteBooks = asyncHandler(async (req, res) => {
+  // Find all progress entries where isFavorite is true for the current user
+  const favoriteProgress = await Progress.find({
+    user: req.user._id,
+    isFavorite: true
+  }).select('book');
+
+  // Extract book IDs from progress
+  const favoriteBookIds = favoriteProgress.map(progress => progress.book);
+
+  // Fetch the actual books with their details
+  const favoriteBooks = await Book.find({
+    _id: { $in: favoriteBookIds }
+  }).populate('author', 'name');
+
+  res.json(favoriteBooks);
 });
 
 module.exports = {
@@ -369,4 +415,6 @@ module.exports = {
   downloadBookAsPDF,
   trackReadingProgress,
   getReadingProgress,
+  searchBooks,
+  getFavoriteBooks,
 };

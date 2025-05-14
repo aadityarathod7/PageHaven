@@ -20,7 +20,7 @@ const progressSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-    isBookmarked: {
+    isFavorite: {
       type: Boolean,
       default: false,
     },
@@ -29,5 +29,8 @@ const progressSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Create a compound index for efficient favorites lookup
+progressSchema.index({ user: 1, isFavorite: 1 });
 
 module.exports = mongoose.model('Progress', progressSchema);

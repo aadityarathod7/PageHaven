@@ -27,6 +27,8 @@ import AdminBookListPage from './pages/AdminBookListPage';
 import AdminBookEditPage from './pages/AdminBookEditPage';
 import AdminBookCreatePage from './pages/AdminBookCreatePage';
 import AdminUserListPage from './pages/AdminUserListPage';
+import SearchResults from './pages/SearchResults';
+import FavoritesPage from './pages/FavoritesPage';
 
 function App() {
   return (
@@ -37,7 +39,7 @@ function App() {
           <Container>
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/search/:keyword" element={<HomePage />} />
+              <Route path="/search/:query" element={<SearchResults />} />
               <Route path="/page/:pageNumber" element={<HomePage />} />
               <Route path="/search/:keyword/page/:pageNumber" element={<HomePage />} />
               <Route path="/book/:id" element={<BookPage />} />
@@ -45,6 +47,14 @@ function App() {
               <Route path="/register" element={<RegisterPage />} />
               
               {/* Private Routes */}
+              <Route 
+                path="/favorites" 
+                element={
+                  <PrivateRoute>
+                    <FavoritesPage />
+                  </PrivateRoute>
+                } 
+              />
               <Route 
                 path="/read/:id" 
                 element={
