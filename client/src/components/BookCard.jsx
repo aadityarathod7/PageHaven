@@ -61,7 +61,7 @@ const AuthorName = styled.p`
 `;
 
 const CategoryBadge = styled(Badge)`
-  background: ${colors.background.secondary};
+  background: #3cd88f !important;
   color: ${colors.text.secondary};
   font-weight: ${typography.fontWeights.medium};
   font-size: 0.8rem;
