@@ -18,6 +18,7 @@ import AdminRoute from './components/AdminRoute';
 // Pages
 import HomePage from './pages/HomePage';
 import BookPage from './pages/BookPage';
+import BooksPage from './pages/BooksPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ReadBookPage from './pages/ReadBookPage';
@@ -39,6 +40,8 @@ function App() {
           <Container>
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/books" element={<BooksPage />} />
+              <Route path="/books/page/:pageNumber" element={<BooksPage />} />
               <Route path="/search/:query" element={<SearchResults />} />
               <Route path="/page/:pageNumber" element={<HomePage />} />
               <Route path="/search/:keyword/page/:pageNumber" element={<HomePage />} />

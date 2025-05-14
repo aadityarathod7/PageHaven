@@ -32,7 +32,7 @@ const createBook = asyncHandler(async (req, res) => {
 // @route   GET /api/books
 // @access  Public
 const getBooks = asyncHandler(async (req, res) => {
-  const pageSize = 10;
+  const pageSize = req.query.limit ? Number(req.query.limit) : 10;
   const page = Number(req.query.pageNumber) || 1;
   const keyword = req.query.keyword
     ? {

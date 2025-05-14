@@ -246,8 +246,16 @@ const ViewAllLink = styled(Link)`
 
 const BookGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const HomePage = () => {
@@ -257,20 +265,14 @@ const HomePage = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
-  const [pages, setPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState(keyword);
 
   useEffect(() => {
     const fetchBooks = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get(
-          `/api/books?keyword=${keyword}&pageNumber=${pageNumber}`
-        );
+        const { data } = await axios.get('/api/books?limit=4');
         setBooks(data.books);
-        setPage(data.page);
-        setPages(data.pages);
         setLoading(false);
       } catch (error) {
         setError(
@@ -283,7 +285,7 @@ const HomePage = () => {
     };
 
     fetchBooks();
-  }, [keyword, pageNumber]);
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -351,20 +353,11 @@ const HomePage = () => {
           ) : books.length === 0 ? (
             <Message>No books found</Message>
           ) : (
-            <>
-              <Row>
-                {books.map((book) => (
-                  <Col key={book._id} sm={12} md={6} lg={4} xl={3}>
-                    <BookCard book={book} />
-                  </Col>
-                ))}
-              </Row>
-              <Paginate
-                pages={pages}
-                page={page}
-                keyword={keyword ? keyword : ''}
-              />
-            </>
+            <BookGrid>
+              {books.map((book) => (
+                <BookCard key={book._id} book={book} />
+              ))}
+            </BookGrid>
           )}
         </Container>
       </FeaturedSection>
