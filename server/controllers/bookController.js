@@ -51,8 +51,25 @@ const getBooks = asyncHandler(async (req, res) => {
     .populate('author', 'name')
     .sort({ createdAt: -1 });
 
+  // If user is logged in, get their progress for all books
+  let userProgress = [];
+  if (req.user) {
+    userProgress = await Progress.find({
+      user: req.user._id,
+      book: { $in: books.map(book => book._id) }
+    });
+  }
+
+  // Add isPurchased field to each book
+  const booksWithPurchaseStatus = books.map(book => {
+    const bookObj = book.toObject();
+    const progress = userProgress.find(p => p.book.equals(book._id));
+    bookObj.isPurchased = progress ? progress.isPurchased : false;
+    return bookObj;
+  });
+
   res.json({
-    books,
+    books: booksWithPurchaseStatus,
     page,
     pages: Math.ceil(count / pageSize),
     total: count,
@@ -66,7 +83,21 @@ const getAdminBooks = asyncHandler(async (req, res) => {
   const books = await Book.find({})
     .populate('author', 'name')
     .sort({ createdAt: -1 });
-  res.json(books);
+
+  // Get all progress entries for these books
+  const allProgress = await Progress.find({
+    book: { $in: books.map(book => book._id) }
+  }).select('book isPurchased');
+
+  // Add isPurchased count to each book
+  const booksWithPurchaseInfo = books.map(book => {
+    const bookObj = book.toObject();
+    const bookProgress = allProgress.filter(p => p.book.equals(book._id));
+    bookObj.purchaseCount = bookProgress.filter(p => p.isPurchased).length;
+    return bookObj;
+  });
+
+  res.json(booksWithPurchaseInfo);
 });
 
 // @desc    Get book by ID
@@ -84,10 +115,20 @@ const getBookById = asyncHandler(async (req, res) => {
     throw new Error('Book not found');
   }
 
+  // Check if the user has purchased the book
+  const progress = await Progress.findOne({
+    user: req.user._id,
+    book: req.params.id
+  });
+
+  // Add isPurchased field to the response
+  const bookResponse = book.toObject();
+  bookResponse.isPurchased = progress ? progress.isPurchased : false;
+
   // Admin can access any book
   if (req.user.role === 'admin') {
     console.log('Admin access granted');
-    res.json(book);
+    res.json(bookResponse);
     return;
   }
 
@@ -99,7 +140,7 @@ const getBookById = asyncHandler(async (req, res) => {
       book.readCount += 1;
       await book.save();
     }
-    res.json(book);
+    res.json(bookResponse);
   } else {
     console.log('Access denied - book is not published and user is not author');
     res.status(403);
@@ -395,7 +436,24 @@ const searchBooks = asyncHandler(async (req, res) => {
     .sort({ createdAt: -1 })
     .limit(20);
 
-  res.json(books);
+  // If user is logged in, get their progress for all books
+  let userProgress = [];
+  if (req.user) {
+    userProgress = await Progress.find({
+      user: req.user._id,
+      book: { $in: books.map(book => book._id) }
+    });
+  }
+
+  // Add isPurchased field to each book
+  const booksWithPurchaseStatus = books.map(book => {
+    const bookObj = book.toObject();
+    const progress = userProgress.find(p => p.book.equals(book._id));
+    bookObj.isPurchased = progress ? progress.isPurchased : false;
+    return bookObj;
+  });
+
+  res.json(booksWithPurchaseStatus);
 });
 
 // @desc    Get user's favorite books
@@ -406,7 +464,7 @@ const getFavoriteBooks = asyncHandler(async (req, res) => {
   const favoriteProgress = await Progress.find({
     user: req.user._id,
     isFavorite: true
-  }).select('book');
+  }).select('book isPurchased');
 
   // Extract book IDs from progress
   const favoriteBookIds = favoriteProgress.map(progress => progress.book);
@@ -416,7 +474,15 @@ const getFavoriteBooks = asyncHandler(async (req, res) => {
     _id: { $in: favoriteBookIds }
   }).populate('author', 'name');
 
-  res.json(favoriteBooks);
+  // Add isPurchased field to each book
+  const booksWithPurchaseStatus = favoriteBooks.map(book => {
+    const bookObj = book.toObject();
+    const progress = favoriteProgress.find(p => p.book.equals(book._id));
+    bookObj.isPurchased = progress ? progress.isPurchased : false;
+    return bookObj;
+  });
+
+  res.json(booksWithPurchaseStatus);
 });
 
 module.exports = {

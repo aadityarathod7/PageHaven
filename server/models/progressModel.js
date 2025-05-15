@@ -24,6 +24,10 @@ const progressSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isPurchased: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -32,5 +36,7 @@ const progressSchema = mongoose.Schema(
 
 // Create a compound index for efficient favorites lookup
 progressSchema.index({ user: 1, isFavorite: 1 });
+// Create an index for efficient purchase status lookup
+progressSchema.index({ user: 1, isPurchased: 1 });
 
 module.exports = mongoose.model('Progress', progressSchema);

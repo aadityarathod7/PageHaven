@@ -86,6 +86,7 @@ const CheckoutPage = () => {
         <PaymentForm 
           amount={amount}
           bookTitle={bookTitle}
+          bookId={bookId}
           onSuccess={handlePaymentSuccess}
         />
       </Container>
