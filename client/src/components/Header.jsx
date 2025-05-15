@@ -3,7 +3,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { Navbar, Nav, Container, NavDropdown, Form } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FaUser, FaBook, FaSignOutAlt, FaCog, FaList, FaUsers, FaPlus, FaSearch, FaHeart, FaBell } from 'react-icons/fa';
+import { FaUser, FaBook, FaSignOutAlt, FaCog, FaList, FaUsers, FaPlus, FaSearch, FaHeart, FaBell, FaShoppingBag } from 'react-icons/fa';
 import styled from 'styled-components';
 import { AuthContext } from '../context/AuthContext';
 import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
@@ -414,6 +414,12 @@ const Header = () => {
                   <NavDropdown.Item>
                     <FaUser />
                     Profile
+                  </NavDropdown.Item>
+                </LinkContainer>
+                <LinkContainer to="/orders">
+                  <NavDropdown.Item>
+                    <FaShoppingBag />
+                    My Orders
                   </NavDropdown.Item>
                 </LinkContainer>
                 {userInfo.role === 'admin' && (

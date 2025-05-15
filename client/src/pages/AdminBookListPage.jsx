@@ -210,8 +210,9 @@ const AdminBookListPage = () => {
                       <FaEdit />
                     </ActionButton>
                     <ActionButton
-                      $variant="danger"
                       onClick={() => deleteHandler(book._id)}
+                      $variant="danger"
+                      title="Delete Book"
                     >
                       <FaTrash />
                     </ActionButton>

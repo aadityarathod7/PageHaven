@@ -113,6 +113,20 @@ const Description = styled.p`
   font-size: 1.1rem;
 `;
 
+const Price = styled.div`
+  font-size: 1.5rem;
+  color: ${colors.text.primary};
+  font-weight: ${typography.fontWeights.bold};
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  span {
+    color: ${colors.secondary};
+  }
+`;
+
 const ButtonGroup = styled.div`
   display: flex;
   gap: 1rem;
@@ -217,9 +231,11 @@ const BookPage = () => {
     const fetchBook = async () => {
       try {
         const { data } = await authAxios.get(`/api/books/${id}`);
+        console.log('Fetched book data:', data); // Debug log
         setBook(data);
         setLoading(false);
       } catch (error) {
+        console.error('Error fetching book:', error); // Debug log
         setError(
           error.response && error.response.data.message
             ? error.response.data.message
@@ -279,6 +295,40 @@ const BookPage = () => {
     }
   };
 
+  const handlePurchase = () => {
+    console.log('Purchase initiated for book:', id); // Debug log
+
+    if (!userInfo) {
+      toast.error('Please login to purchase books');
+      navigate('/login');
+      return;
+    }
+
+    // Debug log for book data
+    console.log('Book data:', {
+      price: book.price,
+      title: book.title
+    });
+
+    if (!book.price) {
+      toast.error('Book price is not set');
+      return;
+    }
+
+    try {
+      navigate('/checkout', { 
+        state: { 
+          bookId: id,
+          amount: book.price * 100, // Convert to paise for Razorpay (1 INR = 100 paise)
+          bookTitle: book.title
+        } 
+      });
+    } catch (error) {
+      console.error('Navigation error:', error);
+      toast.error('Failed to proceed to checkout');
+    }
+  };
+
   return (
     <PageContainer>
       <BackButton to="/">
@@ -318,28 +368,47 @@ const BookPage = () => {
               </Stats>
               
               <Description>{book.description}</Description>
+
+              <Price>
+                Price: <span>${book.price ? book.price.toFixed(2) : '0.00'}</span>
+              </Price>
               
               <ButtonGroup>
-                <Button onClick={readBookHandler}>
-                  <FaBook /> Read Book
-                </Button>
-                
-                <Button 
-                  variant="success"
-                  onClick={downloadPDFHandler} 
-                  disabled={downloadingPdf}
-                >
-                  <FaDownload />
-                  {downloadingPdf ? 'Downloading...' : 'Download PDF'}
-                </Button>
+                {book.isPurchased ? (
+                  <>
+                    <Button onClick={readBookHandler}>
+                      <FaBook /> Read Book
+                    </Button>
+                    
+                    <Button 
+                      $variant="success"
+                      onClick={downloadPDFHandler} 
+                      disabled={downloadingPdf}
+                    >
+                      <FaDownload />
+                      {downloadingPdf ? 'Downloading...' : 'Download PDF'}
+                    </Button>
+                  </>
+                ) : (
+                  <Button 
+                    onClick={handlePurchase}
+                    $variant="success"
+                    disabled={!book.price}
+                  >
+                    ${book.price ? book.price.toFixed(2) : '0.00'} - Buy Now
+                  </Button>
+                )}
                 
                 {userInfo && userInfo.role === 'admin' && (
                   <AdminActions>
                     <Button as={Link} to={`/admin/book/${book._id}/edit`}>
                       <FaEdit /> Edit
                     </Button>
-                    <Button variant="danger" onClick={deleteBookHandler}>
-                      <FaTrash /> Delete
+                    <Button 
+                      onClick={deleteBookHandler}
+                      $variant="danger"
+                    >
+                      <FaTrash /> Delete Book
                     </Button>
                   </AdminActions>
                 )}
@@ -347,7 +416,7 @@ const BookPage = () => {
             </BookDetails>
           </BookGrid>
           
-          {book.chapters && book.chapters.length > 0 && (
+          {book.isPurchased && book.chapters && book.chapters.length > 0 && (
             <TableOfContents>
               <h3>Table of Contents</h3>
               <ChapterList>

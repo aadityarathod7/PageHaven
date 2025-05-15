@@ -9,7 +9,7 @@ const Progress = require('../models/progressModel');
 // @route   POST /api/books
 // @access  Private/Admin
 const createBook = asyncHandler(async (req, res) => {
-  const { title, description, categories, tags, status, coverImage, authorName } = req.body;
+  const { title, description, categories, tags, status, coverImage, authorName, price } = req.body;
 
   const book = await Book.create({
     title,
@@ -22,6 +22,7 @@ const createBook = asyncHandler(async (req, res) => {
     tags: tags ? tags : [],
     status: status || 'draft',
     coverImage: coverImage || '/uploads/default-cover.jpg',
+    price: Number(price) || 0,
     chapters: [],
   });
 
@@ -118,6 +119,7 @@ const updateBook = asyncHandler(async (req, res) => {
     tags,
     status,
     chapters,
+    price,
   } = req.body;
 
   console.log('Update request body:', req.body);
@@ -139,6 +141,7 @@ const updateBook = asyncHandler(async (req, res) => {
     // Update basic fields
     book.title = title;
     book.description = description;
+    book.price = Number(price) || 0;
 
     // Update author name if provided
     if (authorName) {

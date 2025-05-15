@@ -9,8 +9,13 @@ console.error = (...args) => {
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import axios from 'axios';
+import { API_URL } from './config/config';
 import App from './App.jsx';
 import './App.css';
+
+// Set default base URL for axios
+axios.defaults.baseURL = API_URL;
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <App />

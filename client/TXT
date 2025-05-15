@@ -1,0 +1,9 @@
+For testing the payment integration, you can use these test card details:
+Card Number: 4111 1111 1111 1111
+Expiry: Any future date
+CVV: Any 3 digits
+Name: Any name
+OTP: 1111
+For testing UPI:
+Use any VPA (e.g., success@razorpay)
+In the test mode, it will show a success screen without actual UPI app interaction

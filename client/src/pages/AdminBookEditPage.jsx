@@ -128,6 +128,7 @@ const AdminBookEditPage = () => {
   const [categories, setCategories] = useState('');
   const [tags, setTags] = useState('');
   const [status, setStatus] = useState('draft');
+  const [price, setPrice] = useState(0);
   const [coverImage, setCoverImage] = useState('/uploads/default-cover.jpg');
   const [chapters, setChapters] = useState([{ title: 'Chapter 1', content: '', order: 0 }]);
   const [uploading, setUploading] = useState(false);
@@ -150,6 +151,7 @@ const AdminBookEditPage = () => {
         setCategories(Array.isArray(data.categories) ? data.categories.join(', ') : '');
         setTags(Array.isArray(data.tags) ? data.tags.join(', ') : '');
         setStatus(data.status || 'draft');
+        setPrice(data.price || 0);
         setCoverImage(data.coverImage || '/uploads/default-cover.jpg');
         setChapters(
           data.chapters && data.chapters.length > 0
@@ -247,6 +249,7 @@ const AdminBookEditPage = () => {
         categories: categories.split(',').map(cat => cat.trim()).filter(cat => cat),
         tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
         status,
+        price: Number(price),
         chapters: chapters.map(chapter => ({
           title: chapter.title,
           content: chapter.content,
@@ -303,6 +306,20 @@ const AdminBookEditPage = () => {
               placeholder="Enter author name"
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
+              required
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <label htmlFor="price">Price ($)</label>
+            <input
+              type="number"
+              id="price"
+              placeholder="Enter book price"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              min="0"
+              step="0.01"
               required
             />
           </FormGroup>

@@ -73,7 +73,7 @@ const StyledTable = styled.table`
 const ActionButton = styled.button`
   padding: 0.625rem;
   border-radius: ${borderRadius.lg};
-  color: ${props => props.variant === 'danger' ? colors.accent : colors.secondary};
+  color: ${props => props.$variant === 'danger' ? colors.accent : colors.secondary};
   background: ${colors.background.accent};
   border: none;
   margin-right: 0.75rem;
@@ -81,7 +81,7 @@ const ActionButton = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: ${props => props.hasText ? '120px' : '36px'};
+  min-width: ${props => props.$hasText ? '120px' : '36px'};
   height: 36px;
   cursor: pointer;
   gap: 0.5rem;
@@ -91,7 +91,7 @@ const ActionButton = styled.button`
   &:hover {
     transform: translateY(-2px);
     box-shadow: ${shadows.md};
-    background: ${props => props.variant === 'danger' ? colors.accent : colors.secondary};
+    background: ${props => props.$variant === 'danger' ? colors.accent : colors.secondary};
     color: white;
   }
 

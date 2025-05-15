@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaBook, FaUser, FaDownload, FaEye, FaChartLine } from 'react-icons/fa';
+import { FaBook, FaUser, FaDownload, FaEye, FaChartLine, FaShoppingCart } from 'react-icons/fa';
 import { AuthContext } from '../context/AuthContext';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
@@ -234,6 +234,7 @@ const AdminDashboardPage = () => {
     totalUsers: 0,
     totalReads: 0,
     totalDownloads: 0,
+    totalOrders: 0,
     recentBooks: [],
     topBooks: [],
   });
@@ -243,16 +244,19 @@ const AdminDashboardPage = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [booksResponse, usersResponse] = await Promise.all([
+        const [booksResponse, usersResponse, ordersResponse] = await Promise.all([
           authAxios.get('/api/books/admin/books'),
           authAxios.get('/api/users'),
+          authAxios.get('/api/orders/admin'),
         ]);
         
         const books = booksResponse.data;
         const users = usersResponse.data;
+        const orders = ordersResponse.data;
         
         const totalBooks = books.length;
         const totalUsers = users.length;
+        const totalOrders = orders.length;
         const totalReads = books.reduce((sum, book) => sum + book.readCount, 0);
         const totalDownloads = books.reduce((sum, book) => sum + book.downloads, 0);
         
@@ -269,6 +273,7 @@ const AdminDashboardPage = () => {
           totalUsers,
           totalReads,
           totalDownloads,
+          totalOrders,
           recentBooks,
           topBooks,
         });
@@ -316,7 +321,7 @@ const AdminDashboardPage = () => {
             </StatCard>
 
             <StatCard>
-              <StatHeader variant="success">
+              <StatHeader $variant="success">
                 <div className="icon-wrapper">
                   <FaUser size={24} />
                 </div>
@@ -325,13 +330,28 @@ const AdminDashboardPage = () => {
                   <StatValue>{stats.totalUsers}</StatValue>
                 </div>
               </StatHeader>
-              <StatFooter variant="success">
+              <StatFooter $variant="success">
                 <Link to="/admin/users">View all users</Link>
               </StatFooter>
             </StatCard>
 
             <StatCard>
-              <StatHeader variant="info">
+              <StatHeader $variant="warning">
+                <div className="icon-wrapper">
+                  <FaShoppingCart size={24} />
+                </div>
+                <div>
+                  <StatTitle>Total Orders</StatTitle>
+                  <StatValue>{stats.totalOrders}</StatValue>
+                </div>
+              </StatHeader>
+              <StatFooter $variant="warning">
+                <Link to="/admin/orders">View all orders</Link>
+              </StatFooter>
+            </StatCard>
+
+            <StatCard>
+              <StatHeader $variant="info">
                 <div className="icon-wrapper">
                   <FaEye size={24} />
                 </div>
@@ -340,7 +360,7 @@ const AdminDashboardPage = () => {
                   <StatValue>{stats.totalReads}</StatValue>
                 </div>
               </StatHeader>
-              <StatFooter variant="info">
+              <StatFooter $variant="info">
                 <span>All time reads</span>
               </StatFooter>
             </StatCard>
