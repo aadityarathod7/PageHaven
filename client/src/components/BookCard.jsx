@@ -280,7 +280,7 @@ const FavoriteButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${props => props.isFavorite ? '#ff6384' : colors.text.secondary};
+  color: ${props => props.$isFavorite ? '#ff6384' : colors.text.secondary};
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -415,7 +415,7 @@ const BookCard = ({ book }) => {
           </div>
           <FavoriteButton 
             onClick={handleFavoriteClick}
-            isFavorite={isFavorite}
+            $isFavorite={isFavorite}
           >
             {isFavorite ? <FaHeart /> : <FaRegHeart />}
           </FavoriteButton>
