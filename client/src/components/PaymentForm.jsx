@@ -104,16 +104,20 @@ const PaymentForm = ({ amount, onSuccess, bookTitle, bookId }) => {
 
   const createOrder = async (paymentDetails) => {
     try {
-      await authAxios.post('/api/orders', {
-        bookId,
+      console.log('Creating order with bookId:', bookId);
+      const response = await authAxios.post('/api/orders', {
+        bookId: bookId,
         paymentId: paymentDetails.razorpay_payment_id,
         orderId: paymentDetails.razorpay_order_id,
         amount,
         paymentMethod: selectedMethod
       });
+      console.log('Order created successfully:', response.data);
+      return true;
     } catch (error) {
-      console.error('Error creating order:', error);
+      console.error('Error creating order:', error.response?.data || error);
       toast.error('Payment successful but failed to create order');
+      return false;
     }
   };
 
@@ -157,13 +161,17 @@ const PaymentForm = ({ amount, onSuccess, bookTitle, bookId }) => {
 
             if (data.success) {
               // Create order in database
-              await createOrder(response);
+              const orderCreated = await createOrder(response);
               
-              toast.success('Payment successful!');
-              onSuccess({
-                id: response.razorpay_payment_id,
-                amount: amount
-              });
+              if (orderCreated) {
+                toast.success('Payment successful!');
+                onSuccess({
+                  id: response.razorpay_payment_id,
+                  amount: amount
+                });
+              } else {
+                toast.error('Payment was successful but order creation failed. Please contact support.');
+              }
             }
           } catch (err) {
             toast.error('Payment verification failed. Please contact support.');
