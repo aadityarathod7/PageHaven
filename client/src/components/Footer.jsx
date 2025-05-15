@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaBook, FaHeart, FaTwitter, FaInstagram, FaFacebook } from 'react-icons/fa';
+import { FaBook, FaTwitter, FaInstagram, FaFacebook } from 'react-icons/fa';
 import { colors, typography, transitions } from '../styles/theme';
+import { AuthContext } from '../context/AuthContext';
 
 const StyledFooter = styled.footer`
   background: ${colors.background.primary};
@@ -23,7 +25,21 @@ const FooterTitle = styled.h5`
   font-size: 1rem;
 `;
 
-const FooterLink = styled.a`
+const FooterLink = styled(Link)`
+  color: ${colors.text.secondary};
+  text-decoration: none;
+  font-weight: ${typography.fontWeights.medium};
+  transition: ${transitions.default};
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  
+  &:hover {
+    color: ${colors.secondary};
+  }
+`;
+
+const ExternalLink = styled.a`
   color: ${colors.text.secondary};
   text-decoration: none;
   font-weight: ${typography.fontWeights.medium};
@@ -70,10 +86,11 @@ const SocialIcon = styled.a`
   }
 `;
 
-const Logo = styled.div`
+const Logo = styled(Link)`
   display: flex;
   align-items: center;
   margin-bottom: 1rem;
+  text-decoration: none;
 `;
 
 const LogoText = styled.span`
@@ -84,13 +101,15 @@ const LogoText = styled.span`
 `;
 
 const Footer = () => {
+  const { userInfo } = useContext(AuthContext);
+
   return (
     <StyledFooter>
       <Container>
         <Row>
           <Col lg={4} md={6} className="mb-4 mb-lg-0">
             <FooterSection>
-              <Logo>
+              <Logo to="/">
                 <FaBook size={24} color={colors.secondary} />
                 <LogoText>Book Platform</LogoText>
               </Logo>
@@ -98,13 +117,28 @@ const Footer = () => {
                 Discover, read, and share your favorite books with our community of passionate readers.
               </FooterText>
               <div>
-                <SocialIcon href="#" aria-label="Twitter">
+                <SocialIcon 
+                  href="https://twitter.com/aadityarathod7" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  aria-label="Twitter"
+                >
                   <FaTwitter size={20} />
                 </SocialIcon>
-                <SocialIcon href="#" aria-label="Instagram">
+                <SocialIcon 
+                  href="https://instagram.com/aadityarathod7" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  aria-label="Instagram"
+                >
                   <FaInstagram size={20} />
                 </SocialIcon>
-                <SocialIcon href="#" aria-label="Facebook">
+                <SocialIcon 
+                  href="https://facebook.com/aadityarathod7" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  aria-label="Facebook"
+                >
                   <FaFacebook size={20} />
                 </SocialIcon>
               </div>
@@ -114,30 +148,50 @@ const Footer = () => {
           <Col lg={2} md={6} className="mb-4 mb-lg-0">
             <FooterSection>
               <FooterTitle>Explore</FooterTitle>
-              <FooterLink href="#">Bestsellers</FooterLink>
-              <FooterLink href="#">New Releases</FooterLink>
-              <FooterLink href="#">Genres</FooterLink>
-              <FooterLink href="#">Authors</FooterLink>
+              <FooterLink to="/books">All Books</FooterLink>
+              <FooterLink to="/books?sort=newest">New Releases</FooterLink>
+              {userInfo && <FooterLink to="/favorites">My Favorites</FooterLink>}
             </FooterSection>
           </Col>
           
           <Col lg={2} md={6} className="mb-4 mb-lg-0">
             <FooterSection>
               <FooterTitle>Account</FooterTitle>
-              <FooterLink href="#">Sign In</FooterLink>
-              <FooterLink href="#">Register</FooterLink>
-              <FooterLink href="#">My Library</FooterLink>
-              <FooterLink href="#">Reading Lists</FooterLink>
+              {userInfo ? (
+                <>
+                  <FooterLink to="/profile">My Profile</FooterLink>
+                  {userInfo.role === 'admin' && (
+                    <FooterLink to="/admin/dashboard">Admin Dashboard</FooterLink>
+                  )}
+                </>
+              ) : (
+                <>
+                  <FooterLink to="/login">Sign In</FooterLink>
+                  <FooterLink to="/register">Register</FooterLink>
+                </>
+              )}
             </FooterSection>
           </Col>
           
           <Col lg={4} md={6}>
             <FooterSection>
-              <FooterTitle>Support</FooterTitle>
-              <FooterLink href="#">Help Center</FooterLink>
-              <FooterLink href="#">Contact Us</FooterLink>
-              <FooterLink href="#">Privacy Policy</FooterLink>
-              <FooterLink href="#">Terms of Service</FooterLink>
+              <FooterTitle>Contact Us</FooterTitle>
+              <ExternalLink 
+                href="tel:+919977737801"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Phone: +91 9977737801
+              </ExternalLink>
+              <ExternalLink 
+                href="mailto:aadityarathod7@gmail.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Email: aadityarathod7@gmail.com
+              </ExternalLink>
+              <FooterLink to="/privacy">Privacy Policy</FooterLink>
+              <FooterLink to="/terms">Terms of Service</FooterLink>
             </FooterSection>
           </Col>
         </Row>

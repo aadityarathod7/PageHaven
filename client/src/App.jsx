@@ -30,6 +30,8 @@ import AdminBookCreatePage from './pages/AdminBookCreatePage';
 import AdminUserListPage from './pages/AdminUserListPage';
 import SearchResults from './pages/SearchResults';
 import FavoritesPage from './pages/FavoritesPage';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import Terms from './pages/Terms';
 
 function App() {
   return (
@@ -48,6 +50,8 @@ function App() {
               <Route path="/book/:id" element={<BookPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<Terms />} />
               
               {/* Private Routes */}
               <Route 
