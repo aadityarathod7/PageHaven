@@ -28,10 +28,14 @@ import AdminBookListPage from './pages/AdminBookListPage';
 import AdminBookEditPage from './pages/AdminBookEditPage';
 import AdminBookCreatePage from './pages/AdminBookCreatePage';
 import AdminUserListPage from './pages/AdminUserListPage';
+import AdminOrdersPage from './pages/AdminOrdersPage';
 import SearchResults from './pages/SearchResults';
 import FavoritesPage from './pages/FavoritesPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Terms from './pages/Terms';
+import CheckoutPage from './pages/CheckoutPage';
+import PaymentSuccessPage from './pages/PaymentSuccessPage';
+import OrdersPage from './pages/OrdersPage';
 
 function App() {
   return (
@@ -78,6 +82,30 @@ function App() {
                   </PrivateRoute>
                 } 
               />
+              <Route 
+                path="/checkout" 
+                element={
+                  <PrivateRoute>
+                    <CheckoutPage />
+                  </PrivateRoute>
+                } 
+              />
+              <Route 
+                path="/payment-success" 
+                element={
+                  <PrivateRoute>
+                    <PaymentSuccessPage />
+                  </PrivateRoute>
+                } 
+              />
+              <Route 
+                path="/orders" 
+                element={
+                  <PrivateRoute>
+                    <OrdersPage />
+                  </PrivateRoute>
+                } 
+              />
               
               {/* Admin Routes */}
               <Route 
@@ -117,6 +145,14 @@ function App() {
                 element={
                   <AdminRoute>
                     <AdminUserListPage />
+                  </AdminRoute>
+                } 
+              />
+              <Route 
+                path="/admin/orders" 
+                element={
+                  <AdminRoute>
+                    <AdminOrdersPage />
                   </AdminRoute>
                 } 
               />

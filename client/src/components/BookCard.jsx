@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
+import { API_URL } from '../config/config';
 
 const StyledCard = styled(Card)`
   ${props => props.theme.commonStyles?.cardStyle || `
@@ -373,11 +374,16 @@ const BookCard = ({ book }) => {
     }
   };
 
+  // Get the full image URL
+  const coverImageUrl = book.coverImage ? 
+    (book.coverImage.startsWith('http') ? book.coverImage : `${API_URL}${book.coverImage}`) 
+    : `${API_URL}/uploads/default-cover.jpg`;
+
   return (
     <StyledCard>
       <Link to={`/book/${book._id}`}>
         <ImageWrapper className="card-img-wrapper">
-          <CoverImage variant="top" src={book.coverImage} alt={book.title} className="card-img-top" />
+          <CoverImage variant="top" src={coverImageUrl} alt={book.title} className="card-img-top" />
           {book.status === 'draft' && (
             <BookBadge>Draft</BookBadge>
           )}

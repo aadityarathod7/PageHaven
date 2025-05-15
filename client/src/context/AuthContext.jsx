@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_URL } from '../config/config';
 
 export const AuthContext = createContext();
 
@@ -25,7 +26,7 @@ export const AuthProvider = ({ children }) => {
       };
       
       const { data } = await axios.post(
-        '/api/users/login',
+        `${API_URL}/api/users/login`,
         { email, password },
         config
       );
@@ -58,7 +59,7 @@ export const AuthProvider = ({ children }) => {
       };
       
       const { data } = await axios.post(
-        '/api/users',
+        `${API_URL}/api/users`,
         { name, email, password },
         config
       );
@@ -85,7 +86,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Create axios instance with authentication
-  const authAxios = axios.create();
+  const authAxios = axios.create({
+    baseURL: API_URL
+  });
   
   // Request interceptor for adding auth token
   authAxios.interceptors.request.use(

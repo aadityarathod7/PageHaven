@@ -153,6 +153,7 @@ const AdminBookCreatePage = () => {
   const [coverImage, setCoverImage] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [status, setStatus] = useState('draft');
+  const [price, setPrice] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -180,7 +181,8 @@ const AdminBookCreatePage = () => {
         description,
         categories: categories.split(',').map(cat => cat.trim()).filter(cat => cat),
         tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-        status
+        status,
+        price: Number(price)
       };
 
       // Create the book
@@ -245,6 +247,20 @@ const AdminBookCreatePage = () => {
               placeholder="Enter author name"
               value={authorName}
               onChange={(e) => setAuthorName(e.target.value)}
+              required
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <label htmlFor="price">Price ($)</label>
+            <input
+              type="number"
+              id="price"
+              placeholder="Enter book price"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              min="0"
+              step="0.01"
               required
             />
           </FormGroup>

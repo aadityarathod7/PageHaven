@@ -41,6 +41,11 @@ const bookSchema = mongoose.Schema(
       type: String,
       required: [true, 'Please add a description'],
     },
+    price: {
+      type: Number,
+      required: [true, 'Please add a price'],
+      default: 0,
+    },
     coverImage: {
       type: String,
       default: '/uploads/default-cover.jpg',
