@@ -10,9 +10,9 @@ import styled from 'styled-components';
 import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
 
 const PageContainer = styled.div`
-  padding: 2rem;
+  padding: 1rem;
   max-width: 1200px;
-  margin: 0 auto;
+  margin-top: 5rem;
   min-height: calc(100vh - 140px);
   background: ${colors.background.secondary};
 `;
@@ -21,8 +21,8 @@ const ProfileCard = styled.div`
   background: ${colors.background.primary};
   border-radius: ${borderRadius.xl};
   box-shadow: ${shadows.lg};
-  padding: 2.5rem;
-  margin-bottom: 2rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
   position: relative;
   overflow: hidden;
 
@@ -32,7 +32,7 @@ const ProfileCard = styled.div`
     top: 0;
     left: 0;
     right: 0;
-    height: 6px;
+    height: 4px;
     background: linear-gradient(to right, ${colors.primary}, ${colors.secondary});
   }
 `;
@@ -40,18 +40,18 @@ const ProfileCard = styled.div`
 const ProfileHeader = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
   position: relative;
 
   .profile-icon {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     background: ${colors.background.accent};
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 1.5rem;
+    margin-right: 1rem;
     color: ${colors.primary};
     box-shadow: ${shadows.md};
     border: 2px solid ${colors.background.accent};
@@ -68,13 +68,13 @@ const ProfileHeader = styled.div`
     font-family: ${typography.fonts.heading};
     color: ${colors.text.primary};
     font-weight: ${typography.fontWeights.bold};
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
   p {
-    margin: 0.5rem 0 0;
+    margin: 0.25rem 0 0;
     color: ${colors.text.secondary};
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 `;
 
@@ -82,16 +82,16 @@ const StyledForm = styled(Form)`
   .form-label {
     font-weight: ${typography.fontWeights.medium};
     color: ${colors.text.primary};
-    margin-bottom: 0.5rem;
-    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
   }
 
   .form-control {
     border-radius: ${borderRadius.lg};
     border: 2px solid ${colors.background.accent};
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 0.75rem;
     transition: ${transitions.default};
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     background: ${colors.background.secondary};
     font-family: ${typography.fonts.body};
 
@@ -112,8 +112,16 @@ const StyledForm = styled(Form)`
 
   .form-text {
     color: ${colors.text.secondary};
-    font-size: 0.875rem;
-    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+
+  .mb-3 {
+    margin-bottom: 0.75rem !important;
+  }
+
+  .mb-4 {
+    margin-bottom: 1rem !important;
   }
 `;
 
@@ -121,10 +129,10 @@ const Button = styled.button`
   background: ${colors.secondary};
   color: white;
   border: none;
-  padding: 0.875rem 1.5rem;
+  padding: 0.625rem 1rem;
   border-radius: ${borderRadius.lg};
   font-weight: ${typography.fontWeights.semibold};
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   transition: ${transitions.default};
   box-shadow: ${shadows.md};
   cursor: pointer;
@@ -159,17 +167,18 @@ const BookList = styled.div`
       background: ${colors.background.secondary};
       color: ${colors.text.primary};
       font-weight: ${typography.fontWeights.semibold};
-      padding: 1.25rem 1rem;
+      padding: 0.75rem;
       text-align: left;
       border-bottom: 2px solid ${colors.background.accent};
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
 
     td {
-      padding: 1.25rem 1rem;
+      padding: 0.75rem;
       vertical-align: middle;
       color: ${colors.text.secondary};
       border-bottom: 1px solid ${colors.background.accent};
+      font-size: 0.9rem;
     }
 
     tr:last-child td {
@@ -179,11 +188,11 @@ const BookList = styled.div`
     .book-info {
       display: flex;
       align-items: center;
-      gap: 1.25rem;
+      gap: 0.75rem;
 
       img {
-        width: 56px;
-        height: 75px;
+        width: 45px;
+        height: 60px;
         object-fit: cover;
         border-radius: ${borderRadius.md};
         box-shadow: ${shadows.md};
@@ -200,7 +209,7 @@ const BookList = styled.div`
           font-weight: ${typography.fontWeights.semibold};
           text-decoration: none;
           transition: ${transitions.default};
-          font-size: 1rem;
+          font-size: 0.9rem;
           display: block;
           margin-bottom: 0.25rem;
 
@@ -211,7 +220,7 @@ const BookList = styled.div`
 
         .author {
           color: ${colors.text.secondary};
-          font-size: 0.875rem;
+          font-size: 0.8rem;
         }
       }
     }
@@ -219,22 +228,22 @@ const BookList = styled.div`
 `;
 
 const ActionButton = styled.button`
-  padding: 0.625rem;
+  padding: 0.5rem;
   border-radius: ${borderRadius.lg};
   color: ${colors.secondary};
   background: ${colors.background.accent};
   border: none;
-  margin-right: 0.75rem;
+  margin-right: 0.5rem;
   transition: ${transitions.default};
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   cursor: pointer;
 
   svg {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 
   &:hover {
@@ -253,16 +262,18 @@ const SectionTitle = styled.h2`
   font-family: ${typography.fonts.heading};
   color: ${colors.text.primary};
   font-weight: ${typography.fontWeights.bold};
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  margin-top: 5rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  font-size: 1.25rem;
 `;
 
 const ContentGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 2rem;
+  grid-template-columns: minmax(300px, 1fr) 2fr;
+  gap: 1rem;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -272,18 +283,18 @@ const ContentGrid = styled.div`
 const StatsRow = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 `;
 
 const StatCard = styled.div`
   background: ${colors.background.primary};
   border-radius: ${borderRadius.xl};
-  padding: 1.25rem;
+  padding: 1rem;
   border: 1px solid ${colors.background.accent};
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   transition: ${transitions.default};
 
   &:hover {
@@ -292,28 +303,28 @@ const StatCard = styled.div`
   }
 
   .icon {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     border-radius: ${borderRadius.lg};
     background: ${colors.background.accent};
     color: ${colors.secondary};
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1rem;
   }
 
   .content {
     h3 {
       color: ${colors.text.secondary};
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       margin: 0;
       font-weight: ${typography.fontWeights.medium};
     }
 
     .value {
       color: ${colors.text.primary};
-      font-size: 1.5rem;
+      font-size: 1.25rem;
       font-weight: ${typography.fontWeights.bold};
       margin: 0;
       font-family: ${typography.fonts.heading};
@@ -323,7 +334,7 @@ const StatCard = styled.div`
 
 const TableContainer = styled.div`
   overflow-x: auto;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 `;
 
 const StyledTable = styled.table`
@@ -530,7 +541,7 @@ const ProfilePage = () => {
         
         <div>
           <StatsRow>
-            <StatCard>
+            {/* <StatCard>
               <div className="icon">
                 <FaBook />
               </div>
@@ -538,8 +549,8 @@ const ProfilePage = () => {
                 <h3>Total Books Read</h3>
                 <p className="value">{readingHistory.length}</p>
               </div>
-            </StatCard>
-            <StatCard>
+            </StatCard> */}
+            {/* <StatCard>
               <div className="icon">
                 <FaBookmark />
               </div>
@@ -547,7 +558,7 @@ const ProfilePage = () => {
                 <h3>Bookmarked Books</h3>
                 <p className="value">{bookmarks.length}</p>
               </div>
-            </StatCard>
+            </StatCard> */}
           </StatsRow>
 
           <SectionTitle>
