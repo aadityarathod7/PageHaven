@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaBook, FaUser, FaDownload, FaEye, FaChartLine, FaShoppingCart } from 'react-icons/fa';
+import { FaBook, FaUser, FaDownload, FaEye, FaChartLine, FaShoppingCart, FaPlus } from 'react-icons/fa';
 import { AuthContext } from '../context/AuthContext';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
@@ -14,6 +14,9 @@ const PageContainer = styled.div`
 `;
 
 const PageHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 2rem;
   
   h1 {
@@ -22,6 +25,27 @@ const PageHeader = styled.div`
     font-size: 2rem;
     font-weight: ${typography.fontWeights.bold};
     margin-bottom: 0.5rem;
+  }
+`;
+
+const CreateButton = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: ${colors.secondary};
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: ${borderRadius.lg};
+  text-decoration: none;
+  font-weight: ${typography.fontWeights.semibold};
+  transition: ${transitions.default};
+  box-shadow: ${shadows.md};
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: ${shadows.lg};
+    background: ${colors.primary};
+    color: white;
   }
 `;
 
@@ -296,6 +320,9 @@ const AdminDashboardPage = () => {
     <PageContainer>
       <PageHeader>
         <h1>Admin Dashboard</h1>
+        <CreateButton to="/admin/book/create">
+          <FaPlus /> Add New Book
+        </CreateButton>
       </PageHeader>
 
       {loading ? (
