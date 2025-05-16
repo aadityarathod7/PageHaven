@@ -8,6 +8,7 @@ import Loader from '../components/Loader';
 import Message from '../components/Message';
 import Paginate from '../components/Paginate';
 import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
+import { API_URL } from '../config/config';
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -54,7 +55,7 @@ const BooksPage = () => {
     const fetchBooks = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get(`/api/books?pageNumber=${pageNumber}`);
+        const { data } = await axios.get(`${API_URL}/api/books?pageNumber=${pageNumber}`);
         setBooks(data.books);
         setPage(data.page);
         setPages(data.pages);
