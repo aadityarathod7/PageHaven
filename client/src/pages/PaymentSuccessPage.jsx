@@ -6,59 +6,65 @@ import { FaCheckCircle, FaBook } from 'react-icons/fa';
 import { colors, typography, shadows, borderRadius } from '../styles/theme';
 
 const PageContainer = styled.div`
-  padding: 4rem 0;
+  padding: 2rem 0;
 `;
 
 const SuccessCard = styled.div`
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 3rem 2rem;
+  max-width: 350px;
+  padding: 1.5rem;
+  margin-left: 25rem;
   background: ${colors.background.primary};
   border-radius: ${borderRadius.xl};
   box-shadow: ${shadows.lg};
   text-align: center;
+  margin-top: 6rem;
 `;
 
 const Icon = styled.div`
   color: ${colors.success};
-  font-size: 4rem;
-  margin-bottom: 1.5rem;
+  font-size: 3rem;
+  margin-bottom: 1rem;
 `;
 
 const Title = styled.h1`
   color: ${colors.text.primary};
   font-family: ${typography.fonts.heading};
   font-weight: ${typography.fontWeights.bold};
-  margin-bottom: 1rem;
-  margin-top: 5rem;
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
 `;
 
 const Message = styled.p`
   color: ${colors.text.secondary};
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
+  font-size: 0.95rem;
+  margin-bottom: 1.25rem;
 `;
 
 const Details = styled.div`
   background: ${colors.background.secondary};
-  padding: 1.5rem;
+  padding: 1rem;
   border-radius: ${borderRadius.lg};
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
 `;
 
 const DetailItem = styled.p`
   color: ${colors.text.secondary};
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
   
   strong {
     color: ${colors.text.primary};
     font-weight: ${typography.fontWeights.semibold};
   }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   justify-content: center;
 
   @media (max-width: 576px) {
@@ -67,7 +73,8 @@ const ButtonGroup = styled.div`
 `;
 
 const StyledButton = styled(Button)`
-  padding: 0.75rem 2rem;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.9rem;
   font-weight: ${typography.fontWeights.medium};
   display: inline-flex;
   align-items: center;

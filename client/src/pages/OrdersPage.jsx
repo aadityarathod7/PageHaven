@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { colors, typography, borderRadius, shadows } from '../styles/theme';
 import { toast } from 'react-toastify';
+import { API_URL } from '../config/config';
 import Loader from '../components/Loader';
 
 const PageContainer = styled.div`
@@ -64,6 +65,7 @@ const BookCover = styled.img`
   height: 120px;
   object-fit: cover;
   border-radius: ${borderRadius.md};
+  box-shadow: ${shadows.sm};
 `;
 
 const BookDetails = styled.div`
@@ -142,6 +144,12 @@ const OrdersPage = () => {
     fetchOrders();
   }, [authAxios]);
 
+  const getImageUrl = (coverImage) => {
+    return coverImage ? 
+      (coverImage.startsWith('http') ? coverImage : `${API_URL}${coverImage}`) 
+      : `${API_URL}/uploads/default-cover.jpg`;
+  };
+
   if (loading) return <Loader />;
 
   return (
@@ -167,7 +175,10 @@ const OrdersPage = () => {
                   </OrderHeader>
 
                   <BookInfo>
-                    <BookCover src={order.book.coverImage} alt={order.book.title} />
+                    <BookCover 
+                      src={getImageUrl(order.book.coverImage)} 
+                      alt={order.book.title} 
+                    />
                     <BookDetails>
                       <BookTitle to={`/book/${order.book._id}`}>
                         {order.book.title}

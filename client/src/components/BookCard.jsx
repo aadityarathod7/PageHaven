@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Card, Badge } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { FaEye, FaDownload, FaHeart, FaRegHeart, FaStar } from 'react-icons/fa';
+import { FaEye, FaDownload, FaHeart, FaRegHeart, FaStar, FaBookOpen } from 'react-icons/fa';
 import styled from 'styled-components';
 import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
 import { AuthContext } from '../context/AuthContext';
@@ -65,7 +65,7 @@ const ImageWrapper = styled.div`
   position: relative;
   overflow: hidden;
   border-radius: ${borderRadius.xl} ${borderRadius.xl} 0 0;
-  height: 320px;
+  height: 250px;
 
   &:before {
     content: '';
@@ -127,14 +127,25 @@ const BookBadge = styled.div`
   backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transform: translateY(-5px);
-  opacity: 0;
-  transition: all 0.3s ease;
+  pointer-events: none;
+`;
 
-  ${StyledCard}:hover & {
-    transform: translateY(0);
-    opacity: 1;
-  }
+const PurchaseBadge = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: ${colors.success};
+  color: white;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  z-index: 100;
+  margin: 1rem;
+  border-radius: ${borderRadius.lg};
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: ${shadows.md};
+  pointer-events: none;
 `;
 
 const CardBody = styled(Card.Body)`
@@ -334,29 +345,50 @@ const Rating = styled.div`
   font-weight: ${typography.fontWeights.bold};
   backdrop-filter: blur(4px);
   z-index: 1;
+  pointer-events: none;
 `;
 
 const BookCard = ({ book }) => {
   const { authAxios, userInfo } = useContext(AuthContext);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isPurchased, setIsPurchased] = useState(false);
 
   useEffect(() => {
-    const checkFavoriteStatus = async () => {
-      if (userInfo) {
-        try {
-          const { data } = await authAxios.get(`/api/books/${book._id}/progress`);
-          setIsFavorite(data.isFavorite);
-        } catch (error) {
-          console.error('Error checking favorite status:', error);
+    const checkPurchaseStatus = async () => {
+      if (!userInfo || !book._id) {
+        console.log('Not checking purchase - no user or book:', {
+          hasUserInfo: !!userInfo,
+          bookId: book._id
+        });
+        return;
+      }
+
+      try {
+        console.log('Checking purchase status for:', {
+          bookId: book._id,
+          bookTitle: book.title,
+          userId: userInfo._id
+        });
+
+        const { data } = await authAxios.get(`/api/orders/check-purchase/${book._id}`);
+        console.log('Purchase status response:', data);
+        setIsPurchased(data.isPurchased);
+        
+        if (data.isPurchased) {
+          console.log('Book is purchased:', book.title);
         }
+      } catch (error) {
+        console.error('Error checking purchase status:', error);
       }
     };
 
-    checkFavoriteStatus();
+    checkPurchaseStatus();
   }, [book._id, authAxios, userInfo]);
 
   const handleFavoriteClick = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+    
     if (!userInfo) {
       toast.error('Please login to add favorites');
       return;
@@ -374,18 +406,26 @@ const BookCard = ({ book }) => {
     }
   };
 
-  // Get the full image URL
   const coverImageUrl = book.coverImage ? 
     (book.coverImage.startsWith('http') ? book.coverImage : `${API_URL}${book.coverImage}`) 
     : `${API_URL}/uploads/default-cover.jpg`;
 
+  console.log('Rendering BookCard:', {
+    title: book.title,
+    isPurchased,
+    hasUserInfo: !!userInfo
+  });
+
   return (
     <StyledCard>
-      <Link to={`/book/${book._id}`}>
+      <Link to={`/book/${book._id}`} style={{ textDecoration: 'none' }}>
         <ImageWrapper className="card-img-wrapper">
           <CoverImage variant="top" src={coverImageUrl} alt={book.title} className="card-img-top" />
-          {book.status === 'draft' && (
-            <BookBadge>Draft</BookBadge>
+          <BookBadge>₹{book.price}</BookBadge>
+          {isPurchased && userInfo && (
+            <PurchaseBadge>
+              <FaBookOpen /> Purchased
+            </PurchaseBadge>
           )}
           <Rating>
             <FaStar /> 4.5
