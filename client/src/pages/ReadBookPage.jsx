@@ -35,9 +35,8 @@ const ReadBookPage = () => {
           const { data: progressData } = await authAxios.get(`/api/books/${id}/progress`);
           setCurrentChapter(progressData.currentChapter || 0);
           setIsFavorite(progressData.isFavorite || false);
-        } catch (err) {
+        } catch {
           // If no progress exists, use defaults
-          console.log('No reading progress found');
         }
         
         setLoading(false);

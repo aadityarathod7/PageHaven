@@ -29,7 +29,6 @@ const getAllOrders = asyncHandler(async (req, res) => {
 // @route   POST /api/orders
 // @access  Private
 const createOrder = asyncHandler(async (req, res) => {
-    console.log('Creating order with data:', req.body);
     const { bookId, paymentId, orderId, amount, paymentMethod } = req.body;
 
     try {
@@ -42,7 +41,6 @@ const createOrder = asyncHandler(async (req, res) => {
             amount,
             paymentMethod
         });
-        console.log('Order created successfully:', order._id);
 
         // Create or update progress to mark book as purchased
         let progress = await Progress.findOne({
@@ -51,11 +49,9 @@ const createOrder = asyncHandler(async (req, res) => {
         });
 
         if (progress) {
-            console.log('Updating existing progress for book:', bookId);
             progress.isPurchased = true;
             await progress.save();
         } else {
-            console.log('Creating new progress for book:', bookId);
             await Progress.create({
                 user: req.user._id,
                 book: bookId,
@@ -68,7 +64,6 @@ const createOrder = asyncHandler(async (req, res) => {
 
         res.status(201).json(order);
     } catch (error) {
-        console.error('Error creating order:', error);
         throw error;
     }
 });
@@ -93,21 +88,13 @@ const getPurchasedBooks = asyncHandler(async (req, res) => {
 // @route   GET /api/orders/check-purchase/:bookId
 // @access  Private
 const checkBookPurchase = asyncHandler(async (req, res) => {
-    console.log('Checking purchase status:', {
-        userId: req.user._id,
-        bookId: req.params.bookId,
-        userEmail: req.user.email
-    });
-
     const progress = await Progress.findOne({
         user: req.user._id,
         book: req.params.bookId,
         isPurchased: true
     });
 
-    console.log('Found progress:', progress);
     const isPurchased = !!progress;
-    console.log('isPurchased:', isPurchased);
 
     // Also check orders directly as a fallback
     if (!isPurchased) {
@@ -115,7 +102,6 @@ const checkBookPurchase = asyncHandler(async (req, res) => {
             user: req.user._id,
             book: req.params.bookId
         });
-        console.log('Found order:', order);
         if (order) {
             // If we found an order but no progress, create the progress
             await Progress.create({
@@ -126,7 +112,6 @@ const checkBookPurchase = asyncHandler(async (req, res) => {
                 currentPosition: 0,
                 isFavorite: false
             });
-            console.log('Created missing progress record');
             res.json({ isPurchased: true });
             return;
         }

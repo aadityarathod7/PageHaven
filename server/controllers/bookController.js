@@ -104,13 +104,9 @@ const getAdminBooks = asyncHandler(async (req, res) => {
 // @route   GET /api/books/:id
 // @access  Private
 const getBookById = asyncHandler(async (req, res) => {
-  console.log('Fetching book with ID:', req.params.id);
-  console.log('User:', req.user);
-
   const book = await Book.findById(req.params.id).populate('author', 'name');
 
   if (!book) {
-    console.log('Book not found');
     res.status(404);
     throw new Error('Book not found');
   }
@@ -127,14 +123,12 @@ const getBookById = asyncHandler(async (req, res) => {
 
   // Admin can access any book
   if (req.user.role === 'admin') {
-    console.log('Admin access granted');
     res.json(bookResponse);
     return;
   }
 
   // For non-admin users, check if book is published or user is the author
   if (book.status === 'published' || book.author._id.equals(req.user._id)) {
-    console.log('Access granted - book is published or user is author');
     // Increment read count if published
     if (book.status === 'published') {
       book.readCount += 1;
@@ -142,7 +136,6 @@ const getBookById = asyncHandler(async (req, res) => {
     }
     res.json(bookResponse);
   } else {
-    console.log('Access denied - book is not published and user is not author');
     res.status(403);
     throw new Error('Not authorized to access this book');
   }
@@ -162,8 +155,6 @@ const updateBook = asyncHandler(async (req, res) => {
     chapters,
     price,
   } = req.body;
-
-  console.log('Update request body:', req.body);
 
   const book = await Book.findById(req.params.id);
 
@@ -226,12 +217,9 @@ const updateBook = asyncHandler(async (req, res) => {
       book.chapters = chapters;
     }
 
-    console.log('Saving book with data:', book);
-
     const updatedBook = await book.save();
     res.json(updatedBook);
   } catch (error) {
-    console.error('Error updating book:', error);
     res.status(error.status || 400);
     throw new Error(error.message || 'Error updating book');
   }
@@ -275,14 +263,11 @@ const uploadBookCover = asyncHandler(async (req, res) => {
     book.coverImage = `/uploads/${req.file.filename}`;
     const updatedBook = await book.save();
 
-    console.log('Updated book with cover image:', updatedBook);
-
     res.json({
       message: 'Cover image uploaded successfully',
       coverImage: updatedBook.coverImage
     });
   } catch (error) {
-    console.error('Error saving cover image:', error);
     res.status(500);
     throw new Error('Error saving cover image');
   }
