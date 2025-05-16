@@ -311,7 +311,7 @@ const AdminBookEditPage = () => {
           </FormGroup>
 
           <FormGroup>
-            <label htmlFor="price">Price ($)</label>
+            <label htmlFor="price">Price (₹)</label>
             <input
               type="number"
               id="price"

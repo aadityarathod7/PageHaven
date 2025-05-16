@@ -95,7 +95,7 @@ const PaymentSuccessPage = () => {
               <strong>Book:</strong> {bookTitle}
             </DetailItem>
             <DetailItem>
-              <strong>Amount Paid:</strong> ${(amount / 100).toFixed(2)}
+              <strong>Amount Paid:</strong> ₹{(amount / 100).toFixed(2)}
             </DetailItem>
             <DetailItem>
               <strong>Payment ID:</strong> {paymentId}
