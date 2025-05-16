@@ -201,7 +201,7 @@ const Footer = () => {
         <Row>
           <Col className="py-3">
             <FooterText>
-              PageHaven &copy; {new Date().getFullYear()} - All rights reserved
+              PageHaven - by Aaditya Rathod &copy; {new Date().getFullYear()} - All rights reserved
             </FooterText>
           </Col>
         </Row>
