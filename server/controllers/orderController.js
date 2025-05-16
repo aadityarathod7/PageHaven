@@ -73,8 +73,72 @@ const createOrder = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Get user's purchased books
+// @route   GET /api/orders/purchased-books
+// @access  Private
+const getPurchasedBooks = asyncHandler(async (req, res) => {
+    const orders = await Order.find({ user: req.user._id })
+        .populate('book')
+        .sort('-createdAt');
+
+    // Extract unique books from orders
+    const purchasedBooks = [...new Map(
+        orders.map(order => [order.book._id.toString(), order.book])
+    ).values()];
+
+    res.json(purchasedBooks);
+});
+
+// @desc    Check if a book is purchased by user
+// @route   GET /api/orders/check-purchase/:bookId
+// @access  Private
+const checkBookPurchase = asyncHandler(async (req, res) => {
+    console.log('Checking purchase status:', {
+        userId: req.user._id,
+        bookId: req.params.bookId,
+        userEmail: req.user.email
+    });
+
+    const progress = await Progress.findOne({
+        user: req.user._id,
+        book: req.params.bookId,
+        isPurchased: true
+    });
+
+    console.log('Found progress:', progress);
+    const isPurchased = !!progress;
+    console.log('isPurchased:', isPurchased);
+
+    // Also check orders directly as a fallback
+    if (!isPurchased) {
+        const order = await Order.findOne({
+            user: req.user._id,
+            book: req.params.bookId
+        });
+        console.log('Found order:', order);
+        if (order) {
+            // If we found an order but no progress, create the progress
+            await Progress.create({
+                user: req.user._id,
+                book: req.params.bookId,
+                isPurchased: true,
+                currentChapter: 0,
+                currentPosition: 0,
+                isFavorite: false
+            });
+            console.log('Created missing progress record');
+            res.json({ isPurchased: true });
+            return;
+        }
+    }
+
+    res.json({ isPurchased });
+});
+
 module.exports = {
     getUserOrders,
     getAllOrders,
-    createOrder
+    createOrder,
+    getPurchasedBooks,
+    checkBookPurchase
 }; 

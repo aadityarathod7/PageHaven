@@ -36,6 +36,7 @@ import Terms from './pages/Terms';
 import CheckoutPage from './pages/CheckoutPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import OrdersPage from './pages/OrdersPage';
+import PurchasedBooks from './pages/PurchasedBooks';
 
 function App() {
   return (
@@ -103,6 +104,14 @@ function App() {
                 element={
                   <PrivateRoute>
                     <OrdersPage />
+                  </PrivateRoute>
+                } 
+              />
+              <Route 
+                path="/my-books" 
+                element={
+                  <PrivateRoute>
+                    <PurchasedBooks />
                   </PrivateRoute>
                 } 
               />

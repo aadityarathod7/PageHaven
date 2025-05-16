@@ -7,6 +7,7 @@ import { FaUser, FaBook, FaSignOutAlt, FaCog, FaList, FaUsers, FaPlus, FaSearch,
 import styled from 'styled-components';
 import { AuthContext } from '../context/AuthContext';
 import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
+import { Link } from 'react-router-dom';
 
 const StyledNavbar = styled(Navbar)`
   background: ${colors.background.primary}80;
@@ -410,45 +411,24 @@ const Header = () => {
                 }
                 id="username"
               >
-                <LinkContainer to="/profile">
-                  <NavDropdown.Item>
-                    <FaUser />
-                    Profile
-                  </NavDropdown.Item>
-                </LinkContainer>
-                <LinkContainer to="/orders">
-                  <NavDropdown.Item>
-                    <FaShoppingBag />
-                    My Orders
-                  </NavDropdown.Item>
-                </LinkContainer>
+                <NavDropdown.Item as={Link} to="/my-books">
+                  <FaBook /> My Books
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/orders">
+                  <FaShoppingBag /> My Orders
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/favorites">
+                  <FaHeart /> Favorites
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/profile">
+                  <FaUser /> Profile
+                </NavDropdown.Item>
                 {userInfo.role === 'admin' && (
                   <>
                     <NavDropdown.Divider />
-                    <LinkContainer to="/admin/dashboard">
-                      <NavDropdown.Item>
-                        <FaCog />
-                        Dashboard
-                      </NavDropdown.Item>
-                    </LinkContainer>
-                    <LinkContainer to="/admin/books">
-                      <NavDropdown.Item>
-                        <FaList />
-                        Manage Books
-                      </NavDropdown.Item>
-                    </LinkContainer>
-                    <LinkContainer to="/admin/book/create">
-                      <NavDropdown.Item>
-                        <FaPlus />
-                        Add New Book
-                      </NavDropdown.Item>
-                    </LinkContainer>
-                    <LinkContainer to="/admin/users">
-                      <NavDropdown.Item>
-                        <FaUsers />
-                        Manage Users
-                      </NavDropdown.Item>
-                    </LinkContainer>
+                    <NavDropdown.Item as={Link} to="/admin/dashboard">
+                      <FaCog /> Admin Dashboard
+                    </NavDropdown.Item>
                   </>
                 )}
                 <NavDropdown.Divider />
