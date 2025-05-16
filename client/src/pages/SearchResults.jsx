@@ -4,6 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import BookCard from '../components/BookCard';
 import styled from 'styled-components';
 import { colors, typography, shadows, borderRadius, transitions } from '../styles/theme';
+import { API_URL } from '../config/config';
 
 const SearchHeader = styled.div`
   margin: 2rem 0;
@@ -22,7 +23,7 @@ const SearchResults = () => {
         setLoading(true);
         setError(null);
         
-        const response = await fetch(`/api/books/search?query=${encodeURIComponent(query)}`);
+        const response = await fetch(`${API_URL}/api/books/search?query=${encodeURIComponent(query)}`);
         if (!response.ok) {
           throw new Error('Failed to fetch search results');
         }
