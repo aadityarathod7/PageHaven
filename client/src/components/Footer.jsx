@@ -111,10 +111,10 @@ const Footer = () => {
             <FooterSection>
               <Logo to="/">
                 <FaBook size={24} color={colors.secondary} />
-                <LogoText>Book Platform</LogoText>
+                <LogoText>PageHaven</LogoText>
               </Logo>
               <FooterText className="mb-4 text-left">
-                Discover, read, and share your favorite books with our community of passionate readers.
+                Find your peace, one page at a time. Join our community of passionate readers in a haven of literary discovery.
               </FooterText>
               <div>
                 <SocialIcon 
@@ -201,7 +201,7 @@ const Footer = () => {
         <Row>
           <Col className="py-3">
             <FooterText>
-              Book Platform - Aaditya Rathod &copy; {new Date().getFullYear()} - All rights reserved
+              PageHaven &copy; {new Date().getFullYear()} - All rights reserved
             </FooterText>
           </Col>
         </Row>

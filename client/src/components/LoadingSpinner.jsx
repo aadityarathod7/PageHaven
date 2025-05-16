@@ -17,13 +17,13 @@ const fadeOut = keyframes`
 `;
 
 const SpinnerWrapper = styled.div`
-  display: ${props => props.show ? 'flex' : 'none'};
+  display: ${props => props.$show ? 'flex' : 'none'};
   justify-content: center;
   align-items: center;
   min-height: 60px;
-  animation: ${props => props.isExiting ? fadeOut : fadeIn} 0.2s ease-in;
+  animation: ${props => props.$isExiting ? fadeOut : fadeIn} 0.2s ease-in;
   padding: 10px;
-  opacity: ${props => props.isExiting ? 0 : 1};
+  opacity: ${props => props.$isExiting ? 0 : 1};
 `;
 
 const Spinner = styled.div`
@@ -61,7 +61,7 @@ const LoadingSpinner = () => {
   if (!show && isExiting) return null;
 
   return (
-    <SpinnerWrapper show={show} isExiting={isExiting}>
+    <SpinnerWrapper $show={show} $isExiting={isExiting}>
       <Spinner />
     </SpinnerWrapper>
   );
