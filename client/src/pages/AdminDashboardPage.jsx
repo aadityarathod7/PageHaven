@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaBook, FaUser, FaDownload, FaEye, FaChartLine, FaShoppingCart, FaPlus } from 'react-icons/fa';
+import { FaBook, FaUser, FaDownload, FaEye, FaChartLine, FaShoppingCart, FaPlus, FaList, FaUsers, FaEdit } from 'react-icons/fa';
 import { AuthContext } from '../context/AuthContext';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
+import { API_URL, UPLOADS_URL } from '../config/config';
 
 const PageContainer = styled.div`
   padding: 2rem;
@@ -250,6 +251,85 @@ const StatusBadge = styled.span`
   margin-top: 0.5rem;
 `;
 
+const AdminMenuGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+`;
+
+const AdminMenuCard = styled(Link)`
+  background: ${colors.background.primary};
+  border-radius: ${borderRadius.xl};
+  padding: 2rem 1.5rem;
+  box-shadow: ${shadows.md};
+  transition: ${transitions.default};
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: ${shadows.lg};
+    background: ${colors.background.secondary};
+  }
+
+  .icon-wrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: ${borderRadius.lg};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    background: ${props => 
+      props.$color === 'primary' ? `${colors.primary}15` :
+      props.$color === 'secondary' ? `${colors.secondary}15` :
+      props.$color === 'success' ? `${colors.success}15` :
+      props.$color === 'warning' ? `${colors.warning}15` :
+      `${colors.accent}15`
+    };
+    color: ${props => 
+      props.$color === 'primary' ? colors.primary :
+      props.$color === 'secondary' ? colors.secondary :
+      props.$color === 'success' ? colors.success :
+      props.$color === 'warning' ? colors.warning :
+      colors.accent
+    };
+    transition: ${transitions.default};
+  }
+
+  h3 {
+    color: ${colors.text.primary};
+    font-size: 1.25rem;
+    font-weight: ${typography.fontWeights.bold};
+    margin-bottom: 0.5rem;
+    font-family: ${typography.fonts.heading};
+  }
+
+  p {
+    color: ${colors.text.secondary};
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  &:hover .icon-wrapper {
+    transform: scale(1.1);
+  }
+`;
+
+const SectionHeader = styled.h2`
+  font-family: ${typography.fonts.heading};
+  color: ${colors.text.primary};
+  font-size: 1.75rem;
+  font-weight: ${typography.fontWeights.bold};
+  margin: 3rem 0 1.5rem;
+  border-bottom: 2px solid ${colors.background.accent};
+  padding-bottom: 0.75rem;
+`;
+
 const AdminDashboardPage = () => {
   const { authAxios } = useContext(AuthContext);
   
@@ -331,6 +411,42 @@ const AdminDashboardPage = () => {
         <Message variant="danger">{error}</Message>
       ) : (
         <>
+          <AdminMenuGrid>
+            <AdminMenuCard to="/admin/books" $color="primary">
+              <div className="icon-wrapper">
+                <FaList size={28} />
+              </div>
+              <h3>Manage Books</h3>
+              <p>View, edit and delete books</p>
+            </AdminMenuCard>
+            
+            <AdminMenuCard to="/admin/book/create" $color="secondary">
+              <div className="icon-wrapper">
+                <FaPlus size={28} />
+              </div>
+              <h3>Add New Book</h3>
+              <p>Create a new book</p>
+            </AdminMenuCard>
+            
+            <AdminMenuCard to="/admin/users" $color="success">
+              <div className="icon-wrapper">
+                <FaUsers size={28} />
+              </div>
+              <h3>Manage Users</h3>
+              <p>View and manage user accounts</p>
+            </AdminMenuCard>
+            
+            <AdminMenuCard to="/admin/orders" $color="warning">
+              <div className="icon-wrapper">
+                <FaShoppingCart size={28} />
+              </div>
+              <h3>Manage Orders</h3>
+              <p>View and process orders</p>
+            </AdminMenuCard>
+          </AdminMenuGrid>
+          
+          <SectionHeader>Dashboard Statistics</SectionHeader>
+
           <StatsGrid>
             <StatCard>
               <StatHeader>
@@ -418,7 +534,16 @@ const AdminDashboardPage = () => {
                   <BookList>
                     {stats.recentBooks.map((book) => (
                       <BookItem key={book._id}>
-                        <img src={book.coverImage} alt={book.title} />
+                        <img 
+                          src={book.coverImage.startsWith('/uploads') 
+                            ? `${API_URL}${book.coverImage}` 
+                            : book.coverImage} 
+                          alt={book.title}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://via.placeholder.com/60x80?text=No+Image';
+                          }}
+                        />
                         <BookInfo>
                           <h6>
                             <Link to={`/book/${book._id}`}>{book.title}</Link>
@@ -448,7 +573,16 @@ const AdminDashboardPage = () => {
                   <BookList>
                     {stats.topBooks.map((book) => (
                       <BookItem key={book._id}>
-                        <img src={book.coverImage} alt={book.title} />
+                        <img 
+                          src={book.coverImage.startsWith('/uploads') 
+                            ? `${API_URL}${book.coverImage}` 
+                            : book.coverImage} 
+                          alt={book.title}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://via.placeholder.com/60x80?text=No+Image';
+                          }}
+                        />
                         <BookInfo>
                           <h6>
                             <Link to={`/book/${book._id}`}>{book.title}</Link>

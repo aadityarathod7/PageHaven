@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Card, Badge } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { FaEye, FaDownload, FaHeart, FaRegHeart, FaStar, FaBookOpen } from 'react-icons/fa';
+import { FaEye, FaDownload, FaHeart, FaRegHeart, FaStar, FaBookOpen, FaImage } from 'react-icons/fa';
 import styled from 'styled-components';
 import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
 import { AuthContext } from '../context/AuthContext';
@@ -111,6 +111,21 @@ const CoverImage = styled(Card.Img)`
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   transform-origin: center;
   filter: brightness(0.95) contrast(1.1);
+`;
+
+const ImagePlaceholder = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, ${colors.background.secondary}, ${colors.background.accent});
+  color: ${colors.text.light};
+  
+  svg {
+    font-size: 3rem;
+    opacity: 0.5;
+  }
 `;
 
 const BookBadge = styled.div`
@@ -352,6 +367,7 @@ const BookCard = ({ book }) => {
   const { authAxios, userInfo } = useContext(AuthContext);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isPurchased, setIsPurchased] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     const checkPurchaseStatus = async () => {
@@ -392,14 +408,31 @@ const BookCard = ({ book }) => {
   };
 
   const coverImageUrl = book.coverImage ? 
-    (book.coverImage.startsWith('http') ? book.coverImage : `${API_URL}${book.coverImage}`) 
+    (book.coverImage.startsWith('http') ? book.coverImage : 
+     book.coverImage.startsWith('/') ? `${API_URL}${book.coverImage}` : `${API_URL}/${book.coverImage}`) 
     : `${API_URL}/uploads/default-cover.jpg`;
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
 
   return (
     <StyledCard>
       <Link to={`/book/${book._id}`} style={{ textDecoration: 'none' }}>
         <ImageWrapper className="card-img-wrapper">
-          <CoverImage variant="top" src={coverImageUrl} alt={book.title} className="card-img-top" />
+          {imageError ? (
+            <ImagePlaceholder>
+              <FaImage />
+            </ImagePlaceholder>
+          ) : (
+            <CoverImage 
+              variant="top" 
+              src={coverImageUrl} 
+              alt={book.title} 
+              className="card-img-top" 
+              onError={handleImageError}
+            />
+          )}
           <BookBadge>₹{book.price}</BookBadge>
           {isPurchased && userInfo && (
             <PurchaseBadge>
