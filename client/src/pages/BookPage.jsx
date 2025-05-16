@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { FaArrowLeft, FaDownload, FaBook, FaEye, FaEdit, FaTrash, FaBookOpen } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { AuthContext } from '../context/AuthContext';
+import { API_URL } from '../config/config';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
@@ -343,7 +344,12 @@ const BookPage = () => {
         <>
           <BookGrid>
             <div>
-              <CoverImage src={book.coverImage} alt={book.title} />
+              <CoverImage 
+                src={book.coverImage ? 
+                  (book.coverImage.startsWith('http') ? book.coverImage : `${API_URL}${book.coverImage}`) 
+                  : `${API_URL}/uploads/default-cover.jpg`} 
+                alt={book.title} 
+              />
             </div>
             
             <BookDetails>
@@ -370,7 +376,7 @@ const BookPage = () => {
               <Description>{book.description}</Description>
 
               <Price>
-                Price: <span>${book.price ? book.price.toFixed(2) : '0.00'}</span>
+                Price: <span>₹{book.price ? book.price.toFixed(2) : '0.00'}</span>
               </Price>
               
               <ButtonGroup>
@@ -395,7 +401,7 @@ const BookPage = () => {
                     $variant="success"
                     disabled={!book.price}
                   >
-                    ${book.price ? book.price.toFixed(2) : '0.00'} - Buy Now
+                    ₹{book.price ? book.price.toFixed(2) : '0.00'} - Buy Now
                   </Button>
                 )}
                 

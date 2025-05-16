@@ -118,7 +118,7 @@ const SearchResults = () => {
                 <Card.Body>
                   <BookTitle>{book.title}</BookTitle>
                   <BookAuthor>by {book.author?.name || 'Unknown Author'}</BookAuthor>
-                  <BookPrice>${book.price}</BookPrice>
+                  <BookPrice>₹{book.price}</BookPrice>
                 </Card.Body>
               </BookCard>
             </Col>
