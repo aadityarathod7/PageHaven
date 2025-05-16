@@ -1,50 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Spinner, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
 import { useParams, Link } from 'react-router-dom';
+import BookCard from '../components/BookCard';
 import styled from 'styled-components';
 import { colors, typography, shadows, borderRadius, transitions } from '../styles/theme';
 
 const SearchHeader = styled.div`
   margin: 2rem 0;
   text-align: center;
-`;
-
-const BookCard = styled(Card)`
-  height: 100%;
-  border: none;
-  border-radius: ${borderRadius.xl};
-  background: ${colors.background.primary};
-  box-shadow: ${shadows.md};
-  transition: ${transitions.default};
-  overflow: hidden;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: ${shadows.lg};
-  }
-`;
-
-const BookImage = styled(Card.Img)`
-  height: 300px;
-  object-fit: cover;
-`;
-
-const BookTitle = styled(Card.Title)`
-  font-family: ${typography.fonts.heading};
-  font-weight: ${typography.fontWeights.bold};
-  margin-bottom: 0.5rem;
-`;
-
-const BookAuthor = styled.p`
-  color: ${colors.text.secondary};
-  font-size: 0.9rem;
-  margin-bottom: 0.5rem;
-`;
-
-const BookPrice = styled.p`
-  font-weight: ${typography.fontWeights.bold};
-  color: ${colors.secondary};
-  margin-bottom: 0;
 `;
 
 const SearchResults = () => {
@@ -113,14 +76,7 @@ const SearchResults = () => {
         <Row xs={1} md={2} lg={3} className="g-4">
           {books.map((book) => (
             <Col key={book._id}>
-              <BookCard as={Link} to={`/book/${book._id}`}>
-                <BookImage variant="top" src={book.coverImage} alt={book.title} />
-                <Card.Body>
-                  <BookTitle>{book.title}</BookTitle>
-                  <BookAuthor>by {book.author?.name || 'Unknown Author'}</BookAuthor>
-                  <BookPrice>₹{book.price}</BookPrice>
-                </Card.Body>
-              </BookCard>
+              <BookCard book={book} />
             </Col>
           ))}
         </Row>
