@@ -1,8 +1,9 @@
 // client/src/App.jsx
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import { ToastContainer } from 'react-toastify';
 import { AuthProvider } from './context/AuthContext';
+import React, { lazy, useEffect } from 'react';
 
 // Bootstrap and custom styles
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -14,157 +15,219 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute';
+import LazyRoute from './components/LazyRoute';
 
-// Pages
-import HomePage from './pages/HomePage';
-import BookPage from './pages/BookPage';
-import BooksPage from './pages/BooksPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import ReadBookPage from './pages/ReadBookPage';
-import ProfilePage from './pages/ProfilePage';
-import AdminDashboardPage from './pages/AdminDashboardPage';
-import AdminBookListPage from './pages/AdminBookListPage';
-import AdminBookEditPage from './pages/AdminBookEditPage';
-import AdminBookCreatePage from './pages/AdminBookCreatePage';
-import AdminUserListPage from './pages/AdminUserListPage';
-import AdminOrdersPage from './pages/AdminOrdersPage';
-import SearchResults from './pages/SearchResults';
-import FavoritesPage from './pages/FavoritesPage';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import Terms from './pages/Terms';
-import CheckoutPage from './pages/CheckoutPage';
-import PaymentSuccessPage from './pages/PaymentSuccessPage';
-import OrdersPage from './pages/OrdersPage';
-import PurchasedBooks from './pages/PurchasedBooks';
+// Lazy load pages
+const HomePage = lazy(() => import('./pages/HomePage'));
+const BookPage = lazy(() => import('./pages/BookPage'));
+const BooksPage = lazy(() => import('./pages/BooksPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const ReadBookPage = lazy(() => import('./pages/ReadBookPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
+const AdminBookListPage = lazy(() => import('./pages/AdminBookListPage'));
+const AdminBookEditPage = lazy(() => import('./pages/AdminBookEditPage'));
+const AdminBookCreatePage = lazy(() => import('./pages/AdminBookCreatePage'));
+const AdminUserListPage = lazy(() => import('./pages/AdminUserListPage'));
+const AdminOrdersPage = lazy(() => import('./pages/AdminOrdersPage'));
+const SearchResults = lazy(() => import('./pages/SearchResults'));
+const FavoritesPage = lazy(() => import('./pages/FavoritesPage'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const Terms = lazy(() => import('./pages/Terms'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const PaymentSuccessPage = lazy(() => import('./pages/PaymentSuccessPage'));
+const OrdersPage = lazy(() => import('./pages/OrdersPage'));
+const PurchasedBooks = lazy(() => import('./pages/PurchasedBooks'));
+
+// Route change handler component
+const RouteChangeHandler = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Preload the component for the current route
+    const preloadRoute = async () => {
+      try {
+        switch (location.pathname) {
+          case '/':
+            await HomePage._payload._result();
+            break;
+          case '/books':
+            await BooksPage._payload._result();
+            break;
+          // Add other routes as needed
+        }
+      } catch {
+        // Ignore preloading errors
+      }
+    };
+
+    preloadRoute();
+  }, [location]);
+
+  return null;
+};
 
 function App() {
   return (
     <AuthProvider>
       <Router>
+        <RouteChangeHandler />
         <Header />
         <main className="py-3">
           <Container>
             <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/books" element={<BooksPage />} />
-              <Route path="/books/page/:pageNumber" element={<BooksPage />} />
-              <Route path="/search/:query" element={<SearchResults />} />
-              <Route path="/page/:pageNumber" element={<HomePage />} />
-              <Route path="/search/:keyword/page/:pageNumber" element={<HomePage />} />
-              <Route path="/book/:id" element={<BookPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/terms" element={<Terms />} />
+              {/* Public Routes */}
+              <Route path="/" element={
+                <LazyRoute>
+                  <HomePage />
+                </LazyRoute>
+              } />
+              <Route path="/books" element={
+                <LazyRoute>
+                  <BooksPage />
+                </LazyRoute>
+              } />
+              <Route path="/books/page/:pageNumber" element={
+                <LazyRoute>
+                  <BooksPage />
+                </LazyRoute>
+              } />
+              <Route path="/search/:query" element={
+                <LazyRoute>
+                  <SearchResults />
+                </LazyRoute>
+              } />
+              <Route path="/page/:pageNumber" element={
+                <LazyRoute>
+                  <HomePage />
+                </LazyRoute>
+              } />
+              <Route path="/search/:keyword/page/:pageNumber" element={
+                <LazyRoute>
+                  <HomePage />
+                </LazyRoute>
+              } />
+              <Route path="/book/:id" element={
+                <LazyRoute>
+                  <BookPage />
+                </LazyRoute>
+              } />
+              <Route path="/login" element={
+                <LazyRoute>
+                  <LoginPage />
+                </LazyRoute>
+              } />
+              <Route path="/register" element={
+                <LazyRoute>
+                  <RegisterPage />
+                </LazyRoute>
+              } />
+              <Route path="/privacy" element={
+                <LazyRoute>
+                  <PrivacyPolicy />
+                </LazyRoute>
+              } />
+              <Route path="/terms" element={
+                <LazyRoute>
+                  <Terms />
+                </LazyRoute>
+              } />
               
               {/* Private Routes */}
-              <Route 
-                path="/favorites" 
-                element={
-                  <PrivateRoute>
+              <Route path="/favorites" element={
+                <PrivateRoute>
+                  <LazyRoute>
                     <FavoritesPage />
-                  </PrivateRoute>
-                } 
-              />
-              <Route 
-                path="/read/:id" 
-                element={
-                  <PrivateRoute>
+                  </LazyRoute>
+                </PrivateRoute>
+              } />
+              <Route path="/read/:id" element={
+                <PrivateRoute>
+                  <LazyRoute>
                     <ReadBookPage />
-                  </PrivateRoute>
-                } 
-              />
-              <Route 
-                path="/profile" 
-                element={
-                  <PrivateRoute>
+                  </LazyRoute>
+                </PrivateRoute>
+              } />
+              <Route path="/profile" element={
+                <PrivateRoute>
+                  <LazyRoute>
                     <ProfilePage />
-                  </PrivateRoute>
-                } 
-              />
-              <Route 
-                path="/checkout" 
-                element={
-                  <PrivateRoute>
+                  </LazyRoute>
+                </PrivateRoute>
+              } />
+              <Route path="/checkout" element={
+                <PrivateRoute>
+                  <LazyRoute>
                     <CheckoutPage />
-                  </PrivateRoute>
-                } 
-              />
-              <Route 
-                path="/payment-success" 
-                element={
-                  <PrivateRoute>
+                  </LazyRoute>
+                </PrivateRoute>
+              } />
+              <Route path="/payment-success" element={
+                <PrivateRoute>
+                  <LazyRoute>
                     <PaymentSuccessPage />
-                  </PrivateRoute>
-                } 
-              />
-              <Route 
-                path="/orders" 
-                element={
-                  <PrivateRoute>
+                  </LazyRoute>
+                </PrivateRoute>
+              } />
+              <Route path="/orders" element={
+                <PrivateRoute>
+                  <LazyRoute>
                     <OrdersPage />
-                  </PrivateRoute>
-                } 
-              />
-              <Route 
-                path="/my-books" 
-                element={
-                  <PrivateRoute>
+                  </LazyRoute>
+                </PrivateRoute>
+              } />
+              <Route path="/my-books" element={
+                <PrivateRoute>
+                  <LazyRoute>
                     <PurchasedBooks />
-                  </PrivateRoute>
-                } 
-              />
+                  </LazyRoute>
+                </PrivateRoute>
+              } />
               
               {/* Admin Routes */}
-              <Route 
-                path="/admin/dashboard" 
-                element={
-                  <AdminRoute>
+              <Route path="/admin/dashboard" element={
+                <AdminRoute>
+                  <LazyRoute>
                     <AdminDashboardPage />
-                  </AdminRoute>
-                } 
-              />
-              <Route 
-                path="/admin/books" 
-                element={
-                  <AdminRoute>
+                  </LazyRoute>
+                </AdminRoute>
+              } />
+              <Route path="/admin/books" element={
+                <AdminRoute>
+                  <LazyRoute>
                     <AdminBookListPage />
-                  </AdminRoute>
-                } 
-              />
-              <Route 
-                path="/admin/book/create" 
-                element={
-                  <AdminRoute>
+                  </LazyRoute>
+                </AdminRoute>
+              } />
+              <Route path="/admin/book/create" element={
+                <AdminRoute>
+                  <LazyRoute>
                     <AdminBookCreatePage />
-                  </AdminRoute>
-                } 
-              />
-              <Route 
-                path="/admin/book/:id/edit" 
-                element={
-                  <AdminRoute>
+                  </LazyRoute>
+                </AdminRoute>
+              } />
+              <Route path="/admin/book/:id/edit" element={
+                <AdminRoute>
+                  <LazyRoute>
                     <AdminBookEditPage />
-                  </AdminRoute>
-                } 
-              />
-              <Route 
-                path="/admin/users" 
-                element={
-                  <AdminRoute>
+                  </LazyRoute>
+                </AdminRoute>
+              } />
+              <Route path="/admin/users" element={
+                <AdminRoute>
+                  <LazyRoute>
                     <AdminUserListPage />
-                  </AdminRoute>
-                } 
-              />
-              <Route 
-                path="/admin/orders" 
-                element={
-                  <AdminRoute>
+                  </LazyRoute>
+                </AdminRoute>
+              } />
+              <Route path="/admin/orders" element={
+                <AdminRoute>
+                  <LazyRoute>
                     <AdminOrdersPage />
-                  </AdminRoute>
-                } 
-              />
+                  </LazyRoute>
+                </AdminRoute>
+              } />
             </Routes>
           </Container>
         </main>
