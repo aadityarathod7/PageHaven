@@ -173,9 +173,8 @@ const PaymentForm = ({ amount, onSuccess, bookTitle, bookId }) => {
                 toast.error('Payment was successful but order creation failed. Please contact support.');
               }
             }
-          } catch (err) {
+          } catch {
             toast.error('Payment verification failed. Please contact support.');
-            console.error('Payment verification error:', err);
           }
         },
         prefill: {
@@ -195,9 +194,8 @@ const PaymentForm = ({ amount, onSuccess, bookTitle, bookId }) => {
 
       const paymentObject = new window.Razorpay(options);
       paymentObject.open();
-    } catch (err) {
+    } catch {
       toast.error('Failed to create payment order. Please try again.');
-      console.error('Payment error:', err);
     }
   };
 

@@ -356,27 +356,12 @@ const BookCard = ({ book }) => {
   useEffect(() => {
     const checkPurchaseStatus = async () => {
       if (!userInfo || !book._id) {
-        console.log('Not checking purchase - no user or book:', {
-          hasUserInfo: !!userInfo,
-          bookId: book._id
-        });
         return;
       }
 
       try {
-        console.log('Checking purchase status for:', {
-          bookId: book._id,
-          bookTitle: book.title,
-          userId: userInfo._id
-        });
-
         const { data } = await authAxios.get(`/api/orders/check-purchase/${book._id}`);
-        console.log('Purchase status response:', data);
         setIsPurchased(data.isPurchased);
-        
-        if (data.isPurchased) {
-          console.log('Book is purchased:', book.title);
-        }
       } catch (error) {
         console.error('Error checking purchase status:', error);
       }
@@ -409,12 +394,6 @@ const BookCard = ({ book }) => {
   const coverImageUrl = book.coverImage ? 
     (book.coverImage.startsWith('http') ? book.coverImage : `${API_URL}${book.coverImage}`) 
     : `${API_URL}/uploads/default-cover.jpg`;
-
-  console.log('Rendering BookCard:', {
-    title: book.title,
-    isPurchased,
-    hasUserInfo: !!userInfo
-  });
 
   return (
     <StyledCard>

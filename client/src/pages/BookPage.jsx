@@ -236,13 +236,11 @@ const BookPage = () => {
     const fetchBook = async () => {
       try {
         const { data } = await authAxios.get(`/api/books/${id}`);
-        console.log('Fetched book data:', data);
         setBook(data);
         
         // Check purchase status
         if (userInfo) {
           const purchaseResponse = await authAxios.get(`/api/orders/check-purchase/${id}`);
-          console.log('Purchase status:', purchaseResponse.data);
           setIsPurchased(purchaseResponse.data.isPurchased);
         }
         
@@ -286,7 +284,8 @@ const BookPage = () => {
       
       toast.success('Book downloaded successfully');
       setDownloadingPdf(false);
-    } catch (error) {
+    } catch (err) {
+      console.error('Download failed:', err);
       toast.error('Download failed');
       setDownloadingPdf(false);
     }
@@ -309,19 +308,11 @@ const BookPage = () => {
   };
 
   const handlePurchase = () => {
-    console.log('Purchase initiated for book:', id); // Debug log
-
     if (!userInfo) {
       toast.error('Please login to purchase books');
       navigate('/login');
       return;
     }
-
-    // Debug log for book data
-    console.log('Book data:', {
-      price: book.price,
-      title: book.title
-    });
 
     if (!book.price) {
       toast.error('Book price is not set');

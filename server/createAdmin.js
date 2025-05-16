@@ -11,11 +11,11 @@ mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('MongoDB Connected'))
-.catch(err => {
-  console.error('MongoDB Connection Error:', err.message);
-  process.exit(1);
-});
+  .then(() => { })
+  .catch(err => {
+    console.error('MongoDB Connection Error:', err.message);
+    process.exit(1);
+  });
 
 // Admin details - you can customize these
 const adminData = {
@@ -30,12 +30,11 @@ const createAdmin = async () => {
   try {
     // Check if admin already exists
     const adminExists = await User.findOne({ email: adminData.email });
-    
+
     if (adminExists) {
-      console.log('Admin user already exists');
       return;
     }
-    
+
     // Create new admin
     const admin = await User.create({
       name: adminData.name,
@@ -43,18 +42,11 @@ const createAdmin = async () => {
       password: adminData.password,  // Model will hash this via pre-save hook
       role: adminData.role
     });
-    
-    console.log('Admin user created successfully:');
-    console.log(`Name: ${admin.name}`);
-    console.log(`Email: ${admin.email}`);
-    console.log(`Role: ${admin.role}`);
-    console.log('\nYou can now log in with these credentials.');
   } catch (error) {
     console.error('Error creating admin user:', error.message);
   } finally {
     // Close the connection
     mongoose.connection.close();
-    console.log('MongoDB connection closed');
   }
 };
 
