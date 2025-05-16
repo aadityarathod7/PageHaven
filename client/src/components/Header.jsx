@@ -361,7 +361,7 @@ const Header = () => {
       <Container>
         <LinkContainer to="/">
           <Brand>
-            <FaBook /> BookStore
+            <FaBook /> PageHaven
           </Brand>
         </LinkContainer>
         

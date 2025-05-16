@@ -400,10 +400,10 @@ const HomePage = () => {
       <HeroSection>
         <Container>
           <HeroContent>
-            <h1>Discover Your Next Great Read</h1>
+            <h1>Find your peace, one page at a time</h1>
             <p>
-              Explore our vast collection of books, from timeless classics to contemporary bestsellers.
-              Your next literary adventure awaits.
+              Welcome to PageHaven, your sanctuary of stories. Discover a curated collection of books 
+              that will transport you to new worlds and bring tranquility to your reading journey.
             </p>
             <SearchBox>
               <SearchInput

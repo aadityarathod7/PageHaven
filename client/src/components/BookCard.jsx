@@ -7,6 +7,7 @@ import { colors, typography, shadows, transitions, borderRadius } from '../style
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { API_URL } from '../config/config';
+import { getImageUrl, handleImageError } from '../utils/imageUtils';
 
 const StyledCard = styled(Card)`
   ${props => props.theme.commonStyles?.cardStyle || `
@@ -367,7 +368,6 @@ const BookCard = ({ book }) => {
   const { authAxios, userInfo } = useContext(AuthContext);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isPurchased, setIsPurchased] = useState(false);
-  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     const checkPurchaseStatus = async () => {
@@ -407,32 +407,19 @@ const BookCard = ({ book }) => {
     }
   };
 
-  const coverImageUrl = book.coverImage ? 
-    (book.coverImage.startsWith('http') ? book.coverImage : 
-     book.coverImage.startsWith('/') ? `${API_URL}${book.coverImage}` : `${API_URL}/${book.coverImage}`) 
-    : `${API_URL}/uploads/default-cover.jpg`;
-
-  const handleImageError = () => {
-    setImageError(true);
-  };
+  const coverImageUrl = getImageUrl(book.coverImage);
 
   return (
     <StyledCard>
       <Link to={`/book/${book._id}`} style={{ textDecoration: 'none' }}>
         <ImageWrapper className="card-img-wrapper">
-          {imageError ? (
-            <ImagePlaceholder>
-              <FaImage />
-            </ImagePlaceholder>
-          ) : (
-            <CoverImage 
-              variant="top" 
-              src={coverImageUrl} 
-              alt={book.title} 
-              className="card-img-top" 
-              onError={handleImageError}
-            />
-          )}
+          <CoverImage 
+            variant="top" 
+            src={coverImageUrl} 
+            alt={book.title} 
+            className="card-img-top" 
+            onError={handleImageError}
+          />
           <BookBadge>₹{book.price}</BookBadge>
           {isPurchased && userInfo && (
             <PurchaseBadge>
