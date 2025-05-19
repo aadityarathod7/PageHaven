@@ -5,209 +5,119 @@ import styled from 'styled-components';
 import { FaBook, FaTwitter, FaInstagram, FaFacebook } from 'react-icons/fa';
 import { colors, typography, transitions } from '../styles/theme';
 import { AuthContext } from '../context/AuthContext';
+import { memo } from 'react';
 
 const StyledFooter = styled.footer`
-  background: ${colors.background.primary};
-  padding: 3rem 0 2rem;
+  background: ${colors.background.secondary};
+  padding: 1.2rem 0 0.7rem;
   border-top: 1px solid ${colors.background.accent};
-  margin-top: auto;
   font-family: ${typography.fonts.body};
-`;
-
-const FooterSection = styled.div`
-  margin-bottom: 1.5rem;
-`;
-
-const FooterTitle = styled.h5`
-  color: ${colors.text.primary};
-  font-weight: ${typography.fontWeights.semibold};
-  margin-bottom: 1rem;
-  font-size: 1rem;
-`;
-
-const FooterLink = styled(Link)`
+  font-size: 0.92rem;
   color: ${colors.text.secondary};
-  text-decoration: none;
-  font-weight: ${typography.fontWeights.medium};
-  transition: ${transitions.default};
-  display: block;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  
-  &:hover {
-    color: ${colors.secondary};
-  }
 `;
 
-const ExternalLink = styled.a`
-  color: ${colors.text.secondary};
-  text-decoration: none;
-  font-weight: ${typography.fontWeights.medium};
-  transition: ${transitions.default};
-  display: block;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  
-  &:hover {
-    color: ${colors.secondary};
-  }
-`;
-
-const FooterText = styled.p`
-  color: ${colors.text.secondary};
-  margin: 0;
-  text-align: center;
-  font-size: 0.9rem;
-  
-  a {
-    color: ${colors.secondary};
-    text-decoration: none;
-    font-weight: ${typography.fontWeights.medium};
-    transition: ${transitions.default};
-    
-    &:hover {
-      color: ${colors.primary};
-    }
-  }
-`;
-
-const Divider = styled.hr`
-  border-top: 1px solid ${colors.background.accent};
-  margin: 1.5rem 0;
-`;
-
-const SocialIcon = styled.a`
-  color: ${colors.text.secondary};
-  margin-right: 1rem;
-  transition: ${transitions.default};
-  
-  &:hover {
-    color: ${colors.secondary};
+const FooterRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.7rem;
   }
 `;
 
 const Logo = styled(Link)`
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
+  gap: 0.5rem;
   text-decoration: none;
 `;
 
 const LogoText = styled.span`
   font-weight: ${typography.fontWeights.semibold};
-  font-size: 1.25rem;
-  margin-left: 0.5rem;
+  font-size: 1.1rem;
   color: ${colors.text.primary};
+`;
+
+const Socials = styled.div`
+  display: flex;
+  gap: 0.7rem;
+`;
+
+const SocialIcon = styled.a`
+  color: ${colors.text.secondary};
+  font-size: 1.1rem;
+  transition: ${transitions.default};
+  &:hover {
+    color: ${colors.secondary};
+  }
+`;
+
+const FooterLinks = styled.div`
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  a {
+    color: ${colors.text.secondary};
+    text-decoration: none;
+    font-size: 0.92rem;
+    transition: ${transitions.default};
+    &:hover {
+      color: ${colors.secondary};
+      text-decoration: underline;
+    }
+  }
+`;
+
+const Copyright = styled.div`
+  width: 100%;
+  text-align: center;
+  font-size: 0.85rem;
+  color: ${colors.text.light};
+  margin-top: 0.5rem;
 `;
 
 const Footer = () => {
   const { userInfo } = useContext(AuthContext);
-
   return (
     <StyledFooter>
       <Container>
-        <Row>
-          <Col lg={4} md={6} className="mb-4 mb-lg-0">
-            <FooterSection>
-              <Logo to="/">
-                <FaBook size={24} color={colors.secondary} />
-                <LogoText>PageHaven</LogoText>
-              </Logo>
-              <FooterText className="mb-4 text-left">
-                Find your peace, one page at a time. Join our community of passionate readers in a haven of literary discovery.
-              </FooterText>
-              <div>
-                <SocialIcon 
-                  href="https://twitter.com/aadityarathod7" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  aria-label="Twitter"
-                >
-                  <FaTwitter size={20} />
-                </SocialIcon>
-                <SocialIcon 
-                  href="https://instagram.com/aadityarathod7" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  aria-label="Instagram"
-                >
-                  <FaInstagram size={20} />
-                </SocialIcon>
-                <SocialIcon 
-                  href="https://facebook.com/aadityarathod7" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  aria-label="Facebook"
-                >
-                  <FaFacebook size={20} />
-                </SocialIcon>
-              </div>
-            </FooterSection>
-          </Col>
-          
-          <Col lg={2} md={6} className="mb-4 mb-lg-0">
-            <FooterSection>
-              <FooterTitle>Explore</FooterTitle>
-              <FooterLink to="/books">All Books</FooterLink>
-              <FooterLink to="/books?sort=newest">New Releases</FooterLink>
-              {userInfo && <FooterLink to="/favorites">My Favorites</FooterLink>}
-            </FooterSection>
-          </Col>
-          
-          <Col lg={2} md={6} className="mb-4 mb-lg-0">
-            <FooterSection>
-              <FooterTitle>Account</FooterTitle>
-              {userInfo ? (
-                <>
-                  <FooterLink to="/profile">My Profile</FooterLink>
-                  {userInfo.role === 'admin' && (
-                    <FooterLink to="/admin/dashboard">Admin Dashboard</FooterLink>
-                  )}
-                </>
-              ) : (
-                <>
-                  <FooterLink to="/login">Sign In</FooterLink>
-                  <FooterLink to="/register">Register</FooterLink>
-                </>
-              )}
-            </FooterSection>
-          </Col>
-          
-          <Col lg={4} md={6}>
-            <FooterSection>
-              <FooterTitle>Contact Us</FooterTitle>
-              <ExternalLink 
-                href="tel:+919977737801"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Phone: +91 9977737801
-              </ExternalLink>
-              <ExternalLink 
-                href="mailto:aadityarathod7@gmail.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Email: aadityarathod7@gmail.com
-              </ExternalLink>
-              <FooterLink to="/privacy">Privacy Policy</FooterLink>
-              <FooterLink to="/terms">Terms of Service</FooterLink>
-            </FooterSection>
-          </Col>
-        </Row>
-        
-        <Divider />
-        
-        <Row>
-          <Col className="py-3">
-            <FooterText>
-              PageHaven - by Aaditya Rathod &copy; {new Date().getFullYear()} - All rights reserved
-            </FooterText>
-          </Col>
-        </Row>
+        <FooterRow>
+          <Logo to="/">
+            <FaBook size={18} color={colors.secondary} />
+            <LogoText>PageHaven</LogoText>
+          </Logo>
+          <FooterLinks>
+            <Link to="/books">Books</Link>
+            <Link to="/privacy">Privacy</Link>
+            <Link to="/terms">Terms</Link>
+            {userInfo ? (
+              <Link to="/profile">Profile</Link>
+            ) : (
+              <Link to="/login">Sign In</Link>
+            )}
+          </FooterLinks>
+          <Socials>
+            <SocialIcon href="https://twitter.com/aadityarathod7" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+              <FaTwitter />
+            </SocialIcon>
+            <SocialIcon href="https://instagram.com/aadityarathod7" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <FaInstagram />
+            </SocialIcon>
+            <SocialIcon href="https://facebook.com/aadityarathod7" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <FaFacebook />
+            </SocialIcon>
+          </Socials>
+        </FooterRow>
+        <Copyright>
+          &copy; {new Date().getFullYear()} PageHaven &mdash; Aaditya Rathod
+        </Copyright>
       </Container>
     </StyledFooter>
   );
 };
 
-export default Footer;
+export default memo(Footer);

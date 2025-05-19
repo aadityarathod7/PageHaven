@@ -3,6 +3,7 @@ import { Pagination } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import styled from 'styled-components';
 import { colors, typography, transitions, borderRadius } from '../styles/theme';
+import { memo } from 'react';
 
 const StyledPagination = styled(Pagination)`
   margin: 2rem 0;
@@ -76,4 +77,4 @@ const Paginate = ({ pages, page, keyword = '' }) => {
   );
 };
 
-export default Paginate;
+export default memo(Paginate);

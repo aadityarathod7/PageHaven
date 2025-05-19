@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Container } from 'react-bootstrap';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { FaSearch, FaArrowRight, FaBook, FaStar, FaUserFriends } from 'react-icons/fa';
 import styled, { keyframes } from 'styled-components';
@@ -362,31 +363,21 @@ const BookGrid = styled.div`
 const HomePage = () => {
   const { keyword = '' } = useParams();
   const navigate = useNavigate();
-  
-  const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState(keyword);
 
-  useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        setLoading(true);
-        const { data } = await axios.get('/api/books?limit=4');
-        setBooks(data.books);
-        setLoading(false);
-      } catch (error) {
-        setError(
-          error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message
-        );
-        setLoading(false);
-      }
-    };
-
-    fetchBooks();
-  }, []);
+  const {
+    data,
+    isLoading: loading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ['featured-books'],
+    queryFn: async () => {
+      const { data } = await axios.get('/api/books?limit=4');
+      return data.books;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -449,13 +440,13 @@ const HomePage = () => {
 
           {loading ? (
             <Loader />
-          ) : error ? (
-            <Message variant="danger">{error}</Message>
-          ) : books.length === 0 ? (
+          ) : isError ? (
+            <Message variant="danger">{error?.message || 'Error loading books'}</Message>
+          ) : !data || data.length === 0 ? (
             <Message>No books found</Message>
           ) : (
             <BookGrid>
-              {books.map((book) => (
+              {data.map((book) => (
                 <BookCard key={book._id} book={book} />
               ))}
             </BookGrid>

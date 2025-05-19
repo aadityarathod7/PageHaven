@@ -1,6 +1,7 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { colors } from '../styles/theme';
+import { memo } from 'react';
 
 const spin = keyframes`
   0% {
@@ -51,4 +52,4 @@ const Loader = () => {
   );
 };
 
-export default Loader;
+export default memo(Loader);

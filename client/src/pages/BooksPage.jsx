@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Row, Col, Container } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import styled from 'styled-components';
 import BookCard from '../components/BookCard';
@@ -9,6 +8,8 @@ import Message from '../components/Message';
 import Paginate from '../components/Paginate';
 import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
 import { API_URL } from '../config/config';
+import { FixedSizeGrid as Grid } from 'react-window';
+import { useRef } from 'react';
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -36,42 +37,58 @@ const PageHeader = styled.div`
   }
 `;
 
-const BookGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2rem;
+const GridWrapper = styled.div`
+  width: 100%;
   margin-bottom: 3rem;
 `;
 
+const COLUMN_WIDTH = 320; // px
+const ROW_HEIGHT = 420; // px
+const GUTTER = 32; // px
+const MIN_COLUMNS = 1;
+const MAX_COLUMNS = 3;
+
 const BooksPage = () => {
   const { pageNumber = 1 } = useParams();
-  const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
-  const [pages, setPages] = useState(1);
+  const gridRef = useRef();
 
-  useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        setLoading(true);
-        const { data } = await axios.get(`${API_URL}/api/books?pageNumber=${pageNumber}`);
-        setBooks(data.books);
-        setPage(data.page);
-        setPages(data.pages);
-        setLoading(false);
-      } catch (error) {
-        setError(
-          error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message
-        );
-        setLoading(false);
-      }
-    };
+  const {
+    data,
+    isLoading: loading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ['books', pageNumber],
+    queryFn: async () => {
+      const { data } = await axios.get(`${API_URL}/api/books?pageNumber=${pageNumber}`);
+      return data;
+    },
+    keepPreviousData: true,
+    staleTime: 1000 * 60 * 5,
+  });
 
-    fetchBooks();
-  }, [pageNumber]);
+  // Responsive columns
+  const getColumnCount = () => {
+    if (typeof window === 'undefined') return MAX_COLUMNS;
+    const width = window.innerWidth;
+    if (width < 600) return 1;
+    if (width < 1000) return 2;
+    return 3;
+  };
+  const columnCount = getColumnCount();
+  const books = data?.books || [];
+  const rowCount = Math.ceil(books.length / columnCount);
+
+  // Cell renderer for react-window
+  const Cell = ({ columnIndex, rowIndex, style }) => {
+    const index = rowIndex * columnCount + columnIndex;
+    if (index >= books.length) return null;
+    return (
+      <div style={{ ...style, left: style.left + GUTTER / 2, top: style.top + GUTTER / 2, width: style.width - GUTTER, height: style.height - GUTTER }}>
+        <BookCard book={books[index]} />
+      </div>
+    );
+  };
 
   return (
     <PageContainer>
@@ -83,18 +100,26 @@ const BooksPage = () => {
 
         {loading ? (
           <Loader />
-        ) : error ? (
-          <Message variant="danger">{error}</Message>
-        ) : books.length === 0 ? (
+        ) : isError ? (
+          <Message variant="danger">{error?.message || 'Error loading books'}</Message>
+        ) : !data || books.length === 0 ? (
           <Message>No books found</Message>
         ) : (
           <>
-            <BookGrid>
-              {books.map((book) => (
-                <BookCard key={book._id} book={book} />
-              ))}
-            </BookGrid>
-            <Paginate pages={pages} page={page} />
+            <GridWrapper>
+              <Grid
+                ref={gridRef}
+                columnCount={columnCount}
+                columnWidth={COLUMN_WIDTH}
+                height={Math.min(ROW_HEIGHT * rowCount, 800)}
+                rowCount={rowCount}
+                rowHeight={ROW_HEIGHT}
+                width={Math.min(COLUMN_WIDTH * columnCount, window.innerWidth - 40)}
+              >
+                {Cell}
+              </Grid>
+            </GridWrapper>
+            <Paginate pages={data.pages} page={data.page} />
           </>
         )}
       </Container>

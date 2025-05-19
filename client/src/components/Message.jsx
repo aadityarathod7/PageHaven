@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Alert } from 'react-bootstrap';
 import { colors, typography, borderRadius, transitions } from '../styles/theme';
+import { memo } from 'react';
 
 const StyledAlert = styled(Alert)`
   border: none;
@@ -39,4 +40,4 @@ const Message = ({ variant = 'info', children }) => {
   return <StyledAlert variant={variant}>{children}</StyledAlert>;
 };
 
-export default Message;
+export default memo(Message);
