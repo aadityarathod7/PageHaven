@@ -337,11 +337,11 @@ const FavoriteButton = styled.button`
     box-shadow: 0 4px 12px rgba(255, 99, 132, 0.3);
 
     &:before {
-      opacity: 1;
+      opacity: ${props => props.$isFavorite ? 1 : 0};
     }
 
     svg {
-      color: white;
+      color: ${props => props.$isFavorite ? 'white' : colors.text.secondary};
       transform: scale(1.1);
     }
   }
@@ -364,26 +364,31 @@ const Rating = styled.div`
   pointer-events: none;
 `;
 
-const BookCard = ({ book }) => {
+const BookCard = ({ book, onFavoriteChange }) => {
   const { authAxios, userInfo } = useContext(AuthContext);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isPurchased, setIsPurchased] = useState(false);
 
   useEffect(() => {
-    const checkPurchaseStatus = async () => {
+    const checkBookStatus = async () => {
       if (!userInfo || !book._id) {
         return;
       }
 
       try {
-        const { data } = await authAxios.get(`/api/orders/check-purchase/${book._id}`);
-        setIsPurchased(data.isPurchased);
+        // Check purchase status
+        const { data: purchaseData } = await authAxios.get(`/api/orders/check-purchase/${book._id}`);
+        setIsPurchased(purchaseData.isPurchased);
+
+        // Check favorite status
+        const { data: progressData } = await authAxios.get(`/api/books/${book._id}/progress`);
+        setIsFavorite(progressData.isFavorite || false);
       } catch (error) {
-        console.error('Error checking purchase status:', error);
+        console.error('Error checking book status:', error);
       }
     };
 
-    checkPurchaseStatus();
+    checkBookStatus();
   }, [book._id, authAxios, userInfo]);
 
   const handleFavoriteClick = async (e) => {
@@ -401,6 +406,11 @@ const BookCard = ({ book }) => {
       });
       setIsFavorite(!isFavorite);
       toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites');
+      
+      // Notify parent component about the favorite status change
+      if (onFavoriteChange) {
+        onFavoriteChange(book._id, !isFavorite);
+      }
     } catch (error) {
       toast.error('Error updating favorite status');
       console.error('Error updating favorite status:', error);
