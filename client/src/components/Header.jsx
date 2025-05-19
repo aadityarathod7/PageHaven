@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import { AuthContext } from '../context/AuthContext';
 import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
 import { Link } from 'react-router-dom';
+import { memo } from 'react';
 
 const StyledNavbar = styled(Navbar)`
   background: ${colors.background.primary}80;
@@ -452,4 +453,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default memo(Header);

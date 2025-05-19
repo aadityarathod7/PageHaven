@@ -8,6 +8,7 @@ import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import { API_URL } from '../config/config';
 import { getImageUrl, handleImageError } from '../utils/imageUtils';
+import { memo } from 'react';
 
 const StyledCard = styled(Card)`
   ${props => props.theme.commonStyles?.cardStyle || `
@@ -429,6 +430,7 @@ const BookCard = ({ book, onFavoriteChange }) => {
             alt={book.title} 
             className="card-img-top" 
             onError={handleImageError}
+            loading="lazy"
           />
           <BookBadge>₹{book.price}</BookBadge>
           {isPurchased && userInfo && (
@@ -480,4 +482,4 @@ const BookCard = ({ book, onFavoriteChange }) => {
   );
 };
 
-export default BookCard;
+export default memo(BookCard);
