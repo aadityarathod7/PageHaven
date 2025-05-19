@@ -39,25 +39,32 @@ const FavoritesPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      try {
-        setLoading(true);
-        const { data } = await authAxios.get('/api/books/favorites');
-        setFavorites(data);
-        setLoading(false);
-      } catch (err) {
-        setError(
-          err.response && err.response.data.message
-            ? err.response.data.message
-            : err.message
-        );
-        setLoading(false);
-      }
-    };
+  const fetchFavorites = async () => {
+    try {
+      setLoading(true);
+      const { data } = await authAxios.get('/api/books/favorites');
+      setFavorites(data);
+      setLoading(false);
+    } catch (err) {
+      setError(
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message
+      );
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchFavorites();
   }, [authAxios]);
+
+  const handleFavoriteChange = (bookId, isFavorite) => {
+    if (!isFavorite) {
+      // If book is unfavorited, remove it from the list
+      setFavorites(prevFavorites => prevFavorites.filter(book => book._id !== bookId));
+    }
+  };
 
   if (loading) return <Loader />;
 
@@ -76,7 +83,10 @@ const FavoritesPage = () => {
         <Row xs={1} md={2} lg={3} xl={4} className="g-4">
           {favorites.map((book) => (
             <Col key={book._id}>
-              <BookCard book={book} />
+              <BookCard 
+                book={book} 
+                onFavoriteChange={handleFavoriteChange}
+              />
             </Col>
           ))}
         </Row>
