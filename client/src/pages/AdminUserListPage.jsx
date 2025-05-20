@@ -1,11 +1,17 @@
-import { useState, useEffect, useContext } from 'react';
-import styled from 'styled-components';
-import { FaCheck, FaTimes, FaTrash, FaUserShield } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import { AuthContext } from '../context/AuthContext';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
-import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
+import { useState, useEffect, useContext } from "react";
+import styled from "styled-components";
+import { FaCheck, FaTimes, FaTrash, FaUserShield } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { AuthContext } from "../context/AuthContext";
+import Loader from "../components/Loader";
+import Message from "../components/Message";
+import {
+  colors,
+  typography,
+  shadows,
+  transitions,
+  borderRadius,
+} from "../styles/theme";
 
 const PageContainer = styled.div`
   padding: 2rem;
@@ -73,7 +79,8 @@ const StyledTable = styled.table`
 const ActionButton = styled.button`
   padding: 0.625rem;
   border-radius: ${borderRadius.lg};
-  color: ${props => props.$variant === 'danger' ? colors.danger : colors.secondary};
+  color: ${(props) =>
+    props.$variant === "danger" ? colors.danger : colors.secondary};
   background: ${colors.background.accent};
   border: none;
   margin-right: 0.75rem;
@@ -81,7 +88,7 @@ const ActionButton = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: ${props => props.$hasText ? '120px' : '36px'};
+  min-width: ${(props) => (props.$hasText ? "120px" : "36px")};
   height: 36px;
   cursor: pointer;
   gap: 0.5rem;
@@ -91,7 +98,8 @@ const ActionButton = styled.button`
   &:hover {
     transform: translateY(-2px);
     box-shadow: ${shadows.md};
-    background: ${props => props.$variant === 'danger' ? colors.danger : colors.secondary};
+    background: ${(props) =>
+      props.$variant === "danger" ? colors.danger : colors.secondary};
     color: white;
   }
 
@@ -101,7 +109,7 @@ const ActionButton = styled.button`
 `;
 
 const StatusIcon = styled.span`
-  color: ${props => props.isAdmin ? colors.success : colors.accent};
+  color: ${(props) => (props.isAdmin ? colors.success : colors.accent)};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -109,7 +117,7 @@ const StatusIcon = styled.span`
 
 const AdminUserListPage = () => {
   const { authAxios, userInfo } = useContext(AuthContext);
-  
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -121,7 +129,7 @@ const AdminUserListPage = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const { data } = await authAxios.get('/api/users');
+      const { data } = await authAxios.get("/api/users");
       setUsers(data);
       setLoading(false);
     } catch (error) {
@@ -137,14 +145,14 @@ const AdminUserListPage = () => {
   const deleteHandler = async (id) => {
     // Prevent deleting self
     if (id === userInfo._id) {
-      toast.error('You cannot delete your own account');
+      toast.error("You cannot delete your own account");
       return;
     }
 
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    if (window.confirm("Are you sure you want to delete this user?")) {
       try {
         await authAxios.delete(`/api/users/${id}`);
-        toast.success('User deleted successfully');
+        toast.success("User deleted successfully");
         fetchUsers();
       } catch (error) {
         toast.error(
@@ -159,8 +167,8 @@ const AdminUserListPage = () => {
   // This would require an endpoint that doesn't exist in our implementation yet
   const makeAdminHandler = async (id) => {
     try {
-      await authAxios.put(`/api/users/${id}`, { role: 'admin' });
-      toast.success('User updated to admin role');
+      await authAxios.put(`/api/users/${id}`, { role: "admin" });
+      toast.success("User updated to admin role");
       fetchUsers();
     } catch (error) {
       toast.error(
@@ -176,7 +184,7 @@ const AdminUserListPage = () => {
       <PageHeader>
         <h1>Users</h1>
       </PageHeader>
-      
+
       {loading ? (
         <Loader />
       ) : error ? (
@@ -197,23 +205,21 @@ const AdminUserListPage = () => {
             <tbody>
               {users.map((user) => (
                 <tr key={user._id}>
-                  <td>{user._id}</td>
+                  <td>{user.userId}</td>
                   <td>{user.name}</td>
                   <td>
                     <a href={`mailto:${user.email}`}>{user.email}</a>
                   </td>
                   <td>
-                    <StatusIcon isAdmin={user.role === 'admin'}>
-                      {user.role === 'admin' ? <FaCheck /> : <FaTimes />}
+                    <StatusIcon isAdmin={user.role === "admin"}>
+                      {user.role === "admin" ? <FaCheck /> : <FaTimes />}
                     </StatusIcon>
                   </td>
-                  <td>
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </td>
+                  <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                   <td>
                     {user._id !== userInfo._id && (
                       <>
-                        {user.role !== 'admin' && (
+                        {user.role !== "admin" && (
                           <ActionButton
                             hasText
                             onClick={() => makeAdminHandler(user._id)}

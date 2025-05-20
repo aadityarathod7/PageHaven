@@ -84,6 +84,18 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const getUsers = asyncHandler(async (req, res) => {
   const users = await User.find({}).select('-password');
+
+  // Update existing users with sequential IDs if they don't have one
+  for (let i = 0; i < users.length; i++) {
+    const user = users[i];
+    if (!user.userId) {
+      const originalUser = await User.findById(user._id);
+      originalUser.userId = i + 1;
+      await originalUser.save();
+      user.userId = i + 1;
+    }
+  }
+
   res.json(users);
 });
 
