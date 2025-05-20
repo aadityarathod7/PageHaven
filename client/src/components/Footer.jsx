@@ -95,7 +95,6 @@ const Footer = () => {
             <Link to="/books">• Books</Link>
             <Link to="/privacy">• Privacy</Link>
             <Link to="/terms">• Terms</Link>
-            <Link to="/contact">• Contact</Link>
             {userInfo ? (
               <Link to="/profile">• Profile</Link>
             ) : (
