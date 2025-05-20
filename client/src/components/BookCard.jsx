@@ -1,17 +1,33 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { Card, Badge } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { FaEye, FaDownload, FaHeart, FaRegHeart, FaStar, FaBookOpen, FaImage } from 'react-icons/fa';
-import styled from 'styled-components';
-import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
-import { AuthContext } from '../context/AuthContext';
-import { toast } from 'react-toastify';
-import { API_URL } from '../config/config';
-import { getImageUrl, handleImageError } from '../utils/imageUtils';
-import { memo } from 'react';
+import React, { useState, useContext, useEffect } from "react";
+import { Card, Badge } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import {
+  FaEye,
+  FaDownload,
+  FaHeart,
+  FaRegHeart,
+  FaStar,
+  FaBookOpen,
+  FaImage,
+} from "react-icons/fa";
+import styled from "styled-components";
+import {
+  colors,
+  typography,
+  shadows,
+  transitions,
+  borderRadius,
+} from "../styles/theme";
+import { AuthContext } from "../context/AuthContext";
+import { toast } from "react-toastify";
+import { API_URL } from "../config/config";
+import { getImageUrl, handleImageError } from "../utils/imageUtils";
+import { memo } from "react";
 
 const StyledCard = styled(Card)`
-  ${props => props.theme.commonStyles?.cardStyle || `
+  ${(props) =>
+    props.theme.commonStyles?.cardStyle ||
+    `
     background: rgba(255, 255, 255, 0.05);
     border-radius: ${borderRadius.xl};
     box-shadow: ${shadows.md};
@@ -46,7 +62,7 @@ const StyledCard = styled(Card)`
   }
 
   &:before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -54,8 +70,14 @@ const StyledCard = styled(Card)`
     bottom: 0;
     border-radius: ${borderRadius.xl};
     border: 2px solid transparent;
-    background: linear-gradient(45deg, ${colors.secondary}50, #3cd88f50, ${colors.secondary}50);
-    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    background: linear-gradient(
+      45deg,
+      ${colors.secondary}50,
+      #3cd88f50,
+      ${colors.secondary}50
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box,
+      linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     opacity: 0;
@@ -70,7 +92,7 @@ const ImageWrapper = styled.div`
   height: 250px;
 
   &:before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -90,7 +112,7 @@ const ImageWrapper = styled.div`
   }
 
   &:after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: 0;
     left: 0;
@@ -121,9 +143,13 @@ const ImagePlaceholder = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, ${colors.background.secondary}, ${colors.background.accent});
+  background: linear-gradient(
+    135deg,
+    ${colors.background.secondary},
+    ${colors.background.accent}
+  );
   color: ${colors.text.light};
-  
+
   svg {
     font-size: 3rem;
     opacity: 0.5;
@@ -206,9 +232,9 @@ const AuthorName = styled.p`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  
+
   &:before {
-    content: 'by';
+    content: "by";
     color: ${colors.text.light};
     font-size: 0.85rem;
     font-style: italic;
@@ -217,7 +243,7 @@ const AuthorName = styled.p`
   span {
     color: ${colors.text.primary};
     transition: ${transitions.default};
-    
+
     &:hover {
       color: ${colors.secondary};
     }
@@ -309,14 +335,14 @@ const FavoriteButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${props => props.$isFavorite ? '#ff6384' : colors.text.secondary};
+  color: ${(props) => (props.$isFavorite ? "#ff6384" : colors.text.secondary)};
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
 
   &:before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -338,11 +364,12 @@ const FavoriteButton = styled.button`
     box-shadow: 0 4px 12px rgba(255, 99, 132, 0.3);
 
     &:before {
-      opacity: ${props => props.$isFavorite ? 1 : 0};
+      opacity: ${(props) => (props.$isFavorite ? 1 : 0)};
     }
 
     svg {
-      color: ${props => props.$isFavorite ? 'white' : colors.text.secondary};
+      color: ${(props) =>
+        props.$isFavorite ? "white" : colors.text.secondary};
       transform: scale(1.1);
     }
   }
@@ -378,14 +405,18 @@ const BookCard = ({ book, onFavoriteChange }) => {
 
       try {
         // Check purchase status
-        const { data: purchaseData } = await authAxios.get(`/api/orders/check-purchase/${book._id}`);
+        const { data: purchaseData } = await authAxios.get(
+          `/api/orders/check-purchase/${book._id}`
+        );
         setIsPurchased(purchaseData.isPurchased);
 
         // Check favorite status
-        const { data: progressData } = await authAxios.get(`/api/books/${book._id}/progress`);
+        const { data: progressData } = await authAxios.get(
+          `/api/books/${book._id}/progress`
+        );
         setIsFavorite(progressData.isFavorite || false);
       } catch (error) {
-        console.error('Error checking book status:', error);
+        console.error("Error checking book status:", error);
       }
     };
 
@@ -395,26 +426,28 @@ const BookCard = ({ book, onFavoriteChange }) => {
   const handleFavoriteClick = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (!userInfo) {
-      toast.error('Please login to add favorites');
+      toast.error("Please login to add favorites");
       return;
     }
 
     try {
       await authAxios.post(`/api/books/${book._id}/progress`, {
-        isFavorite: !isFavorite
+        isFavorite: !isFavorite,
       });
       setIsFavorite(!isFavorite);
-      toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites');
-      
+      toast.success(
+        isFavorite ? "Removed from favorites" : "Added to favorites"
+      );
+
       // Notify parent component about the favorite status change
       if (onFavoriteChange) {
         onFavoriteChange(book._id, !isFavorite);
       }
     } catch (error) {
-      toast.error('Error updating favorite status');
-      console.error('Error updating favorite status:', error);
+      toast.error("Error updating favorite status");
+      console.error("Error updating favorite status:", error);
     }
   };
 
@@ -422,13 +455,13 @@ const BookCard = ({ book, onFavoriteChange }) => {
 
   return (
     <StyledCard>
-      <Link to={`/book/${book._id}`} style={{ textDecoration: 'none' }}>
+      <Link to={`/book/${book._id}`} style={{ textDecoration: "none" }}>
         <ImageWrapper className="card-img-wrapper">
-          <CoverImage 
-            variant="top" 
-            src={coverImageUrl} 
-            alt={book.title} 
-            className="card-img-top" 
+          <CoverImage
+            variant="top"
+            src={coverImageUrl}
+            alt={book.title}
+            className="card-img-top"
             onError={handleImageError}
             loading="lazy"
           />
@@ -446,21 +479,19 @@ const BookCard = ({ book, onFavoriteChange }) => {
       <CardBody>
         <BookTitle to={`/book/${book._id}`}>{book.title}</BookTitle>
         <AuthorName>
-          <span>{book.author?.name || 'Unknown Author'}</span>
+          <span>{book.author?.name || "Unknown Author"}</span>
         </AuthorName>
-        
+
         {book.categories && book.categories.length > 0 && (
           <div className="mb-3">
             {book.categories.map((category, index) => (
-              <CategoryBadge key={index}>
-                {category}
-              </CategoryBadge>
+              <CategoryBadge key={index}>{category}</CategoryBadge>
             ))}
           </div>
         )}
-        
+
         <Description>{book.description}</Description>
-        
+
         <StatsContainer>
           <div className="d-flex gap-2">
             <StatItem>
@@ -470,7 +501,7 @@ const BookCard = ({ book, onFavoriteChange }) => {
               <FaDownload /> {book.downloads || 0}
             </StatItem>
           </div>
-          <FavoriteButton 
+          <FavoriteButton
             onClick={handleFavoriteClick}
             $isFavorite={isFavorite}
           >

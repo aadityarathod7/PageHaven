@@ -1,13 +1,27 @@
-import { useState, useEffect, useContext } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import { FaArrowLeft, FaDownload, FaBook, FaEye, FaEdit, FaTrash, FaBookOpen } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import { AuthContext } from '../context/AuthContext';
-import { API_URL } from '../config/config';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
-import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
+import { useState, useEffect, useContext } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import {
+  FaArrowLeft,
+  FaDownload,
+  FaBook,
+  FaEye,
+  FaEdit,
+  FaTrash,
+  FaBookOpen,
+} from "react-icons/fa";
+import { toast } from "react-toastify";
+import { AuthContext } from "../context/AuthContext";
+import { API_URL } from "../config/config";
+import Loader from "../components/Loader";
+import Message from "../components/Message";
+import {
+  colors,
+  typography,
+  shadows,
+  transitions,
+  borderRadius,
+} from "../styles/theme";
 
 const PageContainer = styled.div`
   padding: 2rem;
@@ -154,10 +168,12 @@ const Button = styled.button`
   cursor: pointer;
   transition: ${transitions.default};
   color: white;
-  background: ${props => 
-    props.$variant === 'danger' ? colors.accent :
-    props.$variant === 'success' ? colors.secondary :
-    colors.primary};
+  background: ${(props) =>
+    props.$variant === "danger"
+      ? colors.accent
+      : props.$variant === "success"
+      ? colors.secondary
+      : colors.primary};
 
   &:hover {
     transform: translateY(-2px);
@@ -225,7 +241,7 @@ const BookPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { userInfo, authAxios } = useContext(AuthContext);
-  
+
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -237,16 +253,18 @@ const BookPage = () => {
       try {
         const { data } = await authAxios.get(`/api/books/${id}`);
         setBook(data);
-        
+
         // Check purchase status
         if (userInfo) {
-          const purchaseResponse = await authAxios.get(`/api/orders/check-purchase/${id}`);
+          const purchaseResponse = await authAxios.get(
+            `/api/orders/check-purchase/${id}`
+          );
           setIsPurchased(purchaseResponse.data.isPurchased);
         }
-        
+
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching book:', error);
+        console.error("Error fetching book:", error);
         setError(
           error.response && error.response.data.message
             ? error.response.data.message
@@ -261,32 +279,32 @@ const BookPage = () => {
 
   const downloadPDFHandler = async () => {
     if (!userInfo) {
-      toast.error('Please login to download books');
-      navigate('/login');
+      toast.error("Please login to download books");
+      navigate("/login");
       return;
     }
 
     try {
       setDownloadingPdf(true);
       const response = await authAxios.get(`/api/books/${id}/download/pdf`, {
-        responseType: 'blob',
+        responseType: "blob",
       });
-      
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `${book.title.replace(/\s+/g, '_')}.pdf`);
+      link.setAttribute("download", `${book.title.replace(/\s+/g, "_")}.pdf`);
       document.body.appendChild(link);
       link.click();
-      
+
       window.URL.revokeObjectURL(url);
       link.remove();
-      
-      toast.success('Book downloaded successfully');
+
+      toast.success("Book downloaded successfully");
       setDownloadingPdf(false);
     } catch (err) {
-      console.error('Download failed:', err);
-      toast.error('Download failed');
+      console.error("Download failed:", err);
+      toast.error("Download failed");
       setDownloadingPdf(false);
     }
   };
@@ -296,41 +314,45 @@ const BookPage = () => {
   };
 
   const deleteBookHandler = async () => {
-    if (window.confirm('Are you sure you want to delete this book?')) {
+    if (window.confirm("Are you sure you want to delete this book?")) {
       try {
         await authAxios.delete(`/api/books/${id}`);
-        toast.success('Book deleted');
-        navigate('/admin/books');
+        toast.success("Book deleted");
+        navigate("/admin/books");
       } catch (error) {
-        toast.error(error.response?.data?.message || 'Error deleting book');
+        toast.error(error.response?.data?.message || "Error deleting book");
       }
     }
   };
 
   const handlePurchase = () => {
     if (!userInfo) {
-      toast.error('Please login to purchase books');
-      navigate('/login');
+      toast.error("Please login to purchase books");
+      navigate("/login");
       return;
     }
 
     if (!book.price) {
-      toast.error('Book price is not set');
+      toast.error("Book price is not set");
       return;
     }
 
     try {
-      navigate('/checkout', { 
-        state: { 
+      navigate("/checkout", {
+        state: {
           bookId: id,
           amount: book.price * 100, // Convert to paise for Razorpay (1 INR = 100 paise)
-          bookTitle: book.title
-        } 
+          bookTitle: book.title,
+        },
       });
     } catch (error) {
-      console.error('Navigation error:', error);
-      toast.error('Failed to proceed to checkout');
+      console.error("Navigation error:", error);
+      toast.error("Failed to proceed to checkout");
     }
+  };
+
+  const handleImageError = (event) => {
+    event.target.src = `${API_URL}/uploads/default-cover.jpg`;
   };
 
   return (
@@ -338,7 +360,7 @@ const BookPage = () => {
       <BackButton to="/books">
         <FaArrowLeft /> Back to Books
       </BackButton>
-      
+
       {loading ? (
         <Loader />
       ) : error ? (
@@ -347,18 +369,25 @@ const BookPage = () => {
         <>
           <BookGrid>
             <div>
-              <CoverImage 
-                src={book.coverImage ? 
-                  (book.coverImage.startsWith('http') ? book.coverImage : `${API_URL}${book.coverImage}`) 
-                  : `${API_URL}/uploads/default-cover.jpg`} 
-                alt={book.title} 
+              <CoverImage
+                src={
+                  book.coverImage
+                    ? book.coverImage.startsWith("http")
+                      ? book.coverImage
+                      : `${API_URL}${book.coverImage}`
+                    : `${API_URL}/uploads/default-cover.jpg`
+                }
+                alt={book.title}
+                onError={handleImageError}
               />
             </div>
-            
+
             <BookDetails>
               <BookTitle>{book.title}</BookTitle>
-              <AuthorName>by {book.author?.name || 'Unknown Author'}</AuthorName>
-              
+              <AuthorName>
+                by {book.author?.name || "Unknown Author"}
+              </AuthorName>
+
               {book.categories && book.categories.length > 0 && (
                 <Categories>
                   {book.categories.map((category, index) => (
@@ -366,7 +395,7 @@ const BookPage = () => {
                   ))}
                 </Categories>
               )}
-              
+
               <Stats>
                 <div>
                   <FaEye /> {book.readCount || 0} reads
@@ -389,25 +418,28 @@ const BookPage = () => {
                   </div>
                 )} */}
               </Stats>
-              
+
               <Description>{book.description}</Description>
 
               <Price>
-                Price: <span>₹{book.price ? book.price.toFixed(2) : '0.00'}</span>
+                Price:{" "}
+                <span>₹{book.price ? book.price.toFixed(2) : "0.00"}</span>
               </Price>
-              
+
               <ButtonGroup>
-              {isPurchased && (
-                  <div style={{ 
-                    color: colors.success, 
-                    fontWeight: typography.fontWeights.bold,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    background: `${colors.success}15`,
-                    padding: '0.5rem 1rem',
-                    borderRadius: borderRadius.lg
-                  }}>
+                {isPurchased && (
+                  <div
+                    style={{
+                      color: colors.success,
+                      fontWeight: typography.fontWeights.bold,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      background: `${colors.success}15`,
+                      padding: "0.5rem 1rem",
+                      borderRadius: borderRadius.lg,
+                    }}
+                  >
                     <FaBookOpen /> Purchased
                   </div>
                 )}
@@ -416,36 +448,32 @@ const BookPage = () => {
                     <Button onClick={readBookHandler}>
                       <FaBook /> Read Now
                     </Button>
-                    
-                    <Button 
+
+                    <Button
                       $variant="success"
-                      onClick={downloadPDFHandler} 
+                      onClick={downloadPDFHandler}
                       disabled={downloadingPdf}
                     >
                       <FaDownload />
-                      {downloadingPdf ? 'Downloading...' : 'Download PDF'}
+                      {downloadingPdf ? "Downloading..." : "Download PDF"}
                     </Button>
                   </>
                 ) : (
-                  <Button 
+                  <Button
                     onClick={handlePurchase}
                     $variant="success"
                     disabled={!book.price}
                   >
-                    ₹{book.price ? book.price.toFixed(2) : '0.00'} - Buy Now
+                    ₹{book.price ? book.price.toFixed(2) : "0.00"} - Buy Now
                   </Button>
                 )}
-                
-                
-                {userInfo && userInfo.role === 'admin' && (
+
+                {userInfo && userInfo.role === "admin" && (
                   <AdminActions>
                     <Button as={Link} to={`/admin/book/${book._id}/edit`}>
                       <FaEdit /> Edit
                     </Button>
-                    <Button 
-                      onClick={deleteBookHandler}
-                      $variant="danger"
-                    >
+                    <Button onClick={deleteBookHandler} $variant="danger">
                       <FaTrash /> Delete Book
                     </Button>
                   </AdminActions>
@@ -453,7 +481,7 @@ const BookPage = () => {
               </ButtonGroup>
             </BookDetails>
           </BookGrid>
-          
+
           {book.isPurchased && book.chapters && book.chapters.length > 0 && (
             <TableOfContents>
               <h3>Table of Contents</h3>
