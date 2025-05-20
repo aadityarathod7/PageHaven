@@ -262,21 +262,10 @@ const uploadBookCover = asyncHandler(async (req, res) => {
   book.coverImage = req.file.path;
   const updatedBook = await book.save();
 
-<<<<<<< HEAD
   res.json({
     message: 'Cover image uploaded successfully',
     coverImage: updatedBook.coverImage
   });
-=======
-    res.json({
-      message: 'Cover image uploaded successfully',
-      coverImage: updatedBook.coverImage
-    });
-  } catch (error) {
-    res.status(500);
-    throw new Error('Error saving cover image');
-  }
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
 });
 
 // @desc    Download book as PDF
