@@ -1,14 +1,20 @@
-import { useState } from 'react';
-import { Container } from 'react-bootstrap';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { FaSearch, FaArrowRight, FaBook, FaStar, FaUserFriends } from 'react-icons/fa';
-import styled, { keyframes } from 'styled-components';
-import BookCard from '../components/BookCard';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
-import { colors, typography, shadows, borderRadius } from '../styles/theme';
+import { useState } from "react";
+import { Container } from "react-bootstrap";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import {
+  FaSearch,
+  FaArrowRight,
+  FaBook,
+  FaStar,
+  FaUserFriends,
+} from "react-icons/fa";
+import styled, { keyframes } from "styled-components";
+import BookCard from "../components/BookCard";
+import Loader from "../components/Loader";
+import Message from "../components/Message";
+import { colors, typography, shadows, borderRadius } from "../styles/theme";
 
 const float = keyframes`
   0% { transform: translateY(0px); }
@@ -23,20 +29,26 @@ const shimmer = keyframes`
 
 const PageContainer = styled.div`
   min-height: 100vh;
+  margin-top: 80px;
   background: ${colors.background.primary};
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
 `;
 
 const HeroSection = styled.div`
   padding: 8rem 0;
-  background: linear-gradient(135deg, ${colors.primary}dd, ${colors.secondary}dd),
-              url('/hero-books.jpg') center/cover no-repeat;
+  background: linear-gradient(
+      135deg,
+      ${colors.primary}dd,
+      ${colors.secondary}dd
+    ),
+    url("/hero-books.jpg") center/cover no-repeat;
   position: relative;
   overflow: hidden;
   transition: all 0.5s ease;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -259,9 +271,9 @@ const FeaturedSection = styled.section`
   padding: 4rem 0;
   background: ${colors.background.primary};
   position: relative;
-  
+
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -297,9 +309,9 @@ const SectionTitle = styled.h2`
   color: ${colors.text.primary};
   margin: 0;
   position: relative;
-  
+
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -8px;
     left: 0;
@@ -361,7 +373,7 @@ const BookGrid = styled.div`
 `;
 
 const HomePage = () => {
-  const { keyword = '' } = useParams();
+  const { keyword = "" } = useParams();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState(keyword);
 
@@ -371,9 +383,9 @@ const HomePage = () => {
     isError,
     error,
   } = useQuery({
-    queryKey: ['featured-books'],
+    queryKey: ["featured-books"],
     queryFn: async () => {
-      const { data } = await axios.get('/api/books?limit=4');
+      const { data } = await axios.get("/api/books?limit=4");
       return data.books;
     },
     staleTime: 1000 * 60 * 5,
@@ -393,8 +405,9 @@ const HomePage = () => {
           <HeroContent>
             <h1>Find your peace, one page at a time</h1>
             <p>
-              Welcome to PageHaven, your sanctuary of stories. Discover a curated collection of books 
-              that will transport you to new worlds and bring tranquility to your reading journey.
+              Welcome to PageHaven, your sanctuary of stories. Discover a
+              curated collection of books that will transport you to new worlds
+              and bring tranquility to your reading journey.
             </p>
             <SearchBox>
               <SearchInput
@@ -402,7 +415,7 @@ const HomePage = () => {
                 placeholder="Search by title, author, or genre..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch(e)}
+                onKeyPress={(e) => e.key === "Enter" && handleSearch(e)}
               />
               <SearchButton onClick={handleSearch}>
                 <FaSearch />
@@ -441,7 +454,9 @@ const HomePage = () => {
           {loading ? (
             <Loader />
           ) : isError ? (
-            <Message variant="danger">{error?.message || 'Error loading books'}</Message>
+            <Message variant="danger">
+              {error?.message || "Error loading books"}
+            </Message>
           ) : !data || data.length === 0 ? (
             <Message>No books found</Message>
           ) : (

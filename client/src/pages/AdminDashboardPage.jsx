@@ -28,22 +28,46 @@ import { API_URL, UPLOADS_URL } from "../config/config";
 
 const PageContainer = styled.div`
   padding: 2rem;
+  margin-top: 80px;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 80px auto 0;
 `;
 
 const PageHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin: 2.5rem 0 2rem;
+  padding: 0 1rem;
 
   h1 {
     font-family: ${typography.fonts.heading};
     color: ${colors.text.primary};
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: ${typography.fontWeights.bold};
-    margin-bottom: 0.5rem;
+    margin: 0;
+    position: relative;
+    padding-bottom: 1rem;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: -12px;
+      left: 0;
+      width: 40px;
+      height: 2px;
+      background: ${colors.secondary};
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    &:hover::after {
+      width: 80px;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 1.5rem;
+    }
   }
 `;
 
@@ -129,7 +153,7 @@ const StatTitle = styled.h6`
 
 const StatValue = styled.h3`
   color: ${colors.text.primary};
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: ${typography.fontWeights.bold};
   margin: 0;
   font-family: ${typography.fonts.heading};
@@ -296,7 +320,7 @@ const AdminMenuCard = styled(Link)`
   text-align: center;
 
   &:hover {
-    transform: translateY(-6px) scale(1.02);
+    transform: translateY(-4px) scale(1.01);
     box-shadow: ${shadows.lg};
     background: rgba(255, 255, 255, 0.8);
   }
@@ -334,27 +358,50 @@ const AdminMenuCard = styled(Link)`
 
   h3 {
     color: ${colors.text.primary};
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: ${typography.fontWeights.bold};
-    margin-bottom: 0.5rem;
+    margin: 1.5rem 0 1rem;
     font-family: ${typography.fonts.heading};
   }
 
   p {
     color: ${colors.text.secondary};
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     margin: 0;
+    line-height: 1.6;
   }
 `;
 
 const SectionHeader = styled.h2`
   font-family: ${typography.fonts.heading};
   color: ${colors.text.primary};
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: ${typography.fontWeights.bold};
-  margin: 3rem 0 1.5rem;
-  border-bottom: 2px solid ${colors.background.accent};
-  padding-bottom: 0.75rem;
+  margin: 3rem 0 2rem;
+  padding: 0 1rem 1rem;
+  position: relative;
+  border-bottom: none;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 1rem;
+    width: 40px;
+    height: 2px;
+    background: ${colors.secondary};
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  &:hover::after {
+    width: 80px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1.25rem;
+    margin: 2.5rem 0 1.75rem;
+  }
 `;
 
 const AdminDashboardPage = () => {
@@ -431,9 +478,9 @@ const AdminDashboardPage = () => {
     <PageContainer>
       <PageHeader>
         <h1>Admin Dashboard</h1>
-        <CreateButton to="/admin/book/create">
+        {/* <CreateButton to="/admin/book/create">
           <FaPlus /> Add New Book
-        </CreateButton>
+        </CreateButton> */}
       </PageHeader>
 
       {loading ? (

@@ -242,7 +242,7 @@ const deleteBook = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Upload book cover
+// @desc    Upload book cover image
 // @route   POST /api/books/:id/cover
 // @access  Private/Admin
 const uploadBookCover = asyncHandler(async (req, res) => {
@@ -255,22 +255,17 @@ const uploadBookCover = asyncHandler(async (req, res) => {
 
   if (!req.file) {
     res.status(400);
-    throw new Error('No image file uploaded');
+    throw new Error('Please upload an image file');
   }
 
-  try {
-    // Update the book's cover image path
-    book.coverImage = `/uploads/${req.file.filename}`;
-    const updatedBook = await book.save();
+  // Cloudinary automatically uploads the file and provides the URL in req.file.path
+  book.coverImage = req.file.path;
+  const updatedBook = await book.save();
 
-    res.json({
-      message: 'Cover image uploaded successfully',
-      coverImage: updatedBook.coverImage
-    });
-  } catch (error) {
-    res.status(500);
-    throw new Error('Error saving cover image');
-  }
+  res.json({
+    message: 'Cover image uploaded successfully',
+    coverImage: updatedBook.coverImage
+  });
 });
 
 // @desc    Download book as PDF

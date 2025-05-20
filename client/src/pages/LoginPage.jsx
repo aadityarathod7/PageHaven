@@ -26,7 +26,8 @@ const fadeIn = keyframes`
 `;
 
 const PageContainer = styled.div`
-  min-height: 100vh;
+  min-height: calc(100vh - 80px); /* Adjust for navbar height */
+  margin-top: 80px; /* Add space below navbar */
   display: flex;
   align-items: center;
   justify-content: center;

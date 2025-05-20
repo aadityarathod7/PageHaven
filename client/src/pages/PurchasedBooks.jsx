@@ -11,14 +11,40 @@ import Loader from "../components/Loader";
 
 const PageContainer = styled.div`
   padding: 2rem 0;
+  margin-top: 80px; /* Add space below navbar */
 `;
 
 const Title = styled.h1`
   color: ${colors.text.primary};
   font-family: ${typography.fonts.heading};
+  font-size: 1.75rem;
   font-weight: ${typography.fontWeights.bold};
-  margin-bottom: 2rem;
+  margin: 2.5rem 0 2rem; /* Increased margin top and bottom */
   text-align: center;
+  position: relative;
+  padding: 0 1rem; /* Added horizontal padding */
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -12px; /* Increased space for underline */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    background: ${colors.secondary};
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  &:hover::after {
+    width: 80px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+    margin: 2rem 0 1.75rem; /* Adjusted margins for mobile */
+  }
 `;
 
 const BooksGrid = styled.div`
@@ -53,9 +79,10 @@ const BookInfo = styled.div`
 
 const BookTitle = styled.h3`
   color: ${colors.text.primary};
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: ${typography.fontWeights.semibold};
-  margin-bottom: 0.5rem;
+  margin: 1rem 0 0.75rem; /* Increased margins */
+  padding: 0 0.5rem; /* Added horizontal padding */
 `;
 
 const ButtonGroup = styled.div`
@@ -87,16 +114,24 @@ const ActionButton = styled(Link)`
 
 const NoBooks = styled.div`
   text-align: center;
-  padding: 3rem;
+  padding: 3rem 2rem; /* Increased vertical padding */
   color: ${colors.text.secondary};
   background: ${colors.background.primary};
   border-radius: ${borderRadius.lg};
-  margin: 2rem auto;
+  margin: 2.5rem auto; /* Increased margins */
   max-width: 600px;
 
   h3 {
-    margin-bottom: 1rem;
+    margin: 1rem 0 1.25rem; /* Increased margins */
     color: ${colors.text.primary};
+    font-size: 1.25rem;
+    padding: 0.5rem 0; /* Added vertical padding */
+  }
+
+  p {
+    font-size: 0.95rem;
+    margin: 0 0 1.5rem; /* Increased bottom margin */
+    line-height: 1.6; /* Added line height for better readability */
   }
 `;
 

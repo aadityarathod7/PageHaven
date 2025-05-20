@@ -1,12 +1,18 @@
-import { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
-import { FaArrowLeft, FaUpload, FaBook } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import { AuthContext } from '../context/AuthContext';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
-import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import { FaArrowLeft, FaUpload, FaBook } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { AuthContext } from "../context/AuthContext";
+import Loader from "../components/Loader";
+import Message from "../components/Message";
+import {
+  colors,
+  typography,
+  shadows,
+  transitions,
+  borderRadius,
+} from "../styles/theme";
 
 const PageContainer = styled.div`
   padding: 2rem;
@@ -23,9 +29,12 @@ const PageHeader = styled.div`
   h1 {
     font-family: ${typography.fonts.heading};
     color: ${colors.text.primary};
-    font-size: 2rem;
+    font-size: 1.75rem;
+    position: relative;
+    text-align: center;
+    align-items: center;
     font-weight: ${typography.fontWeights.bold};
-    margin: 0;
+    margin: 6rem 0 0rem;
   }
 `;
 
@@ -36,6 +45,7 @@ const BackButton = styled.button`
   color: ${colors.text.secondary};
   background: none;
   border: none;
+  margin-top: 5rem;
   font-weight: ${typography.fontWeights.medium};
   cursor: pointer;
   transition: ${transitions.default};
@@ -100,7 +110,7 @@ const FormGroup = styled.div`
 
 const ImagePreview = styled.div`
   margin-top: 1rem;
-  
+
   img {
     max-width: 200px;
     border-radius: ${borderRadius.lg};
@@ -113,8 +123,12 @@ const Button = styled.button`
   align-items: center;
   gap: 0.5rem;
   padding: 0.875rem 1.5rem;
-  background: ${props => props.variant === 'secondary' ? colors.background.accent : colors.secondary};
-  color: ${props => props.variant === 'secondary' ? colors.text.primary : 'white'};
+  background: ${(props) =>
+    props.variant === "secondary"
+      ? colors.background.accent
+      : colors.secondary};
+  color: ${(props) =>
+    props.variant === "secondary" ? colors.text.primary : "white"};
   border: none;
   border-radius: ${borderRadius.lg};
   font-weight: ${typography.fontWeights.semibold};
@@ -125,7 +139,10 @@ const Button = styled.button`
   &:hover {
     transform: translateY(-2px);
     box-shadow: ${shadows.lg};
-    background: ${props => props.variant === 'secondary' ? colors.background.accent : colors.primary};
+    background: ${(props) =>
+      props.variant === "secondary"
+        ? colors.background.accent
+        : colors.primary};
   }
 
   &:disabled {
@@ -145,14 +162,14 @@ const AdminBookCreatePage = () => {
   const navigate = useNavigate();
   const { authAxios } = useContext(AuthContext);
 
-  const [title, setTitle] = useState('');
-  const [authorName, setAuthorName] = useState('');
-  const [description, setDescription] = useState('');
-  const [categories, setCategories] = useState('');
-  const [tags, setTags] = useState('');
-  const [coverImage, setCoverImage] = useState('');
+  const [title, setTitle] = useState("");
+  const [authorName, setAuthorName] = useState("");
+  const [description, setDescription] = useState("");
+  const [categories, setCategories] = useState("");
+  const [tags, setTags] = useState("");
+  const [coverImage, setCoverImage] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const [status, setStatus] = useState('draft');
+  const [status, setStatus] = useState("draft");
   const [price, setPrice] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -169,7 +186,7 @@ const AdminBookCreatePage = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    
+
     try {
       setLoading(true);
       setError(null);
@@ -179,34 +196,41 @@ const AdminBookCreatePage = () => {
         title,
         authorName,
         description,
-        categories: categories.split(',').map(cat => cat.trim()).filter(cat => cat),
-        tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+        categories: categories
+          .split(",")
+          .map((cat) => cat.trim())
+          .filter((cat) => cat),
+        tags: tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter((tag) => tag),
         status,
-        price: Number(price)
+        price: Number(price),
       };
 
       // Create the book
-      const { data: newBook } = await authAxios.post('/api/books', bookData);
+      const { data: newBook } = await authAxios.post("/api/books", bookData);
 
       // If we have a selected file, upload it
       if (selectedFile) {
         const formData = new FormData();
-        formData.append('image', selectedFile);
-        
+        formData.append("image", selectedFile);
+
         await authAxios.post(`/api/books/${newBook._id}/cover`, formData, {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         });
       }
 
       setLoading(false);
-      toast.success('Book created successfully');
+      toast.success("Book created successfully");
       navigate(`/admin/book/${newBook._id}/edit`);
     } catch (error) {
-      const errorMessage = error.response && error.response.data.message
-        ? error.response.data.message
-        : error.message;
+      const errorMessage =
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message;
       setError(errorMessage);
       setLoading(false);
       toast.error(errorMessage);
@@ -216,10 +240,9 @@ const AdminBookCreatePage = () => {
   return (
     <PageContainer>
       <PageHeader>
-        <BackButton onClick={() => navigate('/admin/books')}>
+        <BackButton onClick={() => navigate("/admin/books")}>
           <FaArrowLeft /> Back to Books
         </BackButton>
-        <h1>Create New Book</h1>
       </PageHeader>
 
       {loading && <Loader />}
@@ -332,7 +355,7 @@ const AdminBookCreatePage = () => {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => navigate('/admin/books')}
+              onClick={() => navigate("/admin/books")}
             >
               Cancel
             </Button>

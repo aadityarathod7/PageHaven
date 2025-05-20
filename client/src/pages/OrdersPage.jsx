@@ -9,16 +9,41 @@ import { API_URL } from "../config/config";
 import Loader from "../components/Loader";
 
 const PageContainer = styled.div`
-  padding: 4rem 0;
+  margin-top: 80px;
+  padding: 2rem 0 4rem;
 `;
 
 const Title = styled.h1`
   color: ${colors.text.primary};
   font-family: ${typography.fonts.heading};
+  font-size: 1.75rem;
   font-weight: ${typography.fontWeights.bold};
-  margin-bottom: 2rem;
-  margin-top: 2rem;
+  margin: 2.5rem 0 2rem;
   text-align: center;
+  position: relative;
+  padding: 0 1rem;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    background: ${colors.secondary};
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  &:hover::after {
+    width: 80px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+    margin: 2rem 0 1.75rem;
+  }
 `;
 
 const OrderCard = styled.div`
@@ -26,7 +51,7 @@ const OrderCard = styled.div`
   border-radius: ${borderRadius.lg};
   box-shadow: ${shadows.sm};
   padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   transition: all 0.3s ease;
 
   &:hover {
@@ -39,7 +64,7 @@ const OrderHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid ${colors.background.accent};
 `;
@@ -47,17 +72,20 @@ const OrderHeader = styled.div`
 const OrderId = styled.span`
   color: ${colors.text.secondary};
   font-size: 0.9rem;
+  line-height: 1.6;
 `;
 
 const OrderDate = styled.span`
   color: ${colors.text.light};
   font-size: 0.9rem;
+  line-height: 1.6;
 `;
 
 const BookInfo = styled.div`
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+  padding: 0.5rem 0;
 `;
 
 const BookCover = styled.img`
@@ -70,6 +98,7 @@ const BookCover = styled.img`
 
 const BookDetails = styled.div`
   flex: 1;
+  padding: 0.5rem 0;
 `;
 
 const BookTitle = styled(Link)`
@@ -77,6 +106,9 @@ const BookTitle = styled(Link)`
   font-weight: ${typography.fontWeights.semibold};
   text-decoration: none;
   font-size: 1.1rem;
+  line-height: 1.6;
+  display: inline-block;
+  margin-bottom: 0.5rem;
 
   &:hover {
     color: ${colors.primary};
@@ -87,7 +119,7 @@ const OrderDetails = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 1rem;
+  margin-top: 1.25rem;
   padding-top: 1rem;
   border-top: 1px solid ${colors.background.accent};
 `;
@@ -96,6 +128,7 @@ const PaymentInfo = styled.div`
   span {
     color: ${colors.text.secondary};
     font-size: 0.9rem;
+    line-height: 1.6;
     display: block;
 
     &:not(:last-child) {
@@ -105,22 +138,30 @@ const PaymentInfo = styled.div`
 `;
 
 const Amount = styled.div`
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: ${typography.fontWeights.semibold};
   color: ${colors.success};
 `;
 
 const NoOrders = styled.div`
   text-align: center;
-  padding: 3rem;
+  padding: 3rem 2rem;
   color: ${colors.text.secondary};
-  background: ${colors.background.primary};
+  background: ${colors.background.secondary};
   border-radius: ${borderRadius.lg};
-  margin-top: 2rem;
+  margin: 2.5rem 0;
 
   h3 {
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
     color: ${colors.text.primary};
+    font-size: 1.25rem;
+    font-weight: ${typography.fontWeights.semibold};
+  }
+
+  p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0 0 1.5rem;
   }
 `;
 
