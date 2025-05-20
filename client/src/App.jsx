@@ -46,6 +46,7 @@ const CheckoutPage = lazy(() => import("./pages/CheckoutPage"));
 const PaymentSuccessPage = lazy(() => import("./pages/PaymentSuccessPage"));
 const OrdersPage = lazy(() => import("./pages/OrdersPage"));
 const PurchasedBooks = lazy(() => import("./pages/PurchasedBooks"));
+const Contact = lazy(() => import("./pages/Contact"));
 
 // Route change handler component
 const RouteChangeHandler = () => {
@@ -180,6 +181,14 @@ function App() {
                     element={
                       <LazyRoute>
                         <Terms />
+                      </LazyRoute>
+                    }
+                  />
+                  <Route
+                    path="/contact"
+                    element={
+                      <LazyRoute>
+                        <Contact />
                       </LazyRoute>
                     }
                   />
