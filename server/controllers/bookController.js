@@ -246,26 +246,53 @@ const deleteBook = asyncHandler(async (req, res) => {
 // @route   POST /api/books/:id/cover
 // @access  Private/Admin
 const uploadBookCover = asyncHandler(async (req, res) => {
-  const book = await Book.findById(req.params.id);
+  console.log('📥 Starting book cover upload process');
+  console.log('📚 Book ID:', req.params.id);
 
-  if (!book) {
-    res.status(404);
-    throw new Error('Book not found');
+  try {
+    const book = await Book.findById(req.params.id);
+    console.log('🔍 Found book:', book ? 'Yes' : 'No');
+
+    if (!book) {
+      console.log('❌ Book not found');
+      res.status(404);
+      throw new Error('Book not found');
+    }
+
+    if (!req.file) {
+      console.log('❌ No file in request');
+      res.status(400);
+      throw new Error('Please upload an image file');
+    }
+
+    console.log('📁 Received file:', {
+      fieldname: req.file.fieldname,
+      originalname: req.file.originalname,
+      encoding: req.file.encoding,
+      mimetype: req.file.mimetype,
+      path: req.file.path,
+      size: req.file.size,
+    });
+
+    // Cloudinary automatically uploads the file and provides the URL in req.file.path
+    const previousImage = book.coverImage;
+    book.coverImage = req.file.path;
+    console.log('🔄 Updating cover image:', {
+      previous: previousImage,
+      new: book.coverImage
+    });
+
+    const updatedBook = await book.save();
+    console.log('✅ Book updated successfully');
+
+    res.json({
+      message: 'Cover image uploaded successfully',
+      coverImage: updatedBook.coverImage
+    });
+  } catch (error) {
+    console.error('❌ Error in uploadBookCover:', error);
+    throw error;
   }
-
-  if (!req.file) {
-    res.status(400);
-    throw new Error('Please upload an image file');
-  }
-
-  // Cloudinary automatically uploads the file and provides the URL in req.file.path
-  book.coverImage = req.file.path;
-  const updatedBook = await book.save();
-
-  res.json({
-    message: 'Cover image uploaded successfully',
-    coverImage: updatedBook.coverImage
-  });
 });
 
 // @desc    Download book as PDF
