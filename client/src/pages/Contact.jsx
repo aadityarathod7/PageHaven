@@ -12,7 +12,7 @@ import { FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { API_URL } from "../config/config";
-import { commonStyles } from "../styles/commonStyles";
+import { commonStyles } from "../styles/theme";
 
 const PageContainer = styled.div`
   padding: 4rem 0;
