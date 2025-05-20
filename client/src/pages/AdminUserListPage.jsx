@@ -21,13 +21,13 @@ const PageContainer = styled.div`
 
 const PageHeader = styled.div`
   margin-bottom: 2rem;
-
+  margin-top: 5rem;
   h1 {
+    margin-top: 10rem;
     font-family: ${typography.fonts.heading};
     color: ${colors.text.primary};
     font-size: 2rem;
     font-weight: ${typography.fontWeights.bold};
-    margin: 0;
   }
 `;
 
@@ -182,7 +182,6 @@ const AdminUserListPage = () => {
   return (
     <PageContainer>
       <PageHeader>
-        <h1>Users</h1>
       </PageHeader>
 
       {loading ? (
