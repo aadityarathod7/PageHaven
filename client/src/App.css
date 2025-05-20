@@ -37,16 +37,22 @@ img.loaded {
   opacity: 1;
 }
 
-/* General Styles */
+/* Updated global styles for new theme */
 :root {
-  /* Primary Colors */
-  --primary-color: #4f46e5;
-  --primary-hover: #4338ca;
-  --primary-light: #e0e7ff;
+  --primary-color: #7C3AED;
+  --primary-hover: #6D28D9;
+  --secondary-color: #3CD88F;
+  --secondary-hover: #2EB67D;
+  --background-color: #F7F8FA;
+  --card-background: rgba(255,255,255,0.6);
+  --card-background-hover: rgba(255,255,255,0.8);
+  --border-radius: 1.5rem;
+  --box-shadow: 0 4px 16px 0 rgba(124, 58, 237, 0.10), 0 2px 4px -1px rgba(60, 216, 143, 0.06);
+  --shadow-lg: 0 20px 40px -5px rgba(124, 58, 237, 0.15), 0 10px 20px -5px rgba(60, 216, 143, 0.08);
+  --transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  --font-sans: 'Poppins', 'Inter', sans-serif;
   
   /* Secondary Colors */
-  --secondary-color: #64748b;
-  --secondary-hover: #475569;
   --secondary-light: #f1f5f9;
   
   /* Accent Colors */
@@ -58,16 +64,9 @@ img.loaded {
   --warning-light: #fef3c7;
   
   /* Neutral Colors */
-  --light-color: #f8fafc;
-  --dark-color: #0f172a;
   --text-color: #1e293b;
   --text-muted: #64748b;
   --text-light: #94a3b8;
-  
-  /* Background Colors */
-  --background-color: #f8fafc;
-  --card-background: #ffffff;
-  --card-background-hover: #f1f5f9;
   
   /* Border Colors */
   --border-color: #e2e8f0;
@@ -75,7 +74,6 @@ img.loaded {
   
   /* UI Elements */
   --border-radius-sm: 0.375rem;
-  --border-radius: 0.5rem;
   --border-radius-lg: 0.75rem;
   --border-radius-xl: 1rem;
   --border-radius-full: 9999px;
@@ -84,16 +82,13 @@ img.loaded {
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   
   /* Transitions */
-  --transition: all 0.3s ease;
   --transition-fast: all 0.15s ease;
   --transition-slow: all 0.5s ease;
   
   /* Typography */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-serif: 'Merriweather', Georgia, serif;
   --font-mono: 'JetBrains Mono', monospace;
   
@@ -108,9 +103,9 @@ img.loaded {
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
+  font-family: var(--font-sans);
+  background: var(--background-color);
+  color: #22223B;
   line-height: 1.6;
 }
 
@@ -121,8 +116,11 @@ body {
 
 /* Header & Navbar */
 .navbar {
-  background-color: var(--card-background) !important;
+  background: var(--card-background);
   box-shadow: var(--box-shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
 }
 
 .navbar-brand {
@@ -140,47 +138,39 @@ body {
 }
 
 /* Button Styles */
-.btn {
-  padding: 0.5rem 1rem;
-  font-weight: 500;
+.btn, button {
+  background: linear-gradient(135deg, #3CD88F, #7C3AED);
+  color: #fff;
+  border: none;
   border-radius: var(--border-radius);
+  font-weight: 600;
   transition: var(--transition);
+  box-shadow: 0 1px 2px 0 rgba(124, 58, 237, 0.05);
 }
 
-.btn-primary {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-}
-
-.btn-primary:hover {
-  background-color: var(--primary-hover);
-  border-color: var(--primary-hover);
-}
-
-.btn-outline-primary {
-  color: var(--primary-color);
-  border-color: var(--primary-color);
-}
-
-.btn-outline-primary:hover {
-  background-color: var(--primary-hover);
-  border-color: var(--primary-hover);
+.btn:hover, button:hover {
+  background: linear-gradient(135deg, #7C3AED, #3CD88F);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Book Card Styles */
 .book-card {
   background: var(--card-background);
-  border: none;
-  transition: var(--transition);
-  height: 100%;
   border-radius: var(--border-radius);
-  overflow: hidden;
   box-shadow: var(--box-shadow);
+  transition: var(--transition);
+  border: 1px solid #E5E7EB;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  height: 100%;
+  overflow: hidden;
 }
 
 .book-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  background: var(--card-background-hover);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px) scale(1.02);
 }
 
 .book-cover {
@@ -386,16 +376,19 @@ body {
 /* Admin Dashboard */
 .dashboard-card {
   background: var(--card-background);
-  border: none;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   transition: var(--transition);
+  border: 1px solid #E5E7EB;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   height: 100%;
 }
 
 .dashboard-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  background: var(--card-background-hover);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px) scale(1.02);
 }
 
 .icon-bg {
@@ -513,19 +506,33 @@ body {
 
 /* Forms */
 .form-control {
-  border: 1px solid var(--border-color);
+  background: #fff;
+  border: 2px solid #E5E7EB;
   border-radius: var(--border-radius);
-  padding: 0.625rem 0.875rem;
+  font-size: 1rem;
+  color: #22223B;
   transition: var(--transition);
+  font-family: var(--font-sans);
 }
 
 .form-control:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+  border-color: #3CD88F;
+  background: #F7F8FA;
+  box-shadow: 0 0 0 4px #3CD88F15;
+  outline: none;
 }
 
 .form-label {
   font-weight: 500;
   color: var(--dark-color);
   margin-bottom: 0.5rem;
+}
+
+a {
+  color: #7C3AED;
+  text-decoration: none;
+  transition: var(--transition);
+}
+a:hover {
+  color: #3CD88F;
 }

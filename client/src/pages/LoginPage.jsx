@@ -1,12 +1,18 @@
-import React, { useState, useContext } from 'react';
-import { Form } from 'react-bootstrap';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaSignInAlt, FaUser, FaLock } from 'react-icons/fa';
-import styled, { keyframes } from 'styled-components';
-import { AuthContext } from '../context/AuthContext';
-import Message from '../components/Message';
-import Loader from '../components/Loader';
-import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
+import React, { useState, useContext } from "react";
+import { Form } from "react-bootstrap";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { FaSignInAlt, FaUser, FaLock } from "react-icons/fa";
+import styled, { keyframes } from "styled-components";
+import { AuthContext } from "../context/AuthContext";
+import Message from "../components/Message";
+import Loader from "../components/Loader";
+import {
+  colors,
+  typography,
+  shadows,
+  transitions,
+  borderRadius,
+} from "../styles/theme";
 
 const fadeIn = keyframes`
   from {
@@ -24,7 +30,11 @@ const PageContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, ${colors.background.primary} 0%, ${colors.background.secondary} 100%);
+  background: linear-gradient(
+    135deg,
+    ${colors.background.primary} 0%,
+    ${colors.background.secondary} 100%
+  );
   padding: 2rem;
 `;
 
@@ -121,10 +131,12 @@ const SubmitButton = styled.button`
   cursor: pointer;
   transition: ${transitions.default};
   margin-top: 1.5rem;
+  box-shadow: ${shadows.md};
 
   &:hover {
     transform: translateY(-2px);
     box-shadow: ${shadows.lg};
+    background: linear-gradient(135deg, ${colors.primary}, ${colors.secondary});
   }
 
   &:active {
@@ -152,14 +164,14 @@ const RegisterLink = styled(Link)`
 `;
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
   const location = useLocation();
   const { login, loading, error } = useContext(AuthContext);
 
-  const redirect = location.search ? location.search.split('=')[1] : '/';
+  const redirect = location.search ? location.search.split("=")[1] : "/";
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -205,11 +217,13 @@ const LoginPage = () => {
 
           <SubmitButton type="submit" disabled={loading}>
             <FaSignInAlt />
-            {loading ? 'Signing In...' : 'Sign In'}
+            {loading ? "Signing In..." : "Sign In"}
           </SubmitButton>
         </Form>
 
-        <RegisterLink to={redirect ? `/register?redirect=${redirect}` : '/register'}>
+        <RegisterLink
+          to={redirect ? `/register?redirect=${redirect}` : "/register"}
+        >
           Don't have an account? Sign up here
         </RegisterLink>
       </FormContainer>

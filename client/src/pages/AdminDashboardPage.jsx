@@ -22,6 +22,7 @@ import {
   shadows,
   transitions,
   borderRadius,
+  commonStyles,
 } from "../styles/theme";
 import { API_URL, UPLOADS_URL } from "../config/config";
 
@@ -286,11 +287,8 @@ const AdminMenuGrid = styled.div`
 `;
 
 const AdminMenuCard = styled(Link)`
-  background: ${colors.background.primary};
-  border-radius: ${borderRadius.xl};
+  ${commonStyles.cardStyle}
   padding: 2rem 1.5rem;
-  box-shadow: ${shadows.md};
-  transition: ${transitions.default};
   text-decoration: none;
   display: flex;
   flex-direction: column;
@@ -298,9 +296,9 @@ const AdminMenuCard = styled(Link)`
   text-align: center;
 
   &:hover {
-    transform: translateY(-6px);
+    transform: translateY(-6px) scale(1.02);
     box-shadow: ${shadows.lg};
-    background: ${colors.background.secondary};
+    background: rgba(255, 255, 255, 0.8);
   }
 
   .icon-wrapper {
@@ -346,10 +344,6 @@ const AdminMenuCard = styled(Link)`
     color: ${colors.text.secondary};
     font-size: 0.95rem;
     margin: 0;
-  }
-
-  &:hover .icon-wrapper {
-    transform: scale(1.1);
   }
 `;
 

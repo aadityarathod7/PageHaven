@@ -1,18 +1,23 @@
-import React, { useContext, useState } from 'react';
-import { Button } from 'react-bootstrap';
-import styled from 'styled-components';
-import { colors, typography, borderRadius, shadows } from '../styles/theme';
-import { AuthContext } from '../context/AuthContext';
-import { toast } from 'react-toastify';
-import { FaQrcode, FaCreditCard } from 'react-icons/fa';
+import React, { useContext, useState } from "react";
+import { Button } from "react-bootstrap";
+import styled from "styled-components";
+import {
+  colors,
+  typography,
+  borderRadius,
+  shadows,
+  commonStyles,
+  transitions,
+} from "../styles/theme";
+import { AuthContext } from "../context/AuthContext";
+import { toast } from "react-toastify";
+import { FaQrcode, FaCreditCard } from "react-icons/fa";
 
 const PaymentContainer = styled.div`
+  ${commonStyles.cardStyle}
   max-width: 500px;
   margin: 0 auto;
   padding: 2rem;
-  background: ${colors.background.primary};
-  border-radius: ${borderRadius.xl};
-  box-shadow: ${shadows.lg};
 `;
 
 const PaymentTitle = styled.h2`
@@ -36,11 +41,17 @@ const PaymentButton = styled(Button)`
   padding: 0.75rem;
   font-weight: ${typography.fontWeights.medium};
   margin-top: 1rem;
-  background: ${colors.primary};
+  background: linear-gradient(135deg, ${colors.secondary}, ${colors.primary});
   border: none;
-  
+  border-radius: ${borderRadius.lg};
+  color: #fff;
+  box-shadow: ${shadows.md};
+  transition: ${transitions.default};
+
   &:hover {
-    background: ${colors.secondary};
+    background: linear-gradient(135deg, ${colors.primary}, ${colors.secondary});
+    box-shadow: ${shadows.lg};
+    transform: translateY(-2px);
   }
 `;
 
@@ -53,26 +64,31 @@ const PaymentMethods = styled.div`
 
 const PaymentMethod = styled.div`
   padding: 1rem;
-  border: 2px solid ${props => props.$selected ? colors.primary : colors.background.accent};
+  border: 2px solid
+    ${(props) => (props.$selected ? colors.primary : colors.background.accent)};
   border-radius: ${borderRadius.lg};
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: ${props => props.$selected ? `${colors.primary}10` : 'transparent'};
+  background: ${(props) =>
+    props.$selected ? `${colors.primary}10` : "transparent"};
 
   &:hover {
     border-color: ${colors.primary};
-    background: ${props => props.$selected ? `${colors.primary}10` : `${colors.primary}05`};
+    background: ${(props) =>
+      props.$selected ? `${colors.primary}10` : `${colors.primary}05`};
   }
 
   svg {
     font-size: 2rem;
     margin-bottom: 0.5rem;
-    color: ${props => props.$selected ? colors.primary : colors.text.secondary};
+    color: ${(props) =>
+      props.$selected ? colors.primary : colors.text.secondary};
   }
 
   div {
-    color: ${props => props.$selected ? colors.primary : colors.text.primary};
+    color: ${(props) =>
+      props.$selected ? colors.primary : colors.text.primary};
     font-weight: ${typography.fontWeights.medium};
   }
 `;
@@ -87,15 +103,15 @@ const ErrorText = styled.p`
 const PaymentForm = ({ amount, onSuccess, bookTitle, bookId }) => {
   const { authAxios } = useContext(AuthContext);
   const [selectedMethod, setSelectedMethod] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const initializeRazorpay = () => {
     return new Promise((resolve) => {
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
       script.onload = () => resolve(true);
       script.onerror = () => {
-        toast.error('Failed to load Razorpay SDK');
+        toast.error("Failed to load Razorpay SDK");
         resolve(false);
       };
       document.body.appendChild(script);
@@ -104,42 +120,42 @@ const PaymentForm = ({ amount, onSuccess, bookTitle, bookId }) => {
 
   const createOrder = async (paymentDetails) => {
     try {
-      console.log('Creating order with bookId:', bookId);
-      const response = await authAxios.post('/api/orders', {
+      console.log("Creating order with bookId:", bookId);
+      const response = await authAxios.post("/api/orders", {
         bookId: bookId,
         paymentId: paymentDetails.razorpay_payment_id,
         orderId: paymentDetails.razorpay_order_id,
         amount,
-        paymentMethod: selectedMethod
+        paymentMethod: selectedMethod,
       });
-      console.log('Order created successfully:', response.data);
+      console.log("Order created successfully:", response.data);
       return true;
     } catch (error) {
-      console.error('Error creating order:', error.response?.data || error);
-      toast.error('Payment successful but failed to create order');
+      console.error("Error creating order:", error.response?.data || error);
+      toast.error("Payment successful but failed to create order");
       return false;
     }
   };
 
   const handlePayment = async () => {
     if (!selectedMethod) {
-      setError('Please select a payment method');
+      setError("Please select a payment method");
       return;
     }
-    setError('');
+    setError("");
 
     try {
       const res = await initializeRazorpay();
 
       if (!res) {
-        toast.error('Razorpay SDK failed to load. Please try again.');
+        toast.error("Razorpay SDK failed to load. Please try again.");
         return;
       }
 
       // Create order on your backend
-      const { data } = await authAxios.post('/api/payments/create-order', {
+      const { data } = await authAxios.post("/api/payments/create-order", {
         amount,
-        paymentMethod: selectedMethod
+        paymentMethod: selectedMethod,
       });
 
       const options = {
@@ -152,72 +168,72 @@ const PaymentForm = ({ amount, onSuccess, bookTitle, bookId }) => {
         handler: async function (response) {
           try {
             // Verify payment on backend
-            const { data } = await authAxios.post('/api/payments/verify', {
+            const { data } = await authAxios.post("/api/payments/verify", {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_order_id: response.razorpay_order_id,
               razorpay_signature: response.razorpay_signature,
-              paymentMethod: selectedMethod
+              paymentMethod: selectedMethod,
             });
 
             if (data.success) {
               // Create order in database
               const orderCreated = await createOrder(response);
-              
+
               if (orderCreated) {
-                toast.success('Payment successful!');
+                toast.success("Payment successful!");
                 onSuccess({
                   id: response.razorpay_payment_id,
-                  amount: amount
+                  amount: amount,
                 });
               } else {
-                toast.error('Payment was successful but order creation failed. Please contact support.');
+                toast.error(
+                  "Payment was successful but order creation failed. Please contact support."
+                );
               }
             }
           } catch {
-            toast.error('Payment verification failed. Please contact support.');
+            toast.error("Payment verification failed. Please contact support.");
           }
         },
         prefill: {
           name: "Customer Name",
           email: "customer@example.com",
-          contact: "9999999999"
+          contact: "9999999999",
         },
         theme: {
-          color: colors.primary
-        }
+          color: colors.primary,
+        },
       };
 
       // Add method-specific options
-      if (selectedMethod === 'upi') {
-        options.method = 'upi';
+      if (selectedMethod === "upi") {
+        options.method = "upi";
       }
 
       const paymentObject = new window.Razorpay(options);
       paymentObject.open();
     } catch {
-      toast.error('Failed to create payment order. Please try again.');
+      toast.error("Failed to create payment order. Please try again.");
     }
   };
 
   return (
     <PaymentContainer>
       <PaymentTitle>Payment Details</PaymentTitle>
-      
-      <PaymentAmount>
-        Amount to Pay: ₹{(amount / 100).toFixed(2)}
-      </PaymentAmount>
+
+      <PaymentAmount>Amount to Pay: ₹{(amount / 100).toFixed(2)}</PaymentAmount>
 
       <PaymentMethods>
-        <PaymentMethod 
-          onClick={() => setSelectedMethod('upi')}
-          $selected={selectedMethod === 'upi'}
+        <PaymentMethod
+          onClick={() => setSelectedMethod("upi")}
+          $selected={selectedMethod === "upi"}
         >
           <FaQrcode />
           <div>UPI</div>
         </PaymentMethod>
-        <PaymentMethod 
-          onClick={() => setSelectedMethod('card')}
-          $selected={selectedMethod === 'card'}
+        <PaymentMethod
+          onClick={() => setSelectedMethod("card")}
+          $selected={selectedMethod === "card"}
         >
           <FaCreditCard />
           <div>Card</div>
@@ -226,11 +242,9 @@ const PaymentForm = ({ amount, onSuccess, bookTitle, bookId }) => {
 
       {error && <ErrorText>{error}</ErrorText>}
 
-      <PaymentButton onClick={handlePayment}>
-        Pay Now
-      </PaymentButton>
+      <PaymentButton onClick={handlePayment}>Pay Now</PaymentButton>
     </PaymentContainer>
   );
 };
 
-export default PaymentForm; 
+export default PaymentForm;

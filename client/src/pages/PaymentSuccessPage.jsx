@@ -1,21 +1,26 @@
-import React from 'react';
-import { Container, Button } from 'react-bootstrap';
-import { Link, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
-import { FaCheckCircle, FaBook } from 'react-icons/fa';
-import { colors, typography, shadows, borderRadius } from '../styles/theme';
+import React from "react";
+import { Container, Button } from "react-bootstrap";
+import { Link, useLocation } from "react-router-dom";
+import styled from "styled-components";
+import { FaCheckCircle, FaBook } from "react-icons/fa";
+import {
+  colors,
+  typography,
+  shadows,
+  borderRadius,
+  commonStyles,
+  transitions,
+} from "../styles/theme";
 
 const PageContainer = styled.div`
   padding: 2rem 0;
 `;
 
 const SuccessCard = styled.div`
+  ${commonStyles.cardStyle}
   max-width: 350px;
   padding: 1.5rem;
   margin-left: 25rem;
-  background: ${colors.background.primary};
-  border-radius: ${borderRadius.xl};
-  box-shadow: ${shadows.lg};
   text-align: center;
   margin-top: 6rem;
 `;
@@ -51,7 +56,7 @@ const Details = styled.div`
 const DetailItem = styled.p`
   color: ${colors.text.secondary};
   margin-bottom: 0.35rem;
-  
+
   strong {
     color: ${colors.text.primary};
     font-weight: ${typography.fontWeights.semibold};
@@ -79,6 +84,18 @@ const StyledButton = styled(Button)`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  background: linear-gradient(135deg, ${colors.secondary}, ${colors.primary});
+  color: #fff;
+  border: none;
+  border-radius: ${borderRadius.lg};
+  box-shadow: ${shadows.md};
+  transition: ${transitions.default};
+
+  &:hover {
+    background: linear-gradient(135deg, ${colors.primary}, ${colors.secondary});
+    box-shadow: ${shadows.lg};
+    transform: translateY(-2px);
+  }
 `;
 
 const PaymentSuccessPage = () => {
@@ -94,9 +111,10 @@ const PaymentSuccessPage = () => {
           </Icon>
           <Title>Payment Successful!</Title>
           <Message>
-            Thank you for your purchase. You now have access to read and download the book.
+            Thank you for your purchase. You now have access to read and
+            download the book.
           </Message>
-          
+
           <Details>
             <DetailItem>
               <strong>Book:</strong> {bookTitle}
@@ -110,19 +128,11 @@ const PaymentSuccessPage = () => {
           </Details>
 
           <ButtonGroup>
-            <StyledButton 
-              as={Link} 
-              to={`/read/${bookId}`} 
-              variant="primary"
-            >
+            <StyledButton as={Link} to={`/read/${bookId}`} variant="primary">
               <FaBook /> Start Reading
             </StyledButton>
-            
-            <StyledButton 
-              as={Link} 
-              to="/books" 
-              variant="outline-primary"
-            >
+
+            <StyledButton as={Link} to="/books" variant="outline-primary">
               Browse More Books
             </StyledButton>
           </ButtonGroup>
@@ -132,4 +142,4 @@ const PaymentSuccessPage = () => {
   );
 };
 
-export default PaymentSuccessPage; 
+export default PaymentSuccessPage;
