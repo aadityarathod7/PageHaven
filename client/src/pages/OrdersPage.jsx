@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import { colors, typography, borderRadius, shadows } from '../styles/theme';
-import { toast } from 'react-toastify';
-import { API_URL } from '../config/config';
-import Loader from '../components/Loader';
+import React, { useEffect, useState, useContext } from "react";
+import { Container, Row, Col } from "react-bootstrap";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import { colors, typography, borderRadius, shadows } from "../styles/theme";
+import { toast } from "react-toastify";
+import { API_URL } from "../config/config";
+import Loader from "../components/Loader";
 
 const PageContainer = styled.div`
   padding: 4rem 0;
@@ -77,7 +77,7 @@ const BookTitle = styled(Link)`
   font-weight: ${typography.fontWeights.semibold};
   text-decoration: none;
   font-size: 1.1rem;
-  
+
   &:hover {
     color: ${colors.primary};
   }
@@ -97,7 +97,7 @@ const PaymentInfo = styled.div`
     color: ${colors.text.secondary};
     font-size: 0.9rem;
     display: block;
-    
+
     &:not(:last-child) {
       margin-bottom: 0.5rem;
     }
@@ -132,10 +132,10 @@ const OrdersPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const { data } = await authAxios.get('/api/orders');
+        const { data } = await authAxios.get("/api/orders");
         setOrders(data);
       } catch (error) {
-        toast.error('Failed to fetch orders');
+        toast.error("Failed to fetch orders");
       } finally {
         setLoading(false);
       }
@@ -145,9 +145,15 @@ const OrdersPage = () => {
   }, [authAxios]);
 
   const getImageUrl = (coverImage) => {
-    return coverImage ? 
-      (coverImage.startsWith('http') ? coverImage : `${API_URL}${coverImage}`) 
+    return coverImage
+      ? coverImage.startsWith("http")
+        ? coverImage
+        : `${API_URL}${coverImage}`
       : `${API_URL}/uploads/default-cover.jpg`;
+  };
+
+  const handleImageError = (event) => {
+    event.target.src = `${API_URL}/uploads/default-cover.jpg`;
   };
 
   if (loading) return <Loader />;
@@ -175,9 +181,10 @@ const OrdersPage = () => {
                   </OrderHeader>
 
                   <BookInfo>
-                    <BookCover 
-                      src={getImageUrl(order.book.coverImage)} 
-                      alt={order.book.title} 
+                    <BookCover
+                      src={getImageUrl(order.book.coverImage)}
+                      alt={order.book.title}
+                      onError={handleImageError}
                     />
                     <BookDetails>
                       <BookTitle to={`/book/${order.book._id}`}>
@@ -203,4 +210,4 @@ const OrdersPage = () => {
   );
 };
 
-export default OrdersPage; 
+export default OrdersPage;

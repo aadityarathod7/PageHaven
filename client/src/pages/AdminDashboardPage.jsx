@@ -1,12 +1,29 @@
-import { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
-import { FaBook, FaUser, FaDownload, FaEye, FaChartLine, FaShoppingCart, FaPlus, FaList, FaUsers, FaEdit } from 'react-icons/fa';
-import { AuthContext } from '../context/AuthContext';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
-import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
-import { API_URL, UPLOADS_URL } from '../config/config';
+import { useState, useEffect, useContext } from "react";
+import { Link } from "react-router-dom";
+import styled from "styled-components";
+import {
+  FaBook,
+  FaUser,
+  FaDownload,
+  FaEye,
+  FaChartLine,
+  FaShoppingCart,
+  FaPlus,
+  FaList,
+  FaUsers,
+  FaEdit,
+} from "react-icons/fa";
+import { AuthContext } from "../context/AuthContext";
+import Loader from "../components/Loader";
+import Message from "../components/Message";
+import {
+  colors,
+  typography,
+  shadows,
+  transitions,
+  borderRadius,
+} from "../styles/theme";
+import { API_URL, UPLOADS_URL } from "../config/config";
 
 const PageContainer = styled.div`
   padding: 2rem;
@@ -19,7 +36,7 @@ const PageHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
-  
+
   h1 {
     font-family: ${typography.fonts.heading};
     color: ${colors.text.primary};
@@ -83,18 +100,22 @@ const StatHeader = styled.div`
     align-items: center;
     justify-content: center;
     margin-right: 1rem;
-    background: ${props => 
-      props.$variant === 'success' ? `${colors.success}15` :
-      props.$variant === 'warning' ? `${colors.warning}15` :
-      props.$variant === 'info' ? `${colors.secondary}15` :
-      `${colors.primary}15`
-    };
-    color: ${props => 
-      props.$variant === 'success' ? colors.success :
-      props.$variant === 'warning' ? colors.warning :
-      props.$variant === 'info' ? colors.secondary :
-      colors.primary
-    };
+    background: ${(props) =>
+      props.$variant === "success"
+        ? `${colors.success}15`
+        : props.$variant === "warning"
+        ? `${colors.warning}15`
+        : props.$variant === "info"
+        ? `${colors.secondary}15`
+        : `${colors.primary}15`};
+    color: ${(props) =>
+      props.$variant === "success"
+        ? colors.success
+        : props.$variant === "warning"
+        ? colors.warning
+        : props.$variant === "info"
+        ? colors.secondary
+        : colors.primary};
   }
 `;
 
@@ -119,12 +140,14 @@ const StatFooter = styled.div`
   border-top: 1px solid ${colors.background.accent};
 
   a {
-    color: ${props => 
-      props.$variant === 'success' ? colors.success :
-      props.$variant === 'warning' ? colors.warning :
-      props.$variant === 'info' ? colors.secondary :
-      colors.primary
-    };
+    color: ${(props) =>
+      props.$variant === "success"
+        ? colors.success
+        : props.$variant === "warning"
+        ? colors.warning
+        : props.$variant === "info"
+        ? colors.secondary
+        : colors.primary};
     text-decoration: none;
     font-weight: ${typography.fontWeights.medium};
     font-size: 0.875rem;
@@ -246,8 +269,12 @@ const StatusBadge = styled.span`
   border-radius: ${borderRadius.full};
   font-size: 0.75rem;
   font-weight: ${typography.fontWeights.medium};
-  background: ${props => props.$status === 'published' ? `${colors.success}15` : `${colors.warning}15`};
-  color: ${props => props.$status === 'published' ? colors.success : colors.warning};
+  background: ${(props) =>
+    props.$status === "published"
+      ? `${colors.success}15`
+      : `${colors.warning}15`};
+  color: ${(props) =>
+    props.$status === "published" ? colors.success : colors.warning};
   margin-top: 0.5rem;
 `;
 
@@ -284,20 +311,26 @@ const AdminMenuCard = styled(Link)`
     align-items: center;
     justify-content: center;
     margin-bottom: 1.5rem;
-    background: ${props => 
-      props.$color === 'primary' ? `${colors.primary}15` :
-      props.$color === 'secondary' ? `${colors.secondary}15` :
-      props.$color === 'success' ? `${colors.success}15` :
-      props.$color === 'warning' ? `${colors.warning}15` :
-      `${colors.accent}15`
-    };
-    color: ${props => 
-      props.$color === 'primary' ? colors.primary :
-      props.$color === 'secondary' ? colors.secondary :
-      props.$color === 'success' ? colors.success :
-      props.$color === 'warning' ? colors.warning :
-      colors.accent
-    };
+    background: ${(props) =>
+      props.$color === "primary"
+        ? `${colors.primary}15`
+        : props.$color === "secondary"
+        ? `${colors.secondary}15`
+        : props.$color === "success"
+        ? `${colors.success}15`
+        : props.$color === "warning"
+        ? `${colors.warning}15`
+        : `${colors.accent}15`};
+    color: ${(props) =>
+      props.$color === "primary"
+        ? colors.primary
+        : props.$color === "secondary"
+        ? colors.secondary
+        : props.$color === "success"
+        ? colors.success
+        : props.$color === "warning"
+        ? colors.warning
+        : colors.accent};
     transition: ${transitions.default};
   }
 
@@ -332,7 +365,7 @@ const SectionHeader = styled.h2`
 
 const AdminDashboardPage = () => {
   const { authAxios } = useContext(AuthContext);
-  
+
   const [stats, setStats] = useState({
     totalBooks: 0,
     totalUsers: 0,
@@ -348,30 +381,34 @@ const AdminDashboardPage = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [booksResponse, usersResponse, ordersResponse] = await Promise.all([
-          authAxios.get('/api/books/admin/books'),
-          authAxios.get('/api/users'),
-          authAxios.get('/api/orders/admin'),
-        ]);
-        
+        const [booksResponse, usersResponse, ordersResponse] =
+          await Promise.all([
+            authAxios.get("/api/books/admin/books"),
+            authAxios.get("/api/users"),
+            authAxios.get("/api/orders/admin"),
+          ]);
+
         const books = booksResponse.data;
         const users = usersResponse.data;
         const orders = ordersResponse.data;
-        
+
         const totalBooks = books.length;
         const totalUsers = users.length;
         const totalOrders = orders.length;
         const totalReads = books.reduce((sum, book) => sum + book.readCount, 0);
-        const totalDownloads = books.reduce((sum, book) => sum + book.downloads, 0);
-        
+        const totalDownloads = books.reduce(
+          (sum, book) => sum + book.downloads,
+          0
+        );
+
         const recentBooks = [...books]
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           .slice(0, 5);
-        
+
         const topBooks = [...books]
           .sort((a, b) => b.readCount - a.readCount)
           .slice(0, 5);
-        
+
         setStats({
           totalBooks,
           totalUsers,
@@ -381,7 +418,7 @@ const AdminDashboardPage = () => {
           recentBooks,
           topBooks,
         });
-        
+
         setLoading(false);
       } catch (error) {
         setError(
@@ -419,7 +456,7 @@ const AdminDashboardPage = () => {
               <h3>Manage Books</h3>
               <p>View, edit and delete books</p>
             </AdminMenuCard>
-            
+
             <AdminMenuCard to="/admin/book/create" $color="secondary">
               <div className="icon-wrapper">
                 <FaPlus size={28} />
@@ -427,7 +464,7 @@ const AdminDashboardPage = () => {
               <h3>Add New Book</h3>
               <p>Create a new book</p>
             </AdminMenuCard>
-            
+
             <AdminMenuCard to="/admin/users" $color="success">
               <div className="icon-wrapper">
                 <FaUsers size={28} />
@@ -435,7 +472,7 @@ const AdminDashboardPage = () => {
               <h3>Manage Users</h3>
               <p>View and manage user accounts</p>
             </AdminMenuCard>
-            
+
             <AdminMenuCard to="/admin/orders" $color="warning">
               <div className="icon-wrapper">
                 <FaShoppingCart size={28} />
@@ -444,7 +481,7 @@ const AdminDashboardPage = () => {
               <p>View and process orders</p>
             </AdminMenuCard>
           </AdminMenuGrid>
-          
+
           <SectionHeader>Dashboard Statistics</SectionHeader>
 
           <StatsGrid>
@@ -534,14 +571,16 @@ const AdminDashboardPage = () => {
                   <BookList>
                     {stats.recentBooks.map((book) => (
                       <BookItem key={book._id}>
-                        <img 
-                          src={book.coverImage.startsWith('/uploads') 
-                            ? `${API_URL}${book.coverImage}` 
-                            : book.coverImage} 
+                        <img
+                          src={
+                            book.coverImage.startsWith("/uploads")
+                              ? `${API_URL}${book.coverImage}`
+                              : book.coverImage
+                          }
                           alt={book.title}
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = 'https://via.placeholder.com/60x80?text=No+Image';
+                            e.target.src = `${API_URL}/uploads/default-cover.jpg`;
                           }}
                         />
                         <BookInfo>
@@ -549,7 +588,8 @@ const AdminDashboardPage = () => {
                             <Link to={`/book/${book._id}`}>{book.title}</Link>
                           </h6>
                           <small>
-                            Added {new Date(book.createdAt).toLocaleDateString()}
+                            Added{" "}
+                            {new Date(book.createdAt).toLocaleDateString()}
                           </small>
                           <StatusBadge $status={book.status}>
                             {book.status}
@@ -573,14 +613,16 @@ const AdminDashboardPage = () => {
                   <BookList>
                     {stats.topBooks.map((book) => (
                       <BookItem key={book._id}>
-                        <img 
-                          src={book.coverImage.startsWith('/uploads') 
-                            ? `${API_URL}${book.coverImage}` 
-                            : book.coverImage} 
+                        <img
+                          src={
+                            book.coverImage.startsWith("/uploads")
+                              ? `${API_URL}${book.coverImage}`
+                              : book.coverImage
+                          }
                           alt={book.title}
                           onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = 'https://via.placeholder.com/60x80?text=No+Image';
+                            e.target.src = `${API_URL}/uploads/default-cover.jpg`;
                           }}
                         />
                         <BookInfo>

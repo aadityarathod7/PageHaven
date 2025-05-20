@@ -28,9 +28,8 @@ export const getImageUrl = (imageUrl, defaultImage = '/uploads/default-cover.jpg
 /**
  * Creates an error handler for images that will replace broken images with a default one
  * @param {Event} e - The error event
- * @param {string} [fallbackText='No Image'] - The text to show in the placeholder
  */
-export const handleImageError = (e, fallbackText = 'No Image') => {
+export const handleImageError = (e) => {
     e.target.onerror = null; // Prevent infinite loop
-    e.target.src = `https://via.placeholder.com/200x300?text=${fallbackText.replace(' ', '+')}`;
+    e.target.src = '/uploads/default-cover.jpg';
 }; 
