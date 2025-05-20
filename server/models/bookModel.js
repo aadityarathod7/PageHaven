@@ -22,6 +22,10 @@ const chapterSchema = mongoose.Schema(
 
 const bookSchema = mongoose.Schema(
   {
+    bookId: {
+      type: Number,
+      unique: true,
+    },
     author: {
       _id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -71,5 +75,14 @@ const bookSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Pre-save middleware to auto-increment bookId
+bookSchema.pre('save', async function (next) {
+  if (this.isNew) {
+    const lastBook = await this.constructor.findOne({}, {}, { sort: { 'bookId': -1 } });
+    this.bookId = lastBook ? lastBook.bookId + 1 : 1;
+  }
+  next();
+});
 
 module.exports = mongoose.model('Book', bookSchema);

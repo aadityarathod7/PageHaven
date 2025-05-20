@@ -97,6 +97,17 @@ const getAdminBooks = asyncHandler(async (req, res) => {
     return bookObj;
   });
 
+  // Update existing books with sequential IDs if they don't have one
+  for (let i = 0; i < booksWithPurchaseInfo.length; i++) {
+    const book = booksWithPurchaseInfo[i];
+    if (!book.bookId) {
+      const originalBook = await Book.findById(book._id);
+      originalBook.bookId = i + 1;
+      await originalBook.save();
+      book.bookId = i + 1;
+    }
+  }
+
   res.json(booksWithPurchaseInfo);
 });
 

@@ -201,7 +201,7 @@ const AdminBookListPage = () => {
             <tbody>
               {books.map((book) => (
                 <tr key={book._id}>
-                  <td>{book._id}</td>
+                  <td>{book.bookId}</td>
                   <td>{book.title}</td>
                   <td>{book.author.name}</td>
                   <td>
