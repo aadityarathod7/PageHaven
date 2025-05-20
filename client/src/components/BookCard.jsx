@@ -17,6 +17,7 @@ import {
   shadows,
   transitions,
   borderRadius,
+  commonStyles,
 } from "../styles/theme";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
@@ -390,6 +391,10 @@ const Rating = styled.div`
   backdrop-filter: blur(4px);
   z-index: 1;
   pointer-events: none;
+`;
+
+const CardContainer = styled.div`
+  ${commonStyles.cardStyle}
 `;
 
 const BookCard = ({ book, onFavoriteChange }) => {

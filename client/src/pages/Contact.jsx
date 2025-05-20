@@ -12,6 +12,7 @@ import { FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { API_URL } from "../config/config";
+import { commonStyles } from "../styles/commonStyles";
 
 const PageContainer = styled.div`
   padding: 4rem 0;
@@ -37,10 +38,8 @@ const ContactGrid = styled.div`
 `;
 
 const ContactForm = styled.div`
-  background: ${colors.background.primary};
+  ${commonStyles.cardStyle}
   padding: 2rem;
-  border-radius: ${borderRadius.xl};
-  box-shadow: ${shadows.lg};
 `;
 
 const FormGroup = styled(Form.Group)`
@@ -94,13 +93,11 @@ const ContactInfo = styled.div`
 `;
 
 const InfoCard = styled.div`
+  ${commonStyles.cardStyle}
   display: flex;
   align-items: flex-start;
   gap: 1rem;
   padding: 1.5rem;
-  background: ${colors.background.primary};
-  border-radius: ${borderRadius.xl};
-  box-shadow: ${shadows.md};
   transition: ${transitions.default};
 
   &:hover {

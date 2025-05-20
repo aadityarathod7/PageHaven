@@ -1,6 +1,7 @@
-import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
-import styled from 'styled-components';
+import React from "react";
+import { Container, Row, Col } from "react-bootstrap";
+import styled from "styled-components";
+import { commonStyles, colors } from "../styles/theme";
 
 const StyledContainer = styled(Container)`
   margin-top: 3rem;
@@ -8,46 +9,49 @@ const StyledContainer = styled(Container)`
 `;
 
 const StyledCol = styled(Col)`
-  background: white;
+  ${commonStyles.cardStyle}
   padding: 2rem;
-  border-radius: 16px;
-  box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.1), 0 4px 6px -2px rgba(124, 58, 237, 0.05);
-  border: 1px solid #e5e7eb;
 
   form {
     .form-label {
       font-weight: 500;
-      color: #4b5563;
+      color: ${colors.text.primary};
     }
-
     .form-control {
-      border-radius: 10px;
-      border: 1px solid #e5e7eb;
+      border-radius: 1.5rem;
+      border: 2px solid ${colors.background.accent};
       padding: 0.75rem 1rem;
-      transition: all 0.3s ease;
-
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      background: #fff;
+      color: ${colors.text.primary};
+      font-family: "Poppins", "Inter", sans-serif;
       &:focus {
-        border-color: #7C3AED;
-        box-shadow: 0 0 0 0.2rem rgba(124, 58, 237, 0.1);
+        border-color: ${colors.secondary};
+        box-shadow: 0 0 0 0.2rem ${colors.secondary}25;
       }
     }
-
     .btn-primary {
-      background-color: #7C3AED;
-      border-color: #7C3AED;
+      background: linear-gradient(
+        135deg,
+        ${colors.secondary},
+        ${colors.primary}
+      );
+      border: none;
       padding: 0.75rem 1.5rem;
-      border-radius: 25px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-
+      border-radius: 1.5rem;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      color: #fff;
       &:hover {
-        background-color: #6D28D9;
-        border-color: #6D28D9;
+        background: linear-gradient(
+          135deg,
+          ${colors.primary},
+          ${colors.secondary}
+        );
         transform: translateY(-1px);
       }
-
       &:focus {
-        box-shadow: 0 0 0 0.2rem rgba(124, 58, 237, 0.25);
+        box-shadow: 0 0 0 0.2rem ${colors.primary}25;
       }
     }
   }

@@ -1,14 +1,32 @@
 // client/src/components/Header.jsx
-import React, { useContext, useState, useEffect } from 'react';
-import { Navbar, Nav, Container, NavDropdown, Form } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { FaUser, FaBook, FaSignOutAlt, FaCog, FaList, FaUsers, FaPlus, FaSearch, FaHeart, FaBell, FaShoppingBag } from 'react-icons/fa';
-import styled from 'styled-components';
-import { AuthContext } from '../context/AuthContext';
-import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
-import { Link } from 'react-router-dom';
-import { memo } from 'react';
+import React, { useContext, useState, useEffect } from "react";
+import { Navbar, Nav, Container, NavDropdown, Form } from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+  FaUser,
+  FaBook,
+  FaSignOutAlt,
+  FaCog,
+  FaList,
+  FaUsers,
+  FaPlus,
+  FaSearch,
+  FaHeart,
+  FaBell,
+  FaShoppingBag,
+} from "react-icons/fa";
+import styled from "styled-components";
+import { AuthContext } from "../context/AuthContext";
+import {
+  colors,
+  typography,
+  shadows,
+  transitions,
+  borderRadius,
+} from "../styles/theme";
+import { Link } from "react-router-dom";
+import { memo } from "react";
 
 const StyledNavbar = styled(Navbar)`
   background: ${colors.background.primary}80;
@@ -21,6 +39,8 @@ const StyledNavbar = styled(Navbar)`
   z-index: 1000;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  border-radius: 0 0 ${borderRadius.xl} ${borderRadius.xl};
+  box-shadow: ${shadows.md};
   transition: ${transitions.default};
 
   &.scrolled {
@@ -53,7 +73,7 @@ const Brand = styled(Navbar.Brand)`
 
   &:hover {
     transform: translateY(-1px);
-    
+
     svg {
       transform: scale(1.1) rotate(-5deg);
       color: ${colors.primary};
@@ -84,7 +104,7 @@ const NavLink = styled(Nav.Link)`
     background: ${colors.background.secondary};
 
     &:before {
-      content: '';
+      content: "";
       position: absolute;
       bottom: 0.5rem;
       left: 1.25rem;
@@ -221,7 +241,7 @@ const UserAvatar = styled.div`
   ${StyledDropdown}:hover & {
     border-color: ${colors.secondary}40;
     background: ${colors.background.accent};
-    
+
     svg {
       transform: scale(1.1);
     }
@@ -332,11 +352,12 @@ const Header = () => {
   const location = useLocation();
   const { userInfo, logout } = useContext(AuthContext);
   const [scrolled, setScrolled] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [hasNotifications] = useState(true);
 
   // Check if we're on login or signup pages
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  const isAuthPage =
+    location.pathname === "/login" || location.pathname === "/register";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -346,8 +367,8 @@ const Header = () => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [scrolled]);
 
   const handleSearch = (e) => {
@@ -358,18 +379,21 @@ const Header = () => {
   };
 
   return (
-    <StyledNavbar expand="lg" className={scrolled ? 'scrolled' : ''}>
+    <StyledNavbar expand="lg" className={scrolled ? "scrolled" : ""}>
       <Container>
         <LinkContainer to="/">
           <Brand>
             <FaBook /> PageHaven
           </Brand>
         </LinkContainer>
-        
+
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           {!isAuthPage && (
-            <Form onSubmit={handleSearch} className="d-flex flex-grow-1 mx-lg-4">
+            <Form
+              onSubmit={handleSearch}
+              className="d-flex flex-grow-1 mx-lg-4"
+            >
               <SearchContainer>
                 <SearchInput
                   type="text"
@@ -386,9 +410,9 @@ const Header = () => {
 
           {userInfo && (
             <NavIcons>
-              <IconButton 
+              <IconButton
                 title="Favorites"
-                onClick={() => navigate('/favorites')}
+                onClick={() => navigate("/favorites")}
               >
                 <FaHeart />
               </IconButton>
@@ -424,7 +448,7 @@ const Header = () => {
                 <NavDropdown.Item as={Link} to="/profile">
                   <FaUser /> Profile
                 </NavDropdown.Item>
-                {userInfo.role === 'admin' && (
+                {userInfo.role === "admin" && (
                   <>
                     <NavDropdown.Divider />
                     <NavDropdown.Item as={Link} to="/admin/dashboard">
@@ -438,13 +462,15 @@ const Header = () => {
                   Logout
                 </NavDropdown.Item>
               </StyledDropdown>
-            ) : !isAuthPage && (
-              <LinkContainer to="/login">
-                <NavLink>
-                  <FaUser />
-                  Sign In
-                </NavLink>
-              </LinkContainer>
+            ) : (
+              !isAuthPage && (
+                <LinkContainer to="/login">
+                  <NavLink>
+                    <FaUser />
+                    Sign In
+                  </NavLink>
+                </LinkContainer>
+              )
             )}
           </Nav>
         </Navbar.Collapse>

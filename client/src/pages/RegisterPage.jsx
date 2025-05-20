@@ -1,13 +1,19 @@
-import { useState, useEffect, useContext } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import styled, { keyframes } from 'styled-components';
-import { Form } from 'react-bootstrap';
-import { FaUser, FaEnvelope, FaLock, FaUserPlus } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import { AuthContext } from '../context/AuthContext';
-import Message from '../components/Message';
-import Loader from '../components/Loader';
-import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
+import { useState, useEffect, useContext } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import styled, { keyframes } from "styled-components";
+import { Form } from "react-bootstrap";
+import { FaUser, FaEnvelope, FaLock, FaUserPlus } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { AuthContext } from "../context/AuthContext";
+import Message from "../components/Message";
+import Loader from "../components/Loader";
+import {
+  colors,
+  typography,
+  shadows,
+  transitions,
+  borderRadius,
+} from "../styles/theme";
 
 const fadeIn = keyframes`
   from {
@@ -25,7 +31,11 @@ const PageContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, ${colors.background.primary} 0%, ${colors.background.secondary} 100%);
+  background: linear-gradient(
+    135deg,
+    ${colors.background.primary} 0%,
+    ${colors.background.secondary} 100%
+  );
   padding: 2rem;
 `;
 
@@ -122,10 +132,12 @@ const SubmitButton = styled.button`
   cursor: pointer;
   transition: ${transitions.default};
   margin-top: 1.5rem;
+  box-shadow: ${shadows.md};
 
   &:hover {
     transform: translateY(-2px);
     box-shadow: ${shadows.lg};
+    background: linear-gradient(135deg, ${colors.primary}, ${colors.secondary});
   }
 
   &:active {
@@ -159,15 +171,15 @@ const LoginLink = styled(Link)`
 `;
 
 const RegisterPage = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
   const location = useLocation();
-  const redirect = location.search ? location.search.split('=')[1] : '/';
+  const redirect = location.search ? location.search.split("=")[1] : "/";
 
   const { register, userInfo, loading } = useContext(AuthContext);
 
@@ -179,17 +191,17 @@ const RegisterPage = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    
+
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
-    
+
     try {
       await register(name, email, password);
-      toast.success('Registration successful');
+      toast.success("Registration successful");
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      setError(err.response?.data?.message || "Registration failed");
     }
   };
 
@@ -251,11 +263,11 @@ const RegisterPage = () => {
 
           <SubmitButton type="submit" disabled={loading}>
             <FaUserPlus />
-            {loading ? 'Creating Account...' : 'Create Account'}
+            {loading ? "Creating Account..." : "Create Account"}
           </SubmitButton>
         </Form>
 
-        <LoginLink to={redirect ? `/login?redirect=${redirect}` : '/login'}>
+        <LoginLink to={redirect ? `/login?redirect=${redirect}` : "/login"}>
           Already have an account? Sign in here
         </LoginLink>
       </FormContainer>

@@ -1,13 +1,27 @@
-import { useState, useEffect, useContext } from 'react';
-import { Form } from 'react-bootstrap';
-import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
-import { FaEye, FaBookmark, FaUser, FaBook, FaClock, FaEdit } from 'react-icons/fa';
-import { AuthContext } from '../context/AuthContext';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
-import styled from 'styled-components';
-import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
+import { useState, useEffect, useContext } from "react";
+import { Form } from "react-bootstrap";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
+import {
+  FaEye,
+  FaBookmark,
+  FaUser,
+  FaBook,
+  FaClock,
+  FaEdit,
+} from "react-icons/fa";
+import { AuthContext } from "../context/AuthContext";
+import Loader from "../components/Loader";
+import Message from "../components/Message";
+import styled from "styled-components";
+import {
+  colors,
+  typography,
+  shadows,
+  transitions,
+  borderRadius,
+  commonStyles,
+} from "../styles/theme";
 
 const PageContainer = styled.div`
   padding: 1rem;
@@ -27,13 +41,17 @@ const ProfileCard = styled.div`
   overflow: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(to right, ${colors.primary}, ${colors.secondary});
+    background: linear-gradient(
+      to right,
+      ${colors.primary},
+      ${colors.secondary}
+    );
   }
 `;
 
@@ -126,21 +144,21 @@ const StyledForm = styled(Form)`
 `;
 
 const Button = styled.button`
-  background: ${colors.secondary};
+  background: linear-gradient(135deg, ${colors.secondary}, ${colors.primary});
   color: white;
   border: none;
   padding: 0.625rem 1rem;
   border-radius: ${borderRadius.lg};
   font-weight: ${typography.fontWeights.semibold};
   font-size: 0.9rem;
-  transition: ${transitions.default};
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
   box-shadow: ${shadows.md};
   cursor: pointer;
 
   &:hover {
     transform: translateY(-2px);
     box-shadow: ${shadows.lg};
-    background: ${colors.primary};
+    background: linear-gradient(135deg, ${colors.primary}, ${colors.secondary});
   }
 
   &:focus {
@@ -153,9 +171,7 @@ const Button = styled.button`
 `;
 
 const BookList = styled.div`
-  background: ${colors.background.primary};
-  border-radius: ${borderRadius.xl};
-  box-shadow: ${shadows.lg};
+  ${commonStyles.cardStyle}
   overflow: hidden;
 
   table {
@@ -366,10 +382,10 @@ const StyledTable = styled.table`
 const ProfilePage = () => {
   const { userInfo, authAxios } = useContext(AuthContext);
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [bookmarks, setBookmarks] = useState([]);
   const [readingHistory, setReadingHistory] = useState([]);
   const [loadingProfile, setLoadingProfile] = useState(false);
@@ -380,7 +396,7 @@ const ProfilePage = () => {
     if (userInfo) {
       setName(userInfo.name);
       setEmail(userInfo.email);
-      
+
       // Fetch user's bookmarks and reading history
       fetchUserData();
     }
@@ -389,37 +405,40 @@ const ProfilePage = () => {
   const fetchUserData = async () => {
     try {
       setLoadingBookmarks(true);
-      
+
       // Get all books first
-      const { data: allBooks } = await authAxios.get('/api/books');
-      
+      const { data: allBooks } = await authAxios.get("/api/books");
+
       // Get reading progress for each book
-      const progressPromises = allBooks.map(book => 
-        authAxios.get(`/api/books/${book._id}/progress`)
-          .then(response => ({
+      const progressPromises = allBooks.map((book) =>
+        authAxios
+          .get(`/api/books/${book._id}/progress`)
+          .then((response) => ({
             book,
             ...response.data,
             isBookmarked: response.data.isBookmarked || false,
             lastReadAt: response.data.lastReadAt || new Date().toISOString(),
-            currentChapter: response.data.currentChapter || 0
+            currentChapter: response.data.currentChapter || 0,
           }))
           .catch(() => ({
             book,
             isBookmarked: false,
             lastReadAt: new Date().toISOString(),
-            currentChapter: 0
+            currentChapter: 0,
           }))
       );
-      
+
       const booksWithProgress = await Promise.all(progressPromises);
-      
+
       // Filter bookmarks and reading history
-      const bookmarkedBooks = booksWithProgress.filter(item => item.isBookmarked);
+      const bookmarkedBooks = booksWithProgress.filter(
+        (item) => item.isBookmarked
+      );
       const recentReads = booksWithProgress
-        .filter(item => item.lastReadAt) // Only include books that have been read
+        .filter((item) => item.lastReadAt) // Only include books that have been read
         .sort((a, b) => new Date(b.lastReadAt) - new Date(a.lastReadAt))
         .slice(0, 10);
-      
+
       setBookmarks(bookmarkedBooks);
       setReadingHistory(recentReads);
       setLoadingBookmarks(false);
@@ -430,40 +449,43 @@ const ProfilePage = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    
+
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error("Passwords do not match");
       return;
     }
-    
+
     try {
       setLoadingProfile(true);
-      
-      const { data } = await authAxios.put('/api/users/profile', {
+
+      const { data } = await authAxios.put("/api/users/profile", {
         name,
         email,
         password: password ? password : undefined,
       });
-      
+
       // Update local storage with new user info
-      localStorage.setItem('userInfo', JSON.stringify({
-        ...userInfo,
-        name: data.name,
-        email: data.email,
-      }));
-      
+      localStorage.setItem(
+        "userInfo",
+        JSON.stringify({
+          ...userInfo,
+          name: data.name,
+          email: data.email,
+        })
+      );
+
       setSuccess(true);
       setLoadingProfile(false);
-      toast.success('Profile updated successfully');
-      
+      toast.success("Profile updated successfully");
+
       // Clear password fields after successful update
-      setPassword('');
-      setConfirmPassword('');
+      setPassword("");
+      setConfirmPassword("");
     } catch (error) {
       toast.error(
         error.response && error.response.data.message
           ? error.response.data.message
-          : 'Update failed'
+          : "Update failed"
       );
       setLoadingProfile(false);
     }
@@ -516,9 +538,7 @@ const ProfilePage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="new-password"
                 />
-                <Form.Text>
-                  Leave blank to keep current password
-                </Form.Text>
+                <Form.Text>Leave blank to keep current password</Form.Text>
               </Form.Group>
 
               <Form.Group controlId="confirmPassword" className="mb-4">
@@ -538,7 +558,7 @@ const ProfilePage = () => {
             </StyledForm>
           </ProfileCard>
         </div>
-        
+
         <div>
           <StatsRow>
             {/* <StatCard>
@@ -599,9 +619,7 @@ const ProfilePage = () => {
                             </div>
                           </div>
                         </td>
-                        <td>
-                          Chapter {item.currentChapter + 1}
-                        </td>
+                        <td>Chapter {item.currentChapter + 1}</td>
                         <td>
                           {new Date(item.lastReadAt).toLocaleDateString()}
                         </td>
@@ -659,9 +677,7 @@ const ProfilePage = () => {
                             </div>
                           </div>
                         </td>
-                        <td>
-                          Chapter {item.currentChapter + 1}
-                        </td>
+                        <td>Chapter {item.currentChapter + 1}</td>
                         <td>
                           {new Date(item.lastReadAt).toLocaleDateString()}
                         </td>

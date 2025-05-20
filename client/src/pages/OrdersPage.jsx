@@ -181,16 +181,24 @@ const OrdersPage = () => {
                   </OrderHeader>
 
                   <BookInfo>
-                    <BookCover
-                      src={getImageUrl(order.book.coverImage)}
-                      alt={order.book.title}
-                      onError={handleImageError}
-                    />
-                    <BookDetails>
-                      <BookTitle to={`/book/${order.book._id}`}>
-                        {order.book.title}
-                      </BookTitle>
-                    </BookDetails>
+                    {order.book ? (
+                      <>
+                        <BookCover
+                          src={getImageUrl(order.book.coverImage)}
+                          alt={order.book.title}
+                          onError={handleImageError}
+                        />
+                        <BookDetails>
+                          <BookTitle to={`/book/${order.book._id}`}>
+                            {order.book.title}
+                          </BookTitle>
+                        </BookDetails>
+                      </>
+                    ) : (
+                      <BookDetails>
+                        <BookTitle as="span">Book not found</BookTitle>
+                      </BookDetails>
+                    )}
                   </BookInfo>
 
                   <OrderDetails>
