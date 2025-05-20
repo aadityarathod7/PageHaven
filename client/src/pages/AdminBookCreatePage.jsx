@@ -169,11 +169,7 @@ const AdminBookCreatePage = () => {
   const [tags, setTags] = useState("");
   const [coverImage, setCoverImage] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-<<<<<<< HEAD
   const [status, setStatus] = useState("draft");
-=======
-  const [status, setStatus] = useState('draft');
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
   const [price, setPrice] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -200,7 +196,6 @@ const AdminBookCreatePage = () => {
         title,
         authorName,
         description,
-<<<<<<< HEAD
         categories: categories
           .split(",")
           .map((cat) => cat.trim())
@@ -211,12 +206,6 @@ const AdminBookCreatePage = () => {
           .filter((tag) => tag),
         status,
         price: Number(price),
-=======
-        categories: categories.split(',').map(cat => cat.trim()).filter(cat => cat),
-        tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-        status,
-        price: Number(price)
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
       };
 
       // Create the book

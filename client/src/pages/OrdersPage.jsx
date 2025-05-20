@@ -9,18 +9,13 @@ import { API_URL } from "../config/config";
 import Loader from "../components/Loader";
 
 const PageContainer = styled.div`
-<<<<<<< HEAD
   margin-top: 80px;
   padding: 2rem 0 4rem;
-=======
-  padding: 4rem 0;
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
 `;
 
 const Title = styled.h1`
   color: ${colors.text.primary};
   font-family: ${typography.fonts.heading};
-<<<<<<< HEAD
   font-size: 1.75rem;
   font-weight: ${typography.fontWeights.bold};
   margin: 2.5rem 0 2rem;
@@ -49,12 +44,6 @@ const Title = styled.h1`
     font-size: 1.5rem;
     margin: 2rem 0 1.75rem;
   }
-=======
-  font-weight: ${typography.fontWeights.bold};
-  margin-bottom: 2rem;
-  margin-top: 2rem;
-  text-align: center;
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
 `;
 
 const OrderCard = styled.div`
@@ -62,11 +51,7 @@ const OrderCard = styled.div`
   border-radius: ${borderRadius.lg};
   box-shadow: ${shadows.sm};
   padding: 1.5rem;
-<<<<<<< HEAD
   margin-bottom: 2rem;
-=======
-  margin-bottom: 1.5rem;
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
   transition: all 0.3s ease;
 
   &:hover {
@@ -79,11 +64,7 @@ const OrderHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-<<<<<<< HEAD
   margin-bottom: 1.25rem;
-=======
-  margin-bottom: 1rem;
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
   padding-bottom: 1rem;
   border-bottom: 1px solid ${colors.background.accent};
 `;
@@ -91,31 +72,20 @@ const OrderHeader = styled.div`
 const OrderId = styled.span`
   color: ${colors.text.secondary};
   font-size: 0.9rem;
-<<<<<<< HEAD
   line-height: 1.6;
-=======
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
 `;
 
 const OrderDate = styled.span`
   color: ${colors.text.light};
   font-size: 0.9rem;
-<<<<<<< HEAD
   line-height: 1.6;
-=======
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
 `;
 
 const BookInfo = styled.div`
   display: flex;
-<<<<<<< HEAD
   gap: 1.25rem;
   margin-bottom: 1.25rem;
   padding: 0.5rem 0;
-=======
-  gap: 1rem;
-  margin-bottom: 1rem;
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
 `;
 
 const BookCover = styled.img`
@@ -128,10 +98,7 @@ const BookCover = styled.img`
 
 const BookDetails = styled.div`
   flex: 1;
-<<<<<<< HEAD
   padding: 0.5rem 0;
-=======
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
 `;
 
 const BookTitle = styled(Link)`
@@ -139,12 +106,9 @@ const BookTitle = styled(Link)`
   font-weight: ${typography.fontWeights.semibold};
   text-decoration: none;
   font-size: 1.1rem;
-<<<<<<< HEAD
   line-height: 1.6;
   display: inline-block;
   margin-bottom: 0.5rem;
-=======
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
 
   &:hover {
     color: ${colors.primary};
@@ -155,11 +119,7 @@ const OrderDetails = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-<<<<<<< HEAD
   margin-top: 1.25rem;
-=======
-  margin-top: 1rem;
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
   padding-top: 1rem;
   border-top: 1px solid ${colors.background.accent};
 `;
@@ -168,10 +128,7 @@ const PaymentInfo = styled.div`
   span {
     color: ${colors.text.secondary};
     font-size: 0.9rem;
-<<<<<<< HEAD
     line-height: 1.6;
-=======
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
     display: block;
 
     &:not(:last-child) {
@@ -181,18 +138,13 @@ const PaymentInfo = styled.div`
 `;
 
 const Amount = styled.div`
-<<<<<<< HEAD
   font-size: 1.15rem;
-=======
-  font-size: 1.25rem;
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
   font-weight: ${typography.fontWeights.semibold};
   color: ${colors.success};
 `;
 
 const NoOrders = styled.div`
   text-align: center;
-<<<<<<< HEAD
   padding: 3rem 2rem;
   color: ${colors.text.secondary};
   background: ${colors.background.secondary};
@@ -210,17 +162,6 @@ const NoOrders = styled.div`
     font-size: 0.95rem;
     line-height: 1.6;
     margin: 0 0 1.5rem;
-=======
-  padding: 3rem;
-  color: ${colors.text.secondary};
-  background: ${colors.background.primary};
-  border-radius: ${borderRadius.lg};
-  margin-top: 2rem;
-
-  h3 {
-    margin-bottom: 1rem;
-    color: ${colors.text.primary};
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
   }
 `;
 
@@ -232,10 +173,11 @@ const OrdersPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        setLoading(true);
         const { data } = await authAxios.get("/api/orders");
         setOrders(data);
       } catch (error) {
-        toast.error("Failed to fetch orders");
+        toast.error(error?.response?.data?.message || "Failed to fetch orders");
       } finally {
         setLoading(false);
       }

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useState } from "react";
 import { Container } from "react-bootstrap";
 import { useParams, Link, useNavigate } from "react-router-dom";
@@ -16,19 +15,6 @@ import BookCard from "../components/BookCard";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { colors, typography, shadows, borderRadius } from "../styles/theme";
-=======
-import { useState } from 'react';
-import { Container } from 'react-bootstrap';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { FaSearch, FaArrowRight, FaBook, FaStar, FaUserFriends } from 'react-icons/fa';
-import styled, { keyframes } from 'styled-components';
-import BookCard from '../components/BookCard';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
-import { colors, typography, shadows, borderRadius } from '../styles/theme';
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
 
 const float = keyframes`
   0% { transform: translateY(0px); }
@@ -397,15 +383,9 @@ const HomePage = () => {
     isError,
     error,
   } = useQuery({
-<<<<<<< HEAD
     queryKey: ["featured-books"],
     queryFn: async () => {
       const { data } = await axios.get("/api/books?limit=4");
-=======
-    queryKey: ['featured-books'],
-    queryFn: async () => {
-      const { data } = await axios.get('/api/books?limit=4');
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
       return data.books;
     },
     staleTime: 1000 * 60 * 5,
@@ -425,14 +405,9 @@ const HomePage = () => {
           <HeroContent>
             <h1>Find your peace, one page at a time</h1>
             <p>
-<<<<<<< HEAD
               Welcome to PageHaven, your sanctuary of stories. Discover a
               curated collection of books that will transport you to new worlds
               and bring tranquility to your reading journey.
-=======
-              Welcome to PageHaven, your sanctuary of stories. Discover a curated collection of books 
-              that will transport you to new worlds and bring tranquility to your reading journey.
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
             </p>
             <SearchBox>
               <SearchInput
@@ -479,13 +454,9 @@ const HomePage = () => {
           {loading ? (
             <Loader />
           ) : isError ? (
-<<<<<<< HEAD
             <Message variant="danger">
               {error?.message || "Error loading books"}
             </Message>
-=======
-            <Message variant="danger">{error?.message || 'Error loading books'}</Message>
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
           ) : !data || data.length === 0 ? (
             <Message>No books found</Message>
           ) : (

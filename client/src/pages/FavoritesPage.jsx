@@ -76,11 +76,7 @@ const FavoritesPage = () => {
   const fetchFavorites = async () => {
     try {
       setLoading(true);
-<<<<<<< HEAD
       const { data } = await authAxios.get("/api/books/favorites");
-=======
-      const { data } = await authAxios.get('/api/books/favorites');
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
       setFavorites(data);
       setLoading(false);
     } catch (err) {
@@ -100,13 +96,9 @@ const FavoritesPage = () => {
   const handleFavoriteChange = (bookId, isFavorite) => {
     if (!isFavorite) {
       // If book is unfavorited, remove it from the list
-<<<<<<< HEAD
       setFavorites((prevFavorites) =>
         prevFavorites.filter((book) => book._id !== bookId)
       );
-=======
-      setFavorites(prevFavorites => prevFavorites.filter(book => book._id !== bookId));
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
     }
   };
 
@@ -115,7 +107,6 @@ const FavoritesPage = () => {
   if (error) return <Message variant="danger">{error}</Message>;
 
   return (
-<<<<<<< HEAD
     <PageContainer>
       <Container>
         <PageTitle>My Favorite Books</PageTitle>
@@ -136,29 +127,6 @@ const FavoritesPage = () => {
         )}
       </Container>
     </PageContainer>
-=======
-    <Container>
-      <PageTitle>My Favorite Books</PageTitle>
-      
-      {favorites.length === 0 ? (
-        <EmptyState>
-          <h3>No Favorite Books Yet</h3>
-          <p>Books you mark as favorites will appear here</p>
-        </EmptyState>
-      ) : (
-        <Row xs={1} md={2} lg={3} xl={4} className="g-4">
-          {favorites.map((book) => (
-            <Col key={book._id}>
-              <BookCard 
-                book={book} 
-                onFavoriteChange={handleFavoriteChange}
-              />
-            </Col>
-          ))}
-        </Row>
-      )}
-    </Container>
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
   );
 };
 

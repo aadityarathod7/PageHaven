@@ -37,12 +37,8 @@ const PageHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-<<<<<<< HEAD
   margin: 2.5rem 0 2rem;
   padding: 0 1rem;
-=======
-  margin-bottom: 2rem;
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
 
   h1 {
     font-family: ${typography.fonts.heading};
@@ -72,27 +68,6 @@ const PageHeader = styled.div`
     @media (max-width: 768px) {
       font-size: 1.5rem;
     }
-  }
-`;
-
-const CreateButton = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: ${colors.secondary};
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border-radius: ${borderRadius.lg};
-  text-decoration: none;
-  font-weight: ${typography.fontWeights.semibold};
-  transition: ${transitions.default};
-  box-shadow: ${shadows.md};
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: ${shadows.lg};
-    background: ${colors.primary};
-    color: white;
   }
 `;
 
@@ -345,11 +320,7 @@ const AdminMenuCard = styled(Link)`
   text-align: center;
 
   &:hover {
-<<<<<<< HEAD
     transform: translateY(-4px) scale(1.01);
-=======
-    transform: translateY(-6px) scale(1.02);
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
     box-shadow: ${shadows.lg};
     background: rgba(255, 255, 255, 0.8);
   }
@@ -387,35 +358,23 @@ const AdminMenuCard = styled(Link)`
 
   h3 {
     color: ${colors.text.primary};
-<<<<<<< HEAD
     font-size: 1.15rem;
     font-weight: ${typography.fontWeights.bold};
     margin: 1.5rem 0 1rem;
-=======
-    font-size: 1.25rem;
-    font-weight: ${typography.fontWeights.bold};
-    margin-bottom: 0.5rem;
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
     font-family: ${typography.fonts.heading};
   }
 
   p {
     color: ${colors.text.secondary};
-<<<<<<< HEAD
     font-size: 0.9rem;
     margin: 0;
     line-height: 1.6;
-=======
-    font-size: 0.95rem;
-    margin: 0;
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
   }
 `;
 
 const SectionHeader = styled.h2`
   font-family: ${typography.fonts.heading};
   color: ${colors.text.primary};
-<<<<<<< HEAD
   font-size: 1.5rem;
   font-weight: ${typography.fontWeights.bold};
   margin: 3rem 0 2rem;
@@ -443,13 +402,6 @@ const SectionHeader = styled.h2`
     font-size: 1.25rem;
     margin: 2.5rem 0 1.75rem;
   }
-=======
-  font-size: 1.75rem;
-  font-weight: ${typography.fontWeights.bold};
-  margin: 3rem 0 1.5rem;
-  border-bottom: 2px solid ${colors.background.accent};
-  padding-bottom: 0.75rem;
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
 `;
 
 const AdminDashboardPage = () => {
@@ -526,15 +478,9 @@ const AdminDashboardPage = () => {
     <PageContainer>
       <PageHeader>
         <h1>Admin Dashboard</h1>
-<<<<<<< HEAD
-        {/* <CreateButton to="/admin/book/create">
-          <FaPlus /> Add New Book
-        </CreateButton> */}
-=======
         <CreateButton to="/admin/book/create">
           <FaPlus /> Add New Book
         </CreateButton>
->>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
       </PageHeader>
 
       {loading ? (
