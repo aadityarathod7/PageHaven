@@ -1,12 +1,18 @@
-import { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
-import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import { AuthContext } from '../context/AuthContext';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
-import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
+import { useState, useEffect, useContext } from "react";
+import { Link } from "react-router-dom";
+import styled from "styled-components";
+import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { AuthContext } from "../context/AuthContext";
+import Loader from "../components/Loader";
+import Message from "../components/Message";
+import {
+  colors,
+  typography,
+  shadows,
+  transitions,
+  borderRadius,
+} from "../styles/theme";
 
 const PageContainer = styled.div`
   padding: 2rem;
@@ -55,6 +61,7 @@ const TableContainer = styled.div`
   border-radius: ${borderRadius.xl};
   box-shadow: ${shadows.lg};
   overflow: hidden;
+  margin-top: 5rem;
 `;
 
 const StyledTable = styled.table`
@@ -88,7 +95,8 @@ const StyledTable = styled.table`
 const ActionButton = styled.button`
   padding: 0.625rem;
   border-radius: ${borderRadius.lg};
-  color: ${props => props.$variant === 'danger' ? colors.accent : colors.secondary};
+  color: ${(props) =>
+    props.$variant === "danger" ? colors.danger : colors.secondary};
   background: ${colors.background.accent};
   border: none;
   margin-right: 0.75rem;
@@ -103,7 +111,8 @@ const ActionButton = styled.button`
   &:hover {
     transform: translateY(-2px);
     box-shadow: ${shadows.md};
-    background: ${props => props.$variant === 'danger' ? colors.accent : colors.secondary};
+    background: ${(props) =>
+      props.$variant === "danger" ? colors.danger : colors.secondary};
     color: white;
   }
 
@@ -118,13 +127,17 @@ const StatusBadge = styled.span`
   border-radius: ${borderRadius.full};
   font-size: 0.75rem;
   font-weight: ${typography.fontWeights.medium};
-  background: ${props => props.$status === 'published' ? `${colors.success}15` : `${colors.warning}15`};
-  color: ${props => props.$status === 'published' ? colors.success : colors.warning};
+  background: ${(props) =>
+    props.$status === "published"
+      ? `${colors.success}15`
+      : `${colors.warning}15`};
+  color: ${(props) =>
+    props.$status === "published" ? colors.success : colors.warning};
 `;
 
 const AdminBookListPage = () => {
   const { authAxios } = useContext(AuthContext);
-  
+
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -136,7 +149,7 @@ const AdminBookListPage = () => {
   const fetchBooks = async () => {
     try {
       setLoading(true);
-      const { data } = await authAxios.get('/api/books/admin/books');
+      const { data } = await authAxios.get("/api/books/admin/books");
       setBooks(data);
       setLoading(false);
     } catch (error) {
@@ -150,10 +163,10 @@ const AdminBookListPage = () => {
   };
 
   const deleteHandler = async (id) => {
-    if (window.confirm('Are you sure you want to delete this book?')) {
+    if (window.confirm("Are you sure you want to delete this book?")) {
       try {
         await authAxios.delete(`/api/books/${id}`);
-        toast.success('Book deleted successfully');
+        toast.success("Book deleted successfully");
         fetchBooks();
       } catch (error) {
         toast.error(
@@ -167,13 +180,6 @@ const AdminBookListPage = () => {
 
   return (
     <PageContainer>
-      <PageHeader>
-        <h1>Books</h1>
-        <CreateButton to="/admin/book/create">
-          <FaPlus /> Create Book
-        </CreateButton>
-      </PageHeader>
-      
       {loading ? (
         <Loader />
       ) : error ? (
@@ -228,4 +234,3 @@ const AdminBookListPage = () => {
 };
 
 export default AdminBookListPage;
-            

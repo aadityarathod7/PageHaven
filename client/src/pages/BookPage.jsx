@@ -170,7 +170,7 @@ const Button = styled.button`
   color: white;
   background: ${(props) =>
     props.$variant === "danger"
-      ? colors.accent
+      ? colors.danger
       : props.$variant === "success"
       ? colors.secondary
       : colors.primary};

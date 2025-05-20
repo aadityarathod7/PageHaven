@@ -478,9 +478,6 @@ const AdminDashboardPage = () => {
     <PageContainer>
       <PageHeader>
         <h1>Admin Dashboard</h1>
-        <CreateButton to="/admin/book/create">
-          <FaPlus /> Add New Book
-        </CreateButton>
       </PageHeader>
 
       {loading ? (

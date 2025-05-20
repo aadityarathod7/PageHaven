@@ -14,7 +14,7 @@ export const colors = {
   },
   accent: '#F2E9E4',
   success: '#3CD88F',
-  danger: '#FF6384',
+  danger: '#DC2626', // red-600
   warning: '#FFD166',
 };
 
