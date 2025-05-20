@@ -11,12 +11,16 @@ import Loader from "../components/Loader";
 
 const PageContainer = styled.div`
   padding: 2rem 0;
+<<<<<<< HEAD
   margin-top: 80px; /* Add space below navbar */
+=======
+>>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
 `;
 
 const Title = styled.h1`
   color: ${colors.text.primary};
   font-family: ${typography.fonts.heading};
+<<<<<<< HEAD
   font-size: 1.75rem;
   font-weight: ${typography.fontWeights.bold};
   margin: 2.5rem 0 2rem; /* Increased margin top and bottom */
@@ -45,6 +49,11 @@ const Title = styled.h1`
     font-size: 1.5rem;
     margin: 2rem 0 1.75rem; /* Adjusted margins for mobile */
   }
+=======
+  font-weight: ${typography.fontWeights.bold};
+  margin-bottom: 2rem;
+  text-align: center;
+>>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
 `;
 
 const BooksGrid = styled.div`
@@ -79,10 +88,16 @@ const BookInfo = styled.div`
 
 const BookTitle = styled.h3`
   color: ${colors.text.primary};
+<<<<<<< HEAD
   font-size: 1rem;
   font-weight: ${typography.fontWeights.semibold};
   margin: 1rem 0 0.75rem; /* Increased margins */
   padding: 0 0.5rem; /* Added horizontal padding */
+=======
+  font-size: 1.1rem;
+  font-weight: ${typography.fontWeights.semibold};
+  margin-bottom: 0.5rem;
+>>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
 `;
 
 const ButtonGroup = styled.div`
@@ -114,6 +129,7 @@ const ActionButton = styled(Link)`
 
 const NoBooks = styled.div`
   text-align: center;
+<<<<<<< HEAD
   padding: 3rem 2rem; /* Increased vertical padding */
   color: ${colors.text.secondary};
   background: ${colors.background.primary};
@@ -132,6 +148,18 @@ const NoBooks = styled.div`
     font-size: 0.95rem;
     margin: 0 0 1.5rem; /* Increased bottom margin */
     line-height: 1.6; /* Added line height for better readability */
+=======
+  padding: 3rem;
+  color: ${colors.text.secondary};
+  background: ${colors.background.primary};
+  border-radius: ${borderRadius.lg};
+  margin: 2rem auto;
+  max-width: 600px;
+
+  h3 {
+    margin-bottom: 1rem;
+    color: ${colors.text.primary};
+>>>>>>> b71585729ff5b822d4dca67b5ea7eaa064d8b14a
   }
 `;
 
