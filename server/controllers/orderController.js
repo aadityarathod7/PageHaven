@@ -78,7 +78,9 @@ const getPurchasedBooks = asyncHandler(async (req, res) => {
 
     // Extract unique books from orders
     const purchasedBooks = [...new Map(
-        orders.map(order => [order.book._id.toString(), order.book])
+        orders
+            .filter(order => order.book) // Only include orders with a valid book
+            .map(order => [order.book._id.toString(), order.book])
     ).values()];
 
     res.json(purchasedBooks);
