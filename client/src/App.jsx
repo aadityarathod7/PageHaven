@@ -42,6 +42,7 @@ const SearchResults = lazy(() => import("./pages/SearchResults"));
 const FavoritesPage = lazy(() => import("./pages/FavoritesPage"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const Terms = lazy(() => import("./pages/Terms"));
+const Contact = lazy(() => import("./pages/Contact"));
 const CheckoutPage = lazy(() => import("./pages/CheckoutPage"));
 const PaymentSuccessPage = lazy(() => import("./pages/PaymentSuccessPage"));
 const OrdersPage = lazy(() => import("./pages/OrdersPage"));
@@ -180,6 +181,14 @@ function App() {
                     element={
                       <LazyRoute>
                         <Terms />
+                      </LazyRoute>
+                    }
+                  />
+                  <Route
+                    path="/contact"
+                    element={
+                      <LazyRoute>
+                        <Contact />
                       </LazyRoute>
                     }
                   />
