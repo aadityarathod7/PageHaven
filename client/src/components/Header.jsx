@@ -24,6 +24,7 @@ import {
   shadows,
   transitions,
   borderRadius,
+  gradients,
 } from "../styles/theme";
 import { Link } from "react-router-dom";
 import { memo } from "react";
@@ -56,19 +57,26 @@ const StyledNavbar = styled(Navbar)`
 `;
 
 const Brand = styled(Navbar.Brand)`
-  font-family: ${typography.fonts.heading};
+  font-family: 'Playfair Display', ${typography.fonts.heading};
   font-weight: ${typography.fontWeights.bold};
-  font-size: 1.75rem;
+  font-size: 1.85rem;
   color: ${colors.text.primary} !important;
   display: flex;
   align-items: center;
   gap: 0.75rem;
   transition: ${transitions.default};
+  letter-spacing: -0.02em;
+  text-transform: none;
+  background: linear-gradient(135deg, ${colors.text.primary}, ${colors.primary});
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 
   svg {
     color: ${colors.secondary};
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     transition: ${transitions.default};
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   }
 
   &:hover {
@@ -153,7 +161,7 @@ const StyledDropdown = styled(NavDropdown)`
     }
 
     &[aria-expanded="true"] {
-      color: ${colors.secondary} !important;
+      color: ${colors.primary} !important;
       background: ${colors.background.secondary};
 
       &::after {
@@ -204,18 +212,18 @@ const StyledDropdown = styled(NavDropdown)`
     }
 
     &:hover {
-      color: ${colors.text.primary};
-      background: ${colors.background.secondary};
+      color: white;
+      background: ${gradients.primary};
       transform: translateX(4px);
 
       svg {
-        color: ${colors.secondary};
+        color: white;
         transform: scale(1.1);
       }
     }
 
     &:active {
-      background: ${colors.background.accent};
+      background: ${gradients.hover};
     }
   }
 `;

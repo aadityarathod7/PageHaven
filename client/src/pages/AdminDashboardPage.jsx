@@ -23,13 +23,13 @@ import {
   transitions,
   borderRadius,
   commonStyles,
+  gradients,
 } from "../styles/theme";
 import { API_URL, UPLOADS_URL } from "../config/config";
 
 const PageContainer = styled.div`
   padding: 2rem;
-  margin-top: 80px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 80px auto 0;
 `;
 
@@ -42,7 +42,10 @@ const PageHeader = styled.div`
 
   h1 {
     font-family: ${typography.fonts.heading};
-    color: ${colors.text.primary};
+    background: ${gradients.text};
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-size: 1.75rem;
     font-weight: ${typography.fontWeights.bold};
     margin: 0;
@@ -75,7 +78,7 @@ const CreateButton = styled(Link)`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: ${colors.secondary};
+  background: ${gradients.primary};
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: ${borderRadius.lg};
@@ -87,108 +90,127 @@ const CreateButton = styled(Link)`
   &:hover {
     transform: translateY(-2px);
     box-shadow: ${shadows.lg};
-    background: ${colors.primary};
+    background: ${gradients.hover};
     color: white;
+  }
+
+  svg {
+    font-size: 1.1rem;
   }
 `;
 
 const StatsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  padding: 0 1rem;
 `;
 
 const StatCard = styled.div`
   background: ${colors.background.primary};
   border-radius: ${borderRadius.xl};
-  padding: 1.5rem;
+  padding: 1.75rem;
   box-shadow: ${shadows.md};
   transition: ${transitions.default};
+  border: 1px solid ${colors.background.accent};
 
   &:hover {
     transform: translateY(-4px);
     box-shadow: ${shadows.lg};
+    border-color: ${colors.secondary}40;
   }
 `;
 
 const StatHeader = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 
   .icon-wrapper {
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
     border-radius: ${borderRadius.lg};
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 1rem;
+    margin-right: 1.25rem;
     background: ${(props) =>
       props.$variant === "success"
-        ? `${colors.success}15`
+        ? gradients.primary
         : props.$variant === "warning"
-        ? `${colors.warning}15`
+        ? gradients.hover
         : props.$variant === "info"
-        ? `${colors.secondary}15`
-        : `${colors.primary}15`};
-    color: ${(props) =>
-      props.$variant === "success"
-        ? colors.success
-        : props.$variant === "warning"
-        ? colors.warning
-        : props.$variant === "info"
-        ? colors.secondary
-        : colors.primary};
+        ? gradients.text
+        : gradients.primary};
+    color: white;
+    box-shadow: ${shadows.sm};
+    transition: ${transitions.default};
+
+    svg {
+      font-size: 1.5rem;
+    }
+
+    &:hover {
+      transform: scale(1.05) rotate(5deg);
+    }
   }
 `;
 
 const StatTitle = styled.h6`
   color: ${colors.text.secondary};
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   margin: 0;
   font-weight: ${typography.fontWeights.medium};
 `;
 
 const StatValue = styled.h3`
-  color: ${colors.text.primary};
-  font-size: 1.5rem;
+  background: ${gradients.text};
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 1.75rem;
   font-weight: ${typography.fontWeights.bold};
   margin: 0;
   font-family: ${typography.fonts.heading};
 `;
 
 const StatFooter = styled.div`
-  margin-top: 1rem;
-  padding-top: 1rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
   border-top: 1px solid ${colors.background.accent};
 
   a {
-    color: ${(props) =>
-      props.$variant === "success"
-        ? colors.success
-        : props.$variant === "warning"
-        ? colors.warning
-        : props.$variant === "info"
-        ? colors.secondary
-        : colors.primary};
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: ${colors.text.secondary};
     text-decoration: none;
     font-weight: ${typography.fontWeights.medium};
-    font-size: 0.875rem;
+    font-size: 0.95rem;
     transition: ${transitions.default};
 
+    svg {
+      font-size: 1rem;
+      transition: ${transitions.default};
+    }
+
     &:hover {
-      opacity: 0.8;
+      color: ${colors.secondary};
+
+      svg {
+        transform: translateX(4px);
+      }
     }
   }
 `;
 
 const ContentGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
   gap: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  padding: 0 1rem;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -198,25 +220,34 @@ const ContentGrid = styled.div`
 const ContentCard = styled.div`
   background: ${colors.background.primary};
   border-radius: ${borderRadius.xl};
+  padding: 1.75rem;
   box-shadow: ${shadows.md};
-  overflow: hidden;
-`;
+  border: 1px solid ${colors.background.accent};
+  transition: ${transitions.default};
 
-const CardHeader = styled.div`
-  padding: 1.5rem;
-  border-bottom: 1px solid ${colors.background.accent};
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: ${shadows.lg};
+    border-color: ${colors.secondary}40;
+  }
 
-  h5 {
+  h4 {
+    background: ${gradients.text};
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-family: ${typography.fonts.heading};
-    color: ${colors.text.primary};
     font-size: 1.25rem;
     font-weight: ${typography.fontWeights.bold};
-    margin: 0;
-  }
-`;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 
-const CardBody = styled.div`
-  padding: 1.5rem;
+    svg {
+      color: ${colors.secondary};
+    }
+  }
 `;
 
 const BookList = styled.div`
@@ -601,89 +632,84 @@ const AdminDashboardPage = () => {
 
           <ContentGrid>
             <ContentCard>
-              <CardHeader>
-                <h5>Recently Added Books</h5>
-              </CardHeader>
-              <CardBody>
-                {stats.recentBooks.length > 0 ? (
-                  <BookList>
-                    {stats.recentBooks.map((book) => (
-                      <BookItem key={book._id}>
-                        <img
-                          src={
-                            book.coverImage.startsWith("/uploads")
-                              ? `${API_URL}${book.coverImage}`
-                              : book.coverImage
-                          }
-                          alt={book.title}
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = `${API_URL}/uploads/default-cover.jpg`;
-                          }}
-                        />
-                        <BookInfo>
-                          <h6>
-                            <Link to={`/book/${book._id}`}>{book.title}</Link>
-                          </h6>
-                          <small>
-                            Added{" "}
-                            {new Date(book.createdAt).toLocaleDateString()}
-                          </small>
-                          <StatusBadge $status={book.status}>
-                            {book.status}
-                          </StatusBadge>
-                        </BookInfo>
-                      </BookItem>
-                    ))}
-                  </BookList>
-                ) : (
-                  <p>No books added yet</p>
-                )}
-              </CardBody>
+              <h4>
+                <FaBook /> Recently Added Books
+              </h4>
+              {stats.recentBooks.length > 0 ? (
+                <BookList>
+                  {stats.recentBooks.map((book) => (
+                    <BookItem key={book._id}>
+                      <img
+                        src={
+                          book.coverImage.startsWith("/uploads")
+                            ? `${API_URL}${book.coverImage}`
+                            : book.coverImage
+                        }
+                        alt={book.title}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = `${API_URL}/uploads/default-cover.jpg`;
+                        }}
+                      />
+                      <BookInfo>
+                        <h6>
+                          <Link to={`/book/${book._id}`}>{book.title}</Link>
+                        </h6>
+                        <small>
+                          Added {new Date(book.createdAt).toLocaleDateString()}
+                        </small>
+                        <StatusBadge $status={book.status}>
+                          {book.status}
+                        </StatusBadge>
+                      </BookInfo>
+                    </BookItem>
+                  ))}
+                </BookList>
+              ) : (
+                <p>No books added yet</p>
+              )}
             </ContentCard>
 
             <ContentCard>
-              <CardHeader>
-                <h5>Top Books by Reads</h5>
-              </CardHeader>
-              <CardBody>
-                {stats.topBooks.length > 0 ? (
-                  <BookList>
-                    {stats.topBooks.map((book) => (
-                      <BookItem key={book._id}>
-                        <img
-                          src={
-                            book.coverImage.startsWith("/uploads")
-                              ? `${API_URL}${book.coverImage}`
-                              : book.coverImage
-                          }
-                          alt={book.title}
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = `${API_URL}/uploads/default-cover.jpg`;
-                          }}
-                        />
-                        <BookInfo>
-                          <h6>
-                            <Link to={`/book/${book._id}`}>{book.title}</Link>
-                          </h6>
-                          <small>By {book.author.name}</small>
-                        </BookInfo>
-                        <BookStats>
-                          <div>
-                            <FaEye /> {book.readCount}
-                          </div>
-                          <div>
-                            <FaDownload /> {book.downloads}
-                          </div>
-                        </BookStats>
-                      </BookItem>
-                    ))}
-                  </BookList>
-                ) : (
-                  <p>No books read yet</p>
-                )}
-              </CardBody>
+              <h4>
+                <FaChartLine /> Top Books by Reads
+              </h4>
+              {stats.topBooks.length > 0 ? (
+                <BookList>
+                  {stats.topBooks.map((book) => (
+                    <BookItem key={book._id}>
+                      <img
+                        src={
+                          book.coverImage.startsWith("/uploads")
+                            ? `${API_URL}${book.coverImage}`
+                            : book.coverImage
+                        }
+                        alt={book.title}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = `${API_URL}/uploads/default-cover.jpg`;
+                        }}
+                      />
+                      <BookInfo>
+                        <h6>
+                          <Link to={`/book/${book._id}`}>{book.title}</Link>
+                        </h6>
+                        <small>By {book.author.name}</small>
+                      </BookInfo>
+                      <BookStats>
+                        <div>
+                          <FaEye /> {book.readCount}
+                        </div>
+                        <div>
+                          <FaDownload /> {book.downloads}
+                        </div>
+                      </BookStats>
+                    </BookItem>
+                  ))}
+                </BookList>
+              ) : (
+                <p>No books read yet</p>
+              )}
             </ContentCard>
           </ContentGrid>
         </>

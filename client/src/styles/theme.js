@@ -1,7 +1,7 @@
 // Color palette
 export const colors = {
   primary: '#7C3AED', // Vibrant purple
-  secondary: '#3CD88F', // Bright green
+  secondary: '#7C3AED', // Changed from green to match gradient
   text: {
     primary: '#22223B',
     secondary: '#4A4E69',
@@ -13,7 +13,7 @@ export const colors = {
     accent: '#E5E7EB',
   },
   accent: '#F2E9E4',
-  success: '#3CD88F',
+  success: '#7C3AED', // Changed from green to match gradient
   danger: '#DC2626', // red-600
   warning: '#FFD166',
 };
@@ -21,28 +21,28 @@ export const colors = {
 // Typography
 export const typography = {
   fonts: {
-    heading: "'Poppins', 'Inter', sans-serif",
-    body: "'Inter', 'Poppins', sans-serif",
+    heading: "'Playfair Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    body: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   },
   fontWeights: {
-    normal: 400,
+    regular: 400,
     medium: 500,
     semibold: 600,
     bold: 700,
     extrabold: 800,
   },
   lineHeights: {
-    tight: 1.1,
+    tight: 1.2,
     normal: 1.5,
-    relaxed: 1.7,
+    relaxed: 1.75,
   },
 };
 
 // Shadows
 export const shadows = {
-  sm: '0 1px 2px 0 rgba(124, 58, 237, 0.05)',
-  md: '0 4px 16px 0 rgba(124, 58, 237, 0.10), 0 2px 4px -1px rgba(60, 216, 143, 0.06)',
-  lg: '0 20px 40px -5px rgba(124, 58, 237, 0.15), 0 10px 20px -5px rgba(60, 216, 143, 0.08)',
+  sm: '0 1px 2px 0 rgba(34, 34, 59, 0.05)',
+  md: '0 4px 16px 0 rgba(34, 34, 59, 0.10), 0 2px 4px -1px rgba(124, 58, 237, 0.06)',
+  lg: '0 20px 40px -5px rgba(34, 34, 59, 0.15), 0 10px 20px -5px rgba(124, 58, 237, 0.08)',
 };
 
 // Spacing
@@ -73,6 +73,13 @@ export const transitions = {
   slow: 'all 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
 };
 
+// Gradients
+export const gradients = {
+  primary: `linear-gradient(135deg, #22223B, #7C3AED)`,
+  text: `linear-gradient(135deg, #22223B, #7C3AED)`,
+  hover: `linear-gradient(135deg, #7C3AED, #22223B)`,
+};
+
 // Common styles
 export const commonStyles = {
   cardStyle: `
@@ -99,14 +106,14 @@ export const commonStyles = {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: linear-gradient(135deg, ${colors.secondary}, ${colors.primary});
+    background: ${gradients.primary};
     color: white;
     border: none;
     box-shadow: ${shadows.sm};
     
     &:hover {
       transform: translateY(-1px) scale(1.03);
-      background: linear-gradient(135deg, ${colors.primary}, ${colors.secondary});
+      background: ${gradients.hover};
     }
   `,
   inputStyle: `
@@ -126,9 +133,9 @@ export const commonStyles = {
 
     &:focus {
       outline: none;
-      border-color: ${colors.secondary};
+      border-color: ${colors.primary};
       background: ${colors.background.primary};
-      box-shadow: 0 0 0 4px ${colors.secondary}15;
+      box-shadow: 0 0 0 4px ${colors.primary}15;
     }
   `
 }; 

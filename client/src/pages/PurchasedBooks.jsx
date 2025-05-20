@@ -1,9 +1,15 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { colors, typography, borderRadius, shadows } from "../styles/theme";
+import {
+  colors,
+  typography,
+  borderRadius,
+  shadows,
+  gradients,
+} from "../styles/theme";
 import { toast } from "react-toastify";
 import { API_URL } from "../config/config";
 import { FaBook, FaDownload } from "react-icons/fa";
@@ -11,23 +17,26 @@ import Loader from "../components/Loader";
 
 const PageContainer = styled.div`
   padding: 2rem 0;
-  margin-top: 80px; /* Add space below navbar */
+  margin-top: 80px;
 `;
 
 const Title = styled.h1`
-  color: ${colors.text.primary};
+  background: ${gradients.text};
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   font-family: ${typography.fonts.heading};
   font-size: 1.75rem;
   font-weight: ${typography.fontWeights.bold};
-  margin: 2.5rem 0 2rem; /* Increased margin top and bottom */
+  margin: 2.5rem 0 2rem;
   text-align: center;
   position: relative;
-  padding: 0 1rem; /* Added horizontal padding */
+  padding: 0 1rem;
 
   &::after {
     content: "";
     position: absolute;
-    bottom: -12px; /* Increased space for underline */
+    bottom: -12px;
     left: 50%;
     transform: translateX(-50%);
     width: 40px;
@@ -43,7 +52,7 @@ const Title = styled.h1`
 
   @media (max-width: 768px) {
     font-size: 1.5rem;
-    margin: 2rem 0 1.75rem; /* Adjusted margins for mobile */
+    margin: 2rem 0 1.75rem;
   }
 `;
 
@@ -60,10 +69,12 @@ const BookCard = styled.div`
   box-shadow: ${shadows.sm};
   overflow: hidden;
   transition: all 0.3s ease;
+  border: 1px solid ${colors.background.accent};
 
   &:hover {
     transform: translateY(-5px);
     box-shadow: ${shadows.md};
+    border-color: ${colors.secondary}40;
   }
 `;
 
@@ -74,64 +85,84 @@ const BookCover = styled.img`
 `;
 
 const BookInfo = styled.div`
-  padding: 1rem;
+  padding: 1.5rem;
 `;
 
 const BookTitle = styled.h3`
   color: ${colors.text.primary};
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: ${typography.fontWeights.semibold};
-  margin: 1rem 0 0.75rem; /* Increased margins */
-  padding: 0 0.5rem; /* Added horizontal padding */
+  margin: 0 0 1rem;
+  line-height: 1.4;
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
   gap: 0.5rem;
-  margin-top: 1rem;
+  margin-top: 1.25rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 320px) {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 `;
 
 const ActionButton = styled(Link)`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: ${borderRadius.md};
-  font-size: 0.9rem;
+  padding: 0.6rem 1rem;
+  border-radius: ${borderRadius.lg};
+  font-size: 0.85rem;
   font-weight: ${typography.fontWeights.medium};
   text-decoration: none;
   color: white;
   background: ${(props) =>
-    props.$variant === "secondary" ? colors.secondary : colors.primary};
+    props.$variant === "secondary" ? gradients.hover : gradients.primary};
   transition: all 0.3s ease;
+  flex: 1;
+  justify-content: center;
+  white-space: nowrap;
+  min-width: 0;
+
+  svg {
+    flex-shrink: 0;
+  }
 
   &:hover {
     opacity: 0.9;
     color: white;
     transform: translateY(-2px);
   }
+
+  @media (max-width: 320px) {
+    width: 100%;
+  }
 `;
 
 const NoBooks = styled.div`
   text-align: center;
-  padding: 3rem 2rem; /* Increased vertical padding */
+  padding: 3rem 2rem;
   color: ${colors.text.secondary};
   background: ${colors.background.primary};
   border-radius: ${borderRadius.lg};
-  margin: 2.5rem auto; /* Increased margins */
+  margin: 2.5rem auto;
   max-width: 600px;
+  border: 1px solid ${colors.background.accent};
+  box-shadow: ${shadows.sm};
 
   h3 {
-    margin: 1rem 0 1.25rem; /* Increased margins */
+    margin: 1rem 0 1.25rem;
     color: ${colors.text.primary};
     font-size: 1.25rem;
-    padding: 0.5rem 0; /* Added vertical padding */
+    font-weight: ${typography.fontWeights.semibold};
   }
 
   p {
     font-size: 0.95rem;
-    margin: 0 0 1.5rem; /* Increased bottom margin */
-    line-height: 1.6; /* Added line height for better readability */
+    margin: 0 0 1.5rem;
+    line-height: 1.6;
   }
 `;
 
@@ -144,7 +175,6 @@ const PurchasedBooks = () => {
     const fetchPurchasedBooks = async () => {
       try {
         const { data } = await authAxios.get("/api/orders/purchased-books");
-        console.log("Purchased Books API response:", data);
         setBooks(Array.isArray(data) ? data : data.books || []);
       } catch (error) {
         toast.error(

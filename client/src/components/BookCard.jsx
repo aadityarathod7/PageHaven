@@ -18,6 +18,7 @@ import {
   transitions,
   borderRadius,
   commonStyles,
+  gradients,
 } from "../styles/theme";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
@@ -218,10 +219,20 @@ const BookTitle = styled(Link)`
   display: block;
   transition: ${transitions.default};
   line-height: 1.3;
+  background: ${gradients.text};
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 
   &:hover {
     color: ${colors.secondary};
     text-shadow: 0 0 20px rgba(60, 216, 143, 0.3);
+  }
+
+  ${StyledCard}:hover & {
+    background: ${gradients.hover};
+    -webkit-background-clip: text;
+    background-clip: text;
   }
 `;
 
@@ -252,7 +263,7 @@ const AuthorName = styled.p`
 `;
 
 const CategoryBadge = styled(Badge)`
-  background: linear-gradient(135deg, #3cd88f 0%, #2fb344 100%) !important;
+  background: ${gradients.primary} !important;
   color: white;
   font-weight: ${typography.fontWeights.medium};
   font-size: 0.8rem;
@@ -261,12 +272,13 @@ const CategoryBadge = styled(Badge)`
   margin-right: 0.5rem;
   margin-bottom: 0.5rem;
   border: none;
-  box-shadow: 0 2px 4px rgba(60, 216, 143, 0.2);
+  box-shadow: 0 2px 4px rgba(34, 34, 59, 0.2);
   transition: all 0.2s ease;
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(60, 216, 143, 0.3);
+    box-shadow: 0 4px 8px rgba(124, 58, 237, 0.3);
+    background: ${gradients.hover} !important;
   }
 `;
 
@@ -282,7 +294,7 @@ const Description = styled.p`
   flex-grow: 1;
   position: relative;
   padding-left: 1rem;
-  border-left: 2px solid rgba(60, 216, 143, 0.3);
+  border-left: 2px solid ${colors.primary}40;
 `;
 
 const StatsContainer = styled.div`
@@ -313,12 +325,12 @@ const StatItem = styled.div`
   background: rgba(255, 255, 255, 0.03);
 
   svg {
-    color: ${colors.secondary};
+    color: ${colors.primary};
     transition: all 0.2s ease;
   }
 
   &:hover {
-    background: rgba(60, 216, 143, 0.08);
+    background: ${colors.primary}10;
     transform: translateY(-1px);
     svg {
       transform: scale(1.1);

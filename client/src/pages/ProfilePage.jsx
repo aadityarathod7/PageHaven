@@ -21,24 +21,63 @@ import {
   transitions,
   borderRadius,
   commonStyles,
+  gradients,
 } from "../styles/theme";
 
 const PageContainer = styled.div`
-  padding: 1rem;
+  padding: 2rem;
   max-width: 1200px;
-  margin-top: 5rem;
+  margin: 80px auto 0;
   min-height: calc(100vh - 140px);
-  background: ${colors.background.secondary};
+`;
+
+const PageTitle = styled.h1`
+  background: ${gradients.text};
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: ${typography.fonts.heading};
+  font-size: 1.75rem;
+  font-weight: ${typography.fontWeights.bold};
+  margin: 0 0 2rem;
+  text-align: center;
+  position: relative;
+  padding-bottom: 1rem;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    background: ${colors.secondary};
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  &:hover::after {
+    width: 80px;
+  }
 `;
 
 const ProfileCard = styled.div`
   background: ${colors.background.primary};
   border-radius: ${borderRadius.xl};
   box-shadow: ${shadows.lg};
-  padding: 1.5rem;
-  margin-bottom: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
   position: relative;
   overflow: hidden;
+  border: 1px solid ${colors.background.accent};
+  transition: ${transitions.default};
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: ${shadows.xl};
+    border-color: ${colors.secondary}40;
+  }
 
   &::before {
     content: "";
@@ -47,36 +86,38 @@ const ProfileCard = styled.div`
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(
-      to right,
-      ${colors.primary},
-      ${colors.secondary}
-    );
+    background: ${gradients.primary};
   }
 `;
 
 const ProfileHeader = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   position: relative;
+  padding: 1rem;
+  background: ${colors.background.secondary};
+  border-radius: ${borderRadius.lg};
 
   .profile-icon {
-    width: 60px;
-    height: 60px;
-    background: ${colors.background.accent};
+    width: 70px;
+    height: 70px;
+    background: ${gradients.primary};
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 1rem;
-    color: ${colors.primary};
+    margin-right: 1.5rem;
+    color: white;
     box-shadow: ${shadows.md};
-    border: 2px solid ${colors.background.accent};
     transition: ${transitions.default};
 
+    svg {
+      font-size: 1.75rem;
+    }
+
     &:hover {
-      transform: scale(1.05);
+      transform: scale(1.05) rotate(5deg);
       box-shadow: ${shadows.lg};
     }
   }
@@ -84,15 +125,18 @@ const ProfileHeader = styled.div`
   h2 {
     margin: 0;
     font-family: ${typography.fonts.heading};
-    color: ${colors.text.primary};
+    background: ${gradients.text};
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-weight: ${typography.fontWeights.bold};
-    font-size: 1.25rem;
+    font-size: 1.5rem;
   }
 
   p {
-    margin: 0.25rem 0 0;
+    margin: 0.5rem 0 0;
     color: ${colors.text.secondary};
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
 `;
 
@@ -100,26 +144,27 @@ const StyledForm = styled(Form)`
   .form-label {
     font-weight: ${typography.fontWeights.medium};
     color: ${colors.text.primary};
-    margin-bottom: 0.25rem;
-    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
   }
 
   .form-control {
     border-radius: ${borderRadius.lg};
     border: 2px solid ${colors.background.accent};
-    padding: 0.5rem 0.75rem;
+    padding: 0.75rem 1rem;
     transition: ${transitions.default};
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     background: ${colors.background.secondary};
     font-family: ${typography.fonts.body};
+    color: ${colors.text.primary};
 
     &:hover {
-      border-color: ${colors.text.light};
+      border-color: ${colors.secondary}40;
     }
 
     &:focus {
       border-color: ${colors.secondary};
-      box-shadow: 0 0 0 3px ${colors.secondary}15;
+      box-shadow: 0 0 0 4px ${colors.secondary}15;
       background: ${colors.background.primary};
     }
 
@@ -130,114 +175,135 @@ const StyledForm = styled(Form)`
 
   .form-text {
     color: ${colors.text.secondary};
-    font-size: 0.8rem;
-    margin-top: 0.25rem;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
   }
 
   .mb-3 {
-    margin-bottom: 0.75rem !important;
+    margin-bottom: 1.5rem !important;
   }
 
   .mb-4 {
-    margin-bottom: 1rem !important;
+    margin-bottom: 2rem !important;
   }
 `;
 
 const Button = styled.button`
-  background: linear-gradient(135deg, ${colors.secondary}, ${colors.primary});
+  background: ${gradients.primary};
   color: white;
   border: none;
-  padding: 0.625rem 1rem;
+  padding: 0.75rem 1.5rem;
   border-radius: ${borderRadius.lg};
   font-weight: ${typography.fontWeights.semibold};
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
   box-shadow: ${shadows.md};
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 
   &:hover {
     transform: translateY(-2px);
     box-shadow: ${shadows.lg};
-    background: linear-gradient(135deg, ${colors.primary}, ${colors.secondary});
+    background: ${gradients.hover};
   }
 
   &:focus {
-    box-shadow: 0 0 0 3px ${colors.secondary}30;
+    box-shadow: 0 0 0 4px ${colors.secondary}30;
   }
 
   &:active {
     transform: translateY(0);
   }
+
+  svg {
+    font-size: 1.1rem;
+  }
 `;
 
 const BookList = styled.div`
-  ${commonStyles.cardStyle}
+  background: ${colors.background.primary};
+  border-radius: ${borderRadius.xl};
+  box-shadow: ${shadows.lg};
   overflow: hidden;
+  border: 1px solid ${colors.background.accent};
+  transition: ${transitions.default};
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 0;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: ${shadows.xl};
+    border-color: ${colors.secondary}40;
+  }
+`;
 
-    th {
-      background: ${colors.background.secondary};
-      color: ${colors.text.primary};
-      font-weight: ${typography.fontWeights.semibold};
-      padding: 0.75rem;
-      text-align: left;
-      border-bottom: 2px solid ${colors.background.accent};
-      font-size: 0.9rem;
+const TableContainer = styled.div`
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+`;
+
+const StyledTable = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
+
+  th {
+    background: ${gradients.primary};
+    color: white;
+    font-weight: ${typography.fontWeights.semibold};
+    padding: 1rem;
+    text-align: left;
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 1rem;
+    vertical-align: middle;
+    color: ${colors.text.secondary};
+    border-bottom: 1px solid ${colors.background.accent};
+    font-size: 0.95rem;
+    background: ${colors.background.primary};
+    transition: ${transitions.default};
+  }
+
+  tr:hover td {
+    background: ${colors.background.secondary};
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  .book-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    img {
+      width: 48px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: ${borderRadius.md};
+      box-shadow: ${shadows.sm};
     }
 
-    td {
-      padding: 0.75rem;
-      vertical-align: middle;
-      color: ${colors.text.secondary};
-      border-bottom: 1px solid ${colors.background.accent};
-      font-size: 0.9rem;
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    .book-info {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-
-      img {
-        width: 45px;
-        height: 60px;
-        object-fit: cover;
-        border-radius: ${borderRadius.md};
-        box-shadow: ${shadows.md};
+    .book-details {
+      a {
+        color: ${colors.text.primary};
+        text-decoration: none;
+        font-weight: ${typography.fontWeights.medium};
         transition: ${transitions.default};
 
         &:hover {
-          transform: scale(1.05);
+          color: ${colors.secondary};
         }
       }
 
-      .book-details {
-        a {
-          color: ${colors.text.primary};
-          font-weight: ${typography.fontWeights.semibold};
-          text-decoration: none;
-          transition: ${transitions.default};
-          font-size: 0.9rem;
-          display: block;
-          margin-bottom: 0.25rem;
-
-          &:hover {
-            color: ${colors.secondary};
-          }
-        }
-
-        .author {
-          color: ${colors.text.secondary};
-          font-size: 0.8rem;
-        }
+      .author {
+        color: ${colors.text.secondary};
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
       }
     }
   }
@@ -345,37 +411,6 @@ const StatCard = styled.div`
       margin: 0;
       font-family: ${typography.fonts.heading};
     }
-  }
-`;
-
-const TableContainer = styled.div`
-  overflow-x: auto;
-  margin-bottom: 1rem;
-`;
-
-const StyledTable = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-
-  th {
-    background: ${colors.background.secondary};
-    color: ${colors.text.primary};
-    font-weight: ${typography.fontWeights.semibold};
-    padding: 1.25rem 1rem;
-    text-align: left;
-    border-bottom: 2px solid ${colors.background.accent};
-    font-size: 0.95rem;
-  }
-
-  td {
-    padding: 1.25rem 1rem;
-    vertical-align: middle;
-    color: ${colors.text.secondary};
-    border-bottom: 1px solid ${colors.background.accent};
-  }
-
-  tr:last-child td {
-    border-bottom: none;
   }
 `;
 

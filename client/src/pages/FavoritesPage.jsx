@@ -5,7 +5,13 @@ import { AuthContext } from "../context/AuthContext";
 import BookCard from "../components/BookCard";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
-import { colors, typography } from "../styles/theme";
+import {
+  colors,
+  typography,
+  borderRadius,
+  shadows,
+  gradients,
+} from "../styles/theme";
 
 const PageContainer = styled.div`
   margin-top: 80px;
@@ -13,10 +19,13 @@ const PageContainer = styled.div`
 `;
 
 const PageTitle = styled.h1`
+  background: ${gradients.text};
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   font-family: ${typography.fonts.heading};
   font-size: 1.75rem;
   font-weight: ${typography.fontWeights.bold};
-  color: ${colors.text.primary};
   margin: 2.5rem 0 2rem;
   text-align: center;
   position: relative;
@@ -48,12 +57,24 @@ const PageTitle = styled.h1`
 const EmptyState = styled.div`
   text-align: center;
   padding: 3rem 2rem;
-  background: ${colors.background.secondary};
-  border-radius: 1rem;
+  background: ${colors.background.primary};
+  border-radius: ${borderRadius.xl};
   margin: 2.5rem 0;
+  border: 1px solid ${colors.background.accent};
+  box-shadow: ${shadows.sm};
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: ${shadows.md};
+    border-color: ${colors.secondary}40;
+  }
 
   h3 {
-    color: ${colors.text.primary};
+    background: ${gradients.text};
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     margin-bottom: 1.25rem;
     font-size: 1.25rem;
     font-weight: ${typography.fontWeights.semibold};

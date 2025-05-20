@@ -7,6 +7,7 @@ import {
   shadows,
   transitions,
   borderRadius,
+  gradients,
 } from "../styles/theme";
 import { FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -16,14 +17,37 @@ import { commonStyles } from "../styles/theme";
 
 const PageContainer = styled.div`
   padding: 4rem 0;
+  margin-top: 80px;
 `;
 
 const Title = styled.h1`
-  color: ${colors.text.primary};
+  background: ${gradients.text};
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   font-family: ${typography.fonts.heading};
   font-weight: ${typography.fontWeights.bold};
   margin-bottom: 2rem;
-  margin-top: 2rem;
+  text-align: center;
+  position: relative;
+  padding-bottom: 1rem;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    background: ${colors.secondary};
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  &:hover::after {
+    width: 80px;
+  }
 `;
 
 const ContactGrid = styled.div`
@@ -38,8 +62,18 @@ const ContactGrid = styled.div`
 `;
 
 const ContactForm = styled.div`
-  ${commonStyles.cardStyle}
+  background: ${colors.background.primary};
+  border-radius: ${borderRadius.xl};
   padding: 2rem;
+  box-shadow: ${shadows.md};
+  border: 1px solid ${colors.background.accent};
+  transition: ${transitions.default};
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: ${shadows.lg};
+    border-color: ${colors.secondary}40;
+  }
 `;
 
 const FormGroup = styled(Form.Group)`
@@ -49,6 +83,7 @@ const FormGroup = styled(Form.Group)`
     color: ${colors.text.primary};
     font-weight: ${typography.fontWeights.medium};
     margin-bottom: 0.5rem;
+    font-size: 0.95rem;
   }
 
   input,
@@ -59,30 +94,47 @@ const FormGroup = styled(Form.Group)`
     border-radius: ${borderRadius.lg};
     padding: 0.75rem 1rem;
     transition: ${transitions.default};
+    font-size: 0.95rem;
 
     &:focus {
       background: ${colors.background.primary};
       border-color: ${colors.secondary};
       box-shadow: 0 0 0 3px ${colors.secondary}15;
     }
+
+    &::placeholder {
+      color: ${colors.text.light};
+    }
   }
 
   textarea {
     min-height: 150px;
+    resize: vertical;
   }
 `;
 
 const SubmitButton = styled(Button)`
-  background: ${colors.secondary};
+  background: ${gradients.primary};
   border: none;
   padding: 0.75rem 2rem;
   font-weight: ${typography.fontWeights.semibold};
   border-radius: ${borderRadius.lg};
   transition: ${transitions.default};
+  box-shadow: ${shadows.md};
 
   &:hover {
-    background: ${colors.primary};
+    background: ${gradients.hover};
     transform: translateY(-2px);
+    box-shadow: ${shadows.lg};
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
   }
 `;
 
@@ -93,41 +145,54 @@ const ContactInfo = styled.div`
 `;
 
 const InfoCard = styled.div`
-  ${commonStyles.cardStyle}
+  background: ${colors.background.primary};
+  border-radius: ${borderRadius.xl};
+  padding: 1.75rem;
+  box-shadow: ${shadows.md};
+  border: 1px solid ${colors.background.accent};
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
-  padding: 1.5rem;
+  gap: 1.25rem;
   transition: ${transitions.default};
 
   &:hover {
     transform: translateY(-4px);
     box-shadow: ${shadows.lg};
+    border-color: ${colors.secondary}40;
   }
 
   svg {
+    width: 24px;
+    height: 24px;
     color: ${colors.secondary};
-    font-size: 1.5rem;
+    flex-shrink: 0;
   }
 `;
 
 const InfoContent = styled.div`
   h3 {
-    color: ${colors.text.primary};
+    background: ${gradients.text};
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: ${typography.fonts.heading};
     font-size: 1.1rem;
     font-weight: ${typography.fontWeights.semibold};
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
   }
 
   p {
     color: ${colors.text.secondary};
     margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.7;
   }
 
   a {
     color: ${colors.text.secondary};
     text-decoration: none;
     transition: ${transitions.default};
+    font-size: 0.95rem;
 
     &:hover {
       color: ${colors.secondary};

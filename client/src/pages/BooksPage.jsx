@@ -6,9 +6,10 @@ import BookCard from "../components/BookCard";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Paginate from "../components/Paginate";
-import { colors, typography } from "../styles/theme";
+import { colors, typography, gradients } from "../styles/theme";
 import { API_URL } from "../config/config";
 import { Container } from "react-bootstrap";
+import { PageTitle } from "../styles/commonStyles";
 
 const PageContainer = styled.div`
   padding: 2rem;
@@ -19,18 +20,25 @@ const PageContainer = styled.div`
 const PageHeader = styled.div`
   margin-bottom: 2rem;
   margin-top: 5rem;
+  text-align: center;
+
   h1 {
+    background: ${gradients.text};
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-family: ${typography.fonts.heading};
-    color: ${colors.text.primary};
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: ${typography.fontWeights.bold};
     margin-bottom: 1rem;
+    display: inline-block;
   }
 
   p {
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: ${colors.text.secondary};
     max-width: 600px;
+    margin: 0 auto;
   }
 `;
 

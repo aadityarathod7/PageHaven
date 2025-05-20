@@ -3,7 +3,13 @@ import { Container, Row, Col } from "react-bootstrap";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { colors, typography, borderRadius, shadows } from "../styles/theme";
+import {
+  colors,
+  typography,
+  borderRadius,
+  shadows,
+  gradients,
+} from "../styles/theme";
 import { toast } from "react-toastify";
 import { API_URL } from "../config/config";
 import Loader from "../components/Loader";
@@ -14,19 +20,21 @@ const PageContainer = styled.div`
 `;
 
 const Title = styled.h1`
-  color: ${colors.text.primary};
+  background: ${gradients.text};
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   font-family: ${typography.fonts.heading};
-  font-size: 1.75rem;
   font-weight: ${typography.fontWeights.bold};
-  margin: 2.5rem 0 2rem;
+  margin-bottom: 2rem;
   text-align: center;
   position: relative;
-  padding: 0 1rem;
+  padding-bottom: 1rem;
 
   &::after {
     content: "";
     position: absolute;
-    bottom: -12px;
+    bottom: 0;
     left: 50%;
     transform: translateX(-50%);
     width: 40px;
@@ -48,15 +56,17 @@ const Title = styled.h1`
 
 const OrderCard = styled.div`
   background: ${colors.background.primary};
-  border-radius: ${borderRadius.lg};
+  border-radius: ${borderRadius.xl};
   box-shadow: ${shadows.sm};
   padding: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid ${colors.background.accent};
   transition: all 0.3s ease;
 
   &:hover {
-    box-shadow: ${shadows.md};
     transform: translateY(-2px);
+    box-shadow: ${shadows.md};
+    border-color: ${colors.secondary}40;
   }
 `;
 
@@ -64,21 +74,23 @@ const OrderHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid ${colors.background.accent};
 `;
 
-const OrderId = styled.span`
-  color: ${colors.text.secondary};
+const OrderId = styled.div`
+  font-weight: ${typography.fontWeights.semibold};
+  color: ${colors.text.primary};
+  background: ${colors.background.secondary};
+  padding: 0.5rem 1rem;
+  border-radius: ${borderRadius.lg};
   font-size: 0.9rem;
-  line-height: 1.6;
 `;
 
-const OrderDate = styled.span`
-  color: ${colors.text.light};
+const OrderDate = styled.div`
+  color: ${colors.text.secondary};
   font-size: 0.9rem;
-  line-height: 1.6;
 `;
 
 const BookInfo = styled.div`
@@ -102,16 +114,20 @@ const BookDetails = styled.div`
 `;
 
 const BookTitle = styled(Link)`
-  color: ${colors.text.primary};
+  background: ${gradients.text};
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   font-weight: ${typography.fontWeights.semibold};
   text-decoration: none;
   font-size: 1.1rem;
   line-height: 1.6;
   display: inline-block;
   margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
 
   &:hover {
-    color: ${colors.primary};
+    transform: translateY(-1px);
   }
 `;
 
@@ -140,20 +156,28 @@ const PaymentInfo = styled.div`
 const Amount = styled.div`
   font-size: 1.15rem;
   font-weight: ${typography.fontWeights.semibold};
-  color: ${colors.success};
+  background: ${gradients.primary};
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 `;
 
 const NoOrders = styled.div`
   text-align: center;
   padding: 3rem 2rem;
   color: ${colors.text.secondary};
-  background: ${colors.background.secondary};
+  background: ${colors.background.primary};
   border-radius: ${borderRadius.lg};
   margin: 2.5rem 0;
+  border: 1px solid ${colors.background.accent};
+  box-shadow: ${shadows.sm};
 
   h3 {
     margin-bottom: 1.25rem;
-    color: ${colors.text.primary};
+    background: ${gradients.text};
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-size: 1.25rem;
     font-weight: ${typography.fontWeights.semibold};
   }
