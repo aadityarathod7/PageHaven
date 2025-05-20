@@ -109,6 +109,7 @@ const PurchasedBooks = () => {
     const fetchPurchasedBooks = async () => {
       try {
         const { data } = await authAxios.get("/api/orders/purchased-books");
+        console.log("Purchased Books API response:", data);
         setBooks(Array.isArray(data) ? data : data.books || []);
       } catch (error) {
         toast.error("Failed to fetch purchased books");
