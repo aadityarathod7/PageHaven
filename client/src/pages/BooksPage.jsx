@@ -1,15 +1,22 @@
-import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import styled from 'styled-components';
-import BookCard from '../components/BookCard';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
-import Paginate from '../components/Paginate';
-import { colors, typography, shadows, transitions, borderRadius } from '../styles/theme';
-import { API_URL } from '../config/config';
-import { FixedSizeGrid as Grid } from 'react-window';
-import { useRef } from 'react';
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import styled from "styled-components";
+import BookCard from "../components/BookCard";
+import Loader from "../components/Loader";
+import Message from "../components/Message";
+import Paginate from "../components/Paginate";
+import {
+  colors,
+  typography,
+  shadows,
+  transitions,
+  borderRadius,
+} from "../styles/theme";
+import { API_URL } from "../config/config";
+import { FixedSizeGrid as Grid } from "react-window";
+import { useRef } from "react";
+import { Container } from "react-bootstrap";
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -58,9 +65,11 @@ const BooksPage = () => {
     isError,
     error,
   } = useQuery({
-    queryKey: ['books', pageNumber],
+    queryKey: ["books", pageNumber],
     queryFn: async () => {
-      const { data } = await axios.get(`${API_URL}/api/books?pageNumber=${pageNumber}`);
+      const { data } = await axios.get(
+        `${API_URL}/api/books?pageNumber=${pageNumber}`
+      );
       return data;
     },
     keepPreviousData: true,
@@ -69,7 +78,7 @@ const BooksPage = () => {
 
   // Responsive columns
   const getColumnCount = () => {
-    if (typeof window === 'undefined') return MAX_COLUMNS;
+    if (typeof window === "undefined") return MAX_COLUMNS;
     const width = window.innerWidth;
     if (width < 600) return 1;
     if (width < 1000) return 2;
@@ -84,7 +93,15 @@ const BooksPage = () => {
     const index = rowIndex * columnCount + columnIndex;
     if (index >= books.length) return null;
     return (
-      <div style={{ ...style, left: style.left + GUTTER / 2, top: style.top + GUTTER / 2, width: style.width - GUTTER, height: style.height - GUTTER }}>
+      <div
+        style={{
+          ...style,
+          left: style.left + GUTTER / 2,
+          top: style.top + GUTTER / 2,
+          width: style.width - GUTTER,
+          height: style.height - GUTTER,
+        }}
+      >
         <BookCard book={books[index]} />
       </div>
     );
@@ -101,7 +118,9 @@ const BooksPage = () => {
         {loading ? (
           <Loader />
         ) : isError ? (
-          <Message variant="danger">{error?.message || 'Error loading books'}</Message>
+          <Message variant="danger">
+            {error?.message || "Error loading books"}
+          </Message>
         ) : !data || books.length === 0 ? (
           <Message>No books found</Message>
         ) : (
@@ -114,7 +133,10 @@ const BooksPage = () => {
                 height={Math.min(ROW_HEIGHT * rowCount, 800)}
                 rowCount={rowCount}
                 rowHeight={ROW_HEIGHT}
-                width={Math.min(COLUMN_WIDTH * columnCount, window.innerWidth - 40)}
+                width={Math.min(
+                  COLUMN_WIDTH * columnCount,
+                  window.innerWidth - 40
+                )}
               >
                 {Cell}
               </Grid>
@@ -127,4 +149,4 @@ const BooksPage = () => {
   );
 };
 
-export default BooksPage; 
+export default BooksPage;
