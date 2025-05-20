@@ -21,7 +21,7 @@ const { protect, admin } = require('../middleware/authMiddleware');
 // Configure multer storage
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, path.join(__dirname, '../uploads/'));
+    cb(null, 'uploads/');
   },
   filename(req, file, cb) {
     cb(

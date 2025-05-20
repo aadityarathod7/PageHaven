@@ -10,7 +10,6 @@ const bookRoutes = require('./routes/bookRoutes');
 const userRoutes = require('./routes/userRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const orderRoutes = require('./routes/orderRoutes');
-const contactRoutes = require('./routes/contactRoutes');
 
 connectDB();
 const app = express();
@@ -24,14 +23,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Static folder for uploads
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API Routes
 app.use('/api/books', bookRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/api/contact', contactRoutes);
 
 // Frontend build in production
 if (process.env.NODE_ENV === 'production') {
