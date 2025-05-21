@@ -22,21 +22,27 @@ const io = new Server(httpServer, {
   cors: {
     origin: ['https://book-project-frontend.onrender.com', 'http://localhost:5173'],
     credentials: true
-  }
+  },
+  pingTimeout: 60000,
+  pingInterval: 25000
 });
 
 // Socket.io connection handling
 io.on('connection', (socket) => {
-  console.log('Client connected');
+  console.log('Client connected:', socket.id);
+
+  socket.on('error', (error) => {
+    console.error('Socket error:', error);
+  });
 
   // Join user's room for private notifications
   socket.on('join', (userId) => {
     socket.join(userId);
-    console.log(`User ${userId} joined their room`);
+    console.log(`User ${userId} joined their room with socket ${socket.id}`);
   });
 
-  socket.on('disconnect', () => {
-    console.log('Client disconnected');
+  socket.on('disconnect', (reason) => {
+    console.log(`Client disconnected. Reason: ${reason}`);
   });
 });
 

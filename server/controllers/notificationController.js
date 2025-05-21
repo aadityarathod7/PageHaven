@@ -74,31 +74,47 @@ const markAllAsRead = asyncHandler(async (req, res) => {
 const createNotification = asyncHandler(async (req, res) => {
     const { userId, title, message, type, link } = req.body;
 
-    const notification = await Notification.create({
-        user: userId,
-        title,
-        message,
-        type: type || 'info',
-        link,
-    });
+    try {
+        const notification = await Notification.create({
+            user: userId,
+            title,
+            message,
+            type: type || 'info',
+            link,
+        });
 
-    // Get updated notifications and unread count
-    const notifications = await Notification.find({ user: userId })
-        .sort('-createdAt')
-        .limit(50);
+        // Get updated notifications and unread count
+        const notifications = await Notification.find({ user: userId })
+            .sort('-createdAt')
+            .limit(50);
 
-    const unreadCount = await Notification.countDocuments({
-        user: userId,
-        read: false,
-    });
+        const unreadCount = await Notification.countDocuments({
+            user: userId,
+            read: false,
+        });
 
-    // Emit new notification to specific user
-    const io = req.app.get('io');
-    io.to(userId).emit('newNotification', notification);
-    io.to(userId).emit('notifications', notifications);
-    io.to(userId).emit('unreadCount', unreadCount);
+        // Get Socket.IO instance
+        const io = req.app.get('io');
+        if (!io) {
+            console.error('Socket.IO instance not found');
+            throw new Error('Socket.IO instance not found');
+        }
 
-    res.status(201).json(notification);
+        // Log the emission attempt
+        console.log(`Attempting to emit notification to user ${userId}`);
+
+        // Emit new notification to specific user
+        io.to(userId).emit('newNotification', notification);
+        io.to(userId).emit('notifications', notifications);
+        io.to(userId).emit('unreadCount', unreadCount);
+
+        console.log(`Successfully emitted notification to user ${userId}`);
+
+        res.status(201).json(notification);
+    } catch (error) {
+        console.error('Error in createNotification:', error);
+        throw error;
+    }
 });
 
 // @desc    Clear all notifications

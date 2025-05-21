@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { FaBell, FaCheck, FaCircle, FaTrash } from "react-icons/fa";
@@ -204,12 +204,30 @@ const EmptyState = styled.div`
   font-size: 0.9rem;
 `;
 
+const SOCKET_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 const NotificationDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const { authAxios, userInfo } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  const handleNewNotification = useCallback((notification) => {
+    console.log("Received new notification:", notification);
+    setNotifications((prev) => [notification, ...prev].slice(0, 50));
+    setUnreadCount((prev) => prev + 1);
+  }, []);
+
+  const handleNotificationsUpdate = useCallback((updatedNotifications) => {
+    console.log("Received notifications update:", updatedNotifications);
+    setNotifications(updatedNotifications);
+  }, []);
+
+  const handleUnreadCountUpdate = useCallback((count) => {
+    console.log("Received unread count update:", count);
+    setUnreadCount(count);
+  }, []);
 
   const fetchNotifications = async () => {
     try {
@@ -236,35 +254,42 @@ const NotificationDropdown = () => {
       fetchUnreadCount();
 
       // Connect to socket.io
-      const socket = io(
-        process.env.REACT_APP_API_URL || "http://localhost:5000",
-        {
-          withCredentials: true,
-        }
-      );
+      const socket = io(SOCKET_URL, {
+        withCredentials: true,
+      });
+
+      // Add connection error handling
+      socket.on("connect_error", (error) => {
+        console.error("Socket connection error:", error);
+      });
+
+      socket.on("connect", () => {
+        console.log("Socket connected successfully");
+      });
 
       // Join user's room
       socket.emit("join", userInfo._id);
 
-      // Listen for updates
-      socket.on("newNotification", (notification) => {
-        setNotifications((prev) => [notification, ...prev].slice(0, 50));
-      });
-
-      socket.on("notifications", (updatedNotifications) => {
-        setNotifications(updatedNotifications);
-      });
-
-      socket.on("unreadCount", (count) => {
-        setUnreadCount(count);
-      });
+      // Listen for updates with memoized handlers
+      socket.on("newNotification", handleNewNotification);
+      socket.on("notifications", handleNotificationsUpdate);
+      socket.on("unreadCount", handleUnreadCountUpdate);
 
       // Cleanup on unmount
       return () => {
+        console.log("Cleaning up socket connection");
+        socket.off("newNotification", handleNewNotification);
+        socket.off("notifications", handleNotificationsUpdate);
+        socket.off("unreadCount", handleUnreadCountUpdate);
         socket.disconnect();
       };
     }
-  }, [userInfo]);
+  }, [
+    userInfo,
+    handleNewNotification,
+    handleNotificationsUpdate,
+    handleUnreadCountUpdate,
+  ]);
 
   const handleToggleDropdown = () => {
     setIsOpen(!isOpen);
