@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { FaBell, FaCheck, FaCircle, FaTrash } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
+import { io } from "socket.io-client";
 import {
   colors,
   typography,
@@ -207,7 +208,7 @@ const NotificationDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const { authAxios } = useContext(AuthContext);
+  const { authAxios, userInfo } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const fetchNotifications = async () => {
@@ -229,20 +230,50 @@ const NotificationDropdown = () => {
   };
 
   useEffect(() => {
-    fetchNotifications();
-    fetchUnreadCount();
-  }, []);
+    if (userInfo) {
+      // Initial fetch
+      fetchNotifications();
+      fetchUnreadCount();
+
+      // Connect to socket.io
+      const socket = io(
+        process.env.REACT_APP_API_URL || "http://localhost:5000",
+        {
+          withCredentials: true,
+        }
+      );
+
+      // Join user's room
+      socket.emit("join", userInfo._id);
+
+      // Listen for updates
+      socket.on("newNotification", (notification) => {
+        setNotifications((prev) => [notification, ...prev].slice(0, 50));
+      });
+
+      socket.on("notifications", (updatedNotifications) => {
+        setNotifications(updatedNotifications);
+      });
+
+      socket.on("unreadCount", (count) => {
+        setUnreadCount(count);
+      });
+
+      // Cleanup on unmount
+      return () => {
+        socket.disconnect();
+      };
+    }
+  }, [userInfo]);
+
+  const handleToggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
 
   const handleNotificationClick = async (notification) => {
     try {
       if (!notification.read) {
         await authAxios.put(`/api/notifications/${notification._id}/read`);
-        fetchUnreadCount();
-        setNotifications(
-          notifications.map((n) =>
-            n._id === notification._id ? { ...n, read: true } : n
-          )
-        );
       }
       if (notification.link) {
         navigate(notification.link);
@@ -256,8 +287,6 @@ const NotificationDropdown = () => {
   const handleMarkAllRead = async () => {
     try {
       await authAxios.put("/api/notifications/mark-all-read");
-      setNotifications(notifications.map((n) => ({ ...n, read: true })));
-      setUnreadCount(0);
     } catch (error) {
       console.error("Error marking all notifications as read:", error);
     }
@@ -266,8 +295,6 @@ const NotificationDropdown = () => {
   const handleClearNotifications = async () => {
     try {
       await authAxios.delete("/api/notifications");
-      setNotifications([]);
-      setUnreadCount(0);
     } catch (error) {
       console.error("Error clearing notifications:", error);
     }
@@ -275,10 +302,7 @@ const NotificationDropdown = () => {
 
   return (
     <DropdownContainer>
-      <NotificationButton
-        onClick={() => setIsOpen(!isOpen)}
-        title="Notifications"
-      >
+      <NotificationButton onClick={handleToggleDropdown} title="Notifications">
         <FaBell />
         {unreadCount > 0 && (
           <div className="notification-dot">

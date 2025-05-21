@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
 const connectDB = require('./config/db');
 const { errorHandler } = require('./middleware/errorMiddleware');
 
@@ -15,6 +17,31 @@ const notificationRoutes = require('./routes/notificationRoutes');
 
 connectDB();
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: ['https://book-project-frontend.onrender.com', 'http://localhost:5173'],
+    credentials: true
+  }
+});
+
+// Socket.io connection handling
+io.on('connection', (socket) => {
+  console.log('Client connected');
+
+  // Join user's room for private notifications
+  socket.on('join', (userId) => {
+    socket.join(userId);
+    console.log(`User ${userId} joined their room`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
+});
+
+// Make io accessible to our routes
+app.set('io', io);
 
 // Middleware
 app.use(cors({
@@ -47,4 +74,4 @@ if (process.env.NODE_ENV === 'production') {
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+httpServer.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

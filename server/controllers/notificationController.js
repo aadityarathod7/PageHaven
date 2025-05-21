@@ -41,6 +41,15 @@ const markAsRead = asyncHandler(async (req, res) => {
     notification.read = true;
     await notification.save();
 
+    // Get updated unread count
+    const unreadCount = await Notification.countDocuments({
+        user: req.user._id,
+        read: false,
+    });
+
+    // Emit updated count to user
+    req.app.get('io').to(req.user._id.toString()).emit('unreadCount', unreadCount);
+
     res.json(notification);
 });
 
@@ -52,6 +61,9 @@ const markAllAsRead = asyncHandler(async (req, res) => {
         { user: req.user._id, read: false },
         { read: true }
     );
+
+    // Emit zero unread count to user
+    req.app.get('io').to(req.user._id.toString()).emit('unreadCount', 0);
 
     res.json({ message: 'All notifications marked as read' });
 });
@@ -70,6 +82,22 @@ const createNotification = asyncHandler(async (req, res) => {
         link,
     });
 
+    // Get updated notifications and unread count
+    const notifications = await Notification.find({ user: userId })
+        .sort('-createdAt')
+        .limit(50);
+
+    const unreadCount = await Notification.countDocuments({
+        user: userId,
+        read: false,
+    });
+
+    // Emit new notification to specific user
+    const io = req.app.get('io');
+    io.to(userId).emit('newNotification', notification);
+    io.to(userId).emit('notifications', notifications);
+    io.to(userId).emit('unreadCount', unreadCount);
+
     res.status(201).json(notification);
 });
 
@@ -78,6 +106,12 @@ const createNotification = asyncHandler(async (req, res) => {
 // @access  Private
 const clearNotifications = asyncHandler(async (req, res) => {
     await Notification.deleteMany({ user: req.user._id });
+
+    // Emit empty notifications and zero count
+    const io = req.app.get('io');
+    io.to(req.user._id.toString()).emit('notifications', []);
+    io.to(req.user._id.toString()).emit('unreadCount', 0);
+
     res.json({ message: 'All notifications cleared' });
 });
 
