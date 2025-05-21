@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useCallback,
-  useRef,
-} from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { FaBell, FaCheck, FaCircle, FaTrash } from "react-icons/fa";
@@ -217,63 +211,46 @@ const NotificationDropdown = () => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [socketConnected, setSocketConnected] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { authAxios, userInfo } = useContext(AuthContext);
   const navigate = useNavigate();
-
-  // Keep socket reference outside of useEffect
   const socketRef = useRef(null);
+  const initialFetchDone = useRef(false);
 
-  const handleNewNotification = useCallback((notification) => {
-    console.log("Received new notification:", notification);
-    setNotifications((prev) => {
-      // Check if notification already exists
-      const exists = prev.some((n) => n._id === notification._id);
-      if (exists) return prev;
-      return [notification, ...prev].slice(0, 50);
-    });
-    setUnreadCount((prev) => prev + 1);
-  }, []);
+  const fetchData = async () => {
+    if (!socketConnected || !userInfo || initialFetchDone.current) return;
 
-  const handleNotificationsUpdate = useCallback((updatedNotifications) => {
-    console.log("Received notifications update:", updatedNotifications);
-    setNotifications(updatedNotifications);
-  }, []);
-
-  const handleUnreadCountUpdate = useCallback((count) => {
-    console.log("Received unread count update:", count);
-    setUnreadCount(count);
-  }, []);
-
-  const fetchNotifications = async () => {
     try {
-      const { data } = await authAxios.get("/api/notifications");
-      setNotifications(data);
+      setIsLoading(true);
+      const [notificationsRes, countRes] = await Promise.all([
+        authAxios.get("/api/notifications"),
+        authAxios.get("/api/notifications/unread-count"),
+      ]);
+
+      console.log("Initial data fetch:", {
+        notifications: notificationsRes.data,
+        unreadCount: countRes.data.count,
+      });
+
+      setNotifications(notificationsRes.data);
+      setUnreadCount(countRes.data.count);
+      initialFetchDone.current = true;
     } catch (error) {
-      console.error("Error fetching notifications:", error);
+      console.error("Error fetching initial data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const fetchUnreadCount = async () => {
-    try {
-      const { data } = await authAxios.get("/api/notifications/unread-count");
-      setUnreadCount(data.count);
-    } catch (error) {
-      console.error("Error fetching unread count:", error);
-    }
-  };
-
+  // Effect for socket connection
   useEffect(() => {
     let mounted = true;
 
-    const initializeSocket = async () => {
-      if (!userInfo || socketConnected) return;
+    const initializeSocket = () => {
+      if (!userInfo || socketRef.current) return;
 
       try {
-        // Initial fetch
-        await fetchNotifications();
-        await fetchUnreadCount();
-
-        // Create socket connection with acknowledgments
+        console.log("Initializing socket connection...");
         socketRef.current = io(SOCKET_URL, {
           withCredentials: true,
           reconnection: true,
@@ -290,15 +267,11 @@ const NotificationDropdown = () => {
           console.log("Socket connected successfully with ID:", socket.id);
           if (mounted) {
             setSocketConnected(true);
-            // Join user's room and request initial data
             socket.emit("join", userInfo._id, (error) => {
               if (error) {
                 console.error("Error joining room:", error);
               } else {
                 console.log("Successfully joined room");
-                // Request fresh data after joining room
-                fetchNotifications();
-                fetchUnreadCount();
               }
             });
           }
@@ -322,29 +295,38 @@ const NotificationDropdown = () => {
           console.log(`Socket reconnected after ${attemptNumber} attempts`);
           if (mounted) {
             setSocketConnected(true);
-            // Re-join room and refresh data on reconnection
+            initialFetchDone.current = false; // Reset flag on reconnect
             socket.emit("join", userInfo._id);
-            fetchNotifications();
-            fetchUnreadCount();
           }
         });
 
-        // Bind event handlers with acknowledgments
+        // Bind event handlers
         socket.on("newNotification", (notification, callback) => {
           console.log("Received new notification:", notification);
-          handleNewNotification(notification);
+          if (mounted) {
+            setNotifications((prev) => {
+              const exists = prev.some((n) => n._id === notification._id);
+              if (exists) return prev;
+              return [notification, ...prev].slice(0, 50);
+            });
+            setUnreadCount((prev) => prev + 1);
+          }
           if (callback) callback();
         });
 
         socket.on("notifications", (updatedNotifications, callback) => {
           console.log("Received notifications update:", updatedNotifications);
-          handleNotificationsUpdate(updatedNotifications);
+          if (mounted) {
+            setNotifications(updatedNotifications);
+          }
           if (callback) callback();
         });
 
         socket.on("unreadCount", (count, callback) => {
           console.log("Received unread count update:", count);
-          handleUnreadCountUpdate(count);
+          if (mounted) {
+            setUnreadCount(count);
+          }
           if (callback) callback();
         });
       } catch (error) {
@@ -357,7 +339,6 @@ const NotificationDropdown = () => {
 
     initializeSocket();
 
-    // Cleanup
     return () => {
       mounted = false;
       if (socketRef.current) {
@@ -371,14 +352,14 @@ const NotificationDropdown = () => {
         setSocketConnected(false);
       }
     };
-  }, [
-    userInfo,
-    handleNewNotification,
-    handleNotificationsUpdate,
-    handleUnreadCountUpdate,
-  ]);
+  }, [userInfo]);
 
-  // Add visual indicator for socket connection status (optional)
+  // Effect for data fetching after socket connection
+  useEffect(() => {
+    fetchData();
+  }, [socketConnected, userInfo]);
+
+  // Debug logging
   useEffect(() => {
     console.log(
       "Socket connection status:",
@@ -386,25 +367,17 @@ const NotificationDropdown = () => {
     );
   }, [socketConnected]);
 
-  const handleToggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
-
   const handleNotificationClick = async (notification) => {
     try {
       if (!notification.read) {
-        const { data } = await authAxios.put(
-          `/api/notifications/${notification._id}/read`
-        );
+        await authAxios.put(`/api/notifications/${notification._id}/read`);
 
-        // Update the notification in the local state
         setNotifications((prev) =>
           prev.map((n) =>
             n._id === notification._id ? { ...n, read: true } : n
           )
         );
 
-        // Update unread count locally
         setUnreadCount((prev) => Math.max(0, prev - 1));
       }
 
@@ -415,6 +388,10 @@ const NotificationDropdown = () => {
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
+  };
+
+  const handleToggleDropdown = () => {
+    setIsOpen(!isOpen);
   };
 
   const handleMarkAllRead = async () => {
@@ -486,7 +463,9 @@ const NotificationDropdown = () => {
           </HeaderActions>
         </NotificationHeader>
 
-        {notifications.length > 0 ? (
+        {isLoading ? (
+          <EmptyState>Loading notifications...</EmptyState>
+        ) : notifications.length > 0 ? (
           notifications.map((notification) => (
             <NotificationItem
               key={notification._id}
