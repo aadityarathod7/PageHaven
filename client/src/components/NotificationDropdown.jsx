@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { FaBell, FaCheck, FaCircle } from "react-icons/fa";
+import { FaBell, FaCheck, FaCircle, FaTrash } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 import {
   colors,
@@ -44,13 +44,20 @@ const NotificationButton = styled.button`
 
   .notification-dot {
     position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 8px;
-    height: 8px;
+    top: 2px;
+    right: 2px;
+    min-width: 18px;
+    height: 18px;
     background: ${colors.accent};
-    border-radius: 50%;
+    border-radius: ${borderRadius.full};
     border: 2px solid ${colors.background.primary};
+    color: white;
+    font-size: 0.7rem;
+    font-weight: ${typography.fontWeights.bold};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
   }
 `;
 
@@ -98,7 +105,21 @@ const NotificationHeader = styled.div`
     font-size: 1rem;
     font-weight: ${typography.fontWeights.semibold};
     color: ${colors.text.primary};
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .count {
+      font-size: 0.8rem;
+      color: ${colors.text.secondary};
+    }
   }
+`;
+
+const HeaderActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 `;
 
 const MarkAllRead = styled.button`
@@ -112,6 +133,24 @@ const MarkAllRead = styled.button`
   &:hover {
     color: ${colors.primary};
     text-decoration: underline;
+  }
+`;
+
+const ClearButton = styled.button`
+  background: none;
+  border: none;
+  color: ${colors.text.light};
+  font-size: 1rem;
+  cursor: pointer;
+  transition: ${transitions.default};
+  display: flex;
+  align-items: center;
+  padding: 0.25rem;
+  border-radius: ${borderRadius.full};
+
+  &:hover {
+    color: ${colors.secondary};
+    background: ${colors.background.secondary};
   }
 `;
 
@@ -231,17 +270,36 @@ const NotificationDropdown = () => {
         title="Notifications"
       >
         <FaBell />
-        {unreadCount > 0 && <div className="notification-dot" />}
+        {unreadCount > 0 && (
+          <div className="notification-dot">
+            {unreadCount > 99 ? "99+" : unreadCount}
+          </div>
+        )}
       </NotificationButton>
 
       <DropdownContent $isOpen={isOpen}>
         <NotificationHeader>
-          <h3>Notifications</h3>
-          {unreadCount > 0 && (
-            <MarkAllRead onClick={handleMarkAllRead}>
-              Mark all as read
-            </MarkAllRead>
-          )}
+          <h3>
+            Notifications
+            {notifications.length > 0 && (
+              <span className="count">({unreadCount} unread)</span>
+            )}
+          </h3>
+          <HeaderActions>
+            {unreadCount > 0 && (
+              <MarkAllRead onClick={handleMarkAllRead}>
+                Mark all as read
+              </MarkAllRead>
+            )}
+            {notifications.length > 0 && (
+              <ClearButton
+                onClick={() => setNotifications([])}
+                title="Clear all notifications"
+              >
+                <FaTrash />
+              </ClearButton>
+            )}
+          </HeaderActions>
         </NotificationHeader>
 
         {notifications.length > 0 ? (

@@ -3,6 +3,7 @@ const Order = require('../models/orderModel');
 const Progress = require('../models/progressModel');
 const Notification = require('../models/notificationModel');
 const Book = require('../models/bookModel');
+const User = require('../models/userModel');
 
 // @desc    Get user orders
 // @route   GET /api/orders
@@ -67,7 +68,7 @@ const createOrder = asyncHandler(async (req, res) => {
         // Get book details for the notification
         const book = await Book.findById(bookId).select('title');
 
-        // Create a notification for the purchase
+        // Create a notification for the user
         await Notification.create({
             user: req.user._id,
             title: 'Purchase Successful!',
@@ -75,6 +76,22 @@ const createOrder = asyncHandler(async (req, res) => {
             type: 'success',
             link: `/read/${bookId}`
         });
+
+        // Find all admin users
+        const adminUsers = await User.find({ role: 'admin' }).select('_id');
+
+        // Create notifications for all admins
+        const adminNotifications = adminUsers.map(admin => ({
+            user: admin._id,
+            title: 'New Book Purchase',
+            message: `${req.user.name} has purchased "${book.title}" for ₹${amount / 100}`,
+            type: 'info',
+            link: '/admin/orders'
+        }));
+
+        if (adminNotifications.length > 0) {
+            await Notification.insertMany(adminNotifications);
+        }
 
         res.status(201).json(order);
     } catch (error) {
