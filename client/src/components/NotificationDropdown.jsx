@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+  useRef,
+} from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { FaBell, FaCheck, FaCircle, FaTrash } from "react-icons/fa";
@@ -210,12 +216,21 @@ const NotificationDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [socketConnected, setSocketConnected] = useState(false);
   const { authAxios, userInfo } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  // Keep socket reference outside of useEffect
+  const socketRef = useRef(null);
+
   const handleNewNotification = useCallback((notification) => {
     console.log("Received new notification:", notification);
-    setNotifications((prev) => [notification, ...prev].slice(0, 50));
+    setNotifications((prev) => {
+      // Check if notification already exists
+      const exists = prev.some((n) => n._id === notification._id);
+      if (exists) return prev;
+      return [notification, ...prev].slice(0, 50);
+    });
     setUnreadCount((prev) => prev + 1);
   }, []);
 
@@ -248,73 +263,102 @@ const NotificationDropdown = () => {
   };
 
   useEffect(() => {
-    if (userInfo) {
-      let socket;
+    let mounted = true;
+
+    const initializeSocket = async () => {
+      if (!userInfo || socketConnected) return;
+
       try {
         // Initial fetch
-        fetchNotifications();
-        fetchUnreadCount();
+        await fetchNotifications();
+        await fetchUnreadCount();
 
-        // Connect to socket.io
-        socket = io(SOCKET_URL, {
+        // Create socket connection
+        socketRef.current = io(SOCKET_URL, {
           withCredentials: true,
           reconnection: true,
           reconnectionDelay: 1000,
           reconnectionDelayMax: 5000,
           reconnectionAttempts: 5,
+          transports: ["websocket", "polling"], // Try WebSocket first
         });
 
-        // Add connection error handling
-        socket.on("connect_error", (error) => {
-          console.error("Socket connection error:", error);
-        });
+        const socket = socketRef.current;
 
         socket.on("connect", () => {
-          console.log("Socket connected successfully");
-          // Re-join room on reconnection
+          console.log("Socket connected successfully with ID:", socket.id);
+          if (mounted) {
+            setSocketConnected(true);
+          }
+          // Join user's room
           socket.emit("join", userInfo._id);
         });
 
-        socket.on("connect_timeout", () => {
-          console.error("Socket connection timeout");
+        socket.on("connect_error", (error) => {
+          console.error("Socket connection error:", error);
+          if (mounted) {
+            setSocketConnected(false);
+          }
+        });
+
+        socket.on("disconnect", (reason) => {
+          console.log("Socket disconnected:", reason);
+          if (mounted) {
+            setSocketConnected(false);
+          }
         });
 
         socket.on("reconnect", (attemptNumber) => {
           console.log(`Socket reconnected after ${attemptNumber} attempts`);
+          if (mounted) {
+            setSocketConnected(true);
+            // Re-join room on reconnection
+            socket.emit("join", userInfo._id);
+          }
         });
 
-        socket.on("reconnect_error", (error) => {
-          console.error("Socket reconnection error:", error);
-        });
-
-        // Join user's room
-        socket.emit("join", userInfo._id);
-
-        // Listen for updates with memoized handlers
+        // Bind event handlers
         socket.on("newNotification", handleNewNotification);
         socket.on("notifications", handleNotificationsUpdate);
         socket.on("unreadCount", handleUnreadCountUpdate);
-
-        // Cleanup on unmount
-        return () => {
-          console.log("Cleaning up socket connection");
-          if (socket) {
-            socket.off("newNotification", handleNewNotification);
-            socket.off("notifications", handleNotificationsUpdate);
-            socket.off("unreadCount", handleUnreadCountUpdate);
-            socket.disconnect();
-          }
-        };
       } catch (error) {
-        console.error("Error in notification socket setup:", error);
+        console.error("Error initializing socket:", error);
+        if (mounted) {
+          setSocketConnected(false);
+        }
       }
-    }
+    };
+
+    initializeSocket();
+
+    // Cleanup
+    return () => {
+      mounted = false;
+      if (socketRef.current) {
+        console.log("Cleaning up socket connection");
+        const socket = socketRef.current;
+        socket.off("newNotification", handleNewNotification);
+        socket.off("notifications", handleNotificationsUpdate);
+        socket.off("unreadCount", handleUnreadCountUpdate);
+        socket.disconnect();
+        socketRef.current = null;
+        setSocketConnected(false);
+      }
+    };
   }, [
     userInfo,
     handleNewNotification,
     handleNotificationsUpdate,
     handleUnreadCountUpdate,
   ]);
+
+  // Add visual indicator for socket connection status (optional)
+  useEffect(() => {
+    console.log(
+      "Socket connection status:",
+      socketConnected ? "Connected" : "Disconnected"
+    );
+  }, [socketConnected]);
 
   const handleToggleDropdown = () => {
     setIsOpen(!isOpen);

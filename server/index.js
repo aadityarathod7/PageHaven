@@ -24,8 +24,12 @@ const io = new Server(httpServer, {
     credentials: true
   },
   pingTimeout: 60000,
-  pingInterval: 25000
+  pingInterval: 25000,
+  transports: ['websocket', 'polling']
 });
+
+// Track connected users
+const connectedUsers = new Map();
 
 // Socket.io connection handling
 io.on('connection', (socket) => {
@@ -37,12 +41,35 @@ io.on('connection', (socket) => {
 
   // Join user's room for private notifications
   socket.on('join', (userId) => {
+    if (!userId) {
+      console.error('No userId provided for room join');
+      return;
+    }
+
+    // Leave previous room if any
+    const previousUserId = [...socket.rooms].find(room => room !== socket.id);
+    if (previousUserId) {
+      socket.leave(previousUserId);
+      console.log(`Socket ${socket.id} left room ${previousUserId}`);
+    }
+
+    // Join new room
     socket.join(userId);
-    console.log(`User ${userId} joined their room with socket ${socket.id}`);
+    connectedUsers.set(socket.id, userId);
+
+    const roomSize = io.sockets.adapter.rooms.get(userId)?.size || 0;
+    console.log(`User ${userId} joined their room with socket ${socket.id}. Room size: ${roomSize}`);
   });
 
   socket.on('disconnect', (reason) => {
-    console.log(`Client disconnected. Reason: ${reason}`);
+    const userId = connectedUsers.get(socket.id);
+    if (userId) {
+      connectedUsers.delete(socket.id);
+      const roomSize = io.sockets.adapter.rooms.get(userId)?.size || 0;
+      console.log(`Client disconnected. Socket: ${socket.id}, User: ${userId}, Reason: ${reason}, Remaining room size: ${roomSize}`);
+    } else {
+      console.log(`Client disconnected. Socket: ${socket.id}, Reason: ${reason}`);
+    }
   });
 });
 

@@ -24,6 +24,38 @@ const getUnreadCount = asyncHandler(async (req, res) => {
     res.json({ count });
 });
 
+// Helper function to emit notification events
+const emitNotificationEvents = async (io, userId, notification = null) => {
+    try {
+        // Get room size to verify connection
+        const roomSize = io.sockets.adapter.rooms.get(userId)?.size || 0;
+        console.log(`Emitting to user ${userId}. Room size: ${roomSize}`);
+
+        // Get latest notifications and count
+        const notifications = await Notification.find({ user: userId })
+            .sort('-createdAt')
+            .limit(50);
+
+        const unreadCount = await Notification.countDocuments({
+            user: userId,
+            read: false,
+        });
+
+        // Emit events
+        if (notification) {
+            io.to(userId).emit('newNotification', notification);
+        }
+        io.to(userId).emit('notifications', notifications);
+        io.to(userId).emit('unreadCount', unreadCount);
+
+        console.log(`Successfully emitted notifications to user ${userId}`);
+        return true;
+    } catch (error) {
+        console.error(`Error emitting notification events for user ${userId}:`, error);
+        return false;
+    }
+};
+
 // @desc    Mark notification as read
 // @route   PUT /api/notifications/:id/read
 // @access  Private
@@ -41,14 +73,11 @@ const markAsRead = asyncHandler(async (req, res) => {
     notification.read = true;
     await notification.save();
 
-    // Get updated unread count
-    const unreadCount = await Notification.countDocuments({
-        user: req.user._id,
-        read: false,
-    });
-
-    // Emit updated count to user
-    req.app.get('io').to(req.user._id.toString()).emit('unreadCount', unreadCount);
+    // Get Socket.IO instance and emit updates
+    const io = req.app.get('io');
+    if (io) {
+        await emitNotificationEvents(io, req.user._id.toString());
+    }
 
     res.json(notification);
 });
@@ -62,8 +91,11 @@ const markAllAsRead = asyncHandler(async (req, res) => {
         { read: true }
     );
 
-    // Emit zero unread count to user
-    req.app.get('io').to(req.user._id.toString()).emit('unreadCount', 0);
+    // Get Socket.IO instance and emit updates
+    const io = req.app.get('io');
+    if (io) {
+        await emitNotificationEvents(io, req.user._id.toString());
+    }
 
     res.json({ message: 'All notifications marked as read' });
 });
@@ -83,16 +115,6 @@ const createNotification = asyncHandler(async (req, res) => {
             link,
         });
 
-        // Get updated notifications and unread count
-        const notifications = await Notification.find({ user: userId })
-            .sort('-createdAt')
-            .limit(50);
-
-        const unreadCount = await Notification.countDocuments({
-            user: userId,
-            read: false,
-        });
-
         // Get Socket.IO instance
         const io = req.app.get('io');
         if (!io) {
@@ -100,15 +122,8 @@ const createNotification = asyncHandler(async (req, res) => {
             throw new Error('Socket.IO instance not found');
         }
 
-        // Log the emission attempt
-        console.log(`Attempting to emit notification to user ${userId}`);
-
-        // Emit new notification to specific user
-        io.to(userId).emit('newNotification', notification);
-        io.to(userId).emit('notifications', notifications);
-        io.to(userId).emit('unreadCount', unreadCount);
-
-        console.log(`Successfully emitted notification to user ${userId}`);
+        // Emit notification events
+        await emitNotificationEvents(io, userId, notification);
 
         res.status(201).json(notification);
     } catch (error) {
@@ -122,7 +137,6 @@ const createNotification = asyncHandler(async (req, res) => {
 // @access  Private
 const clearNotifications = asyncHandler(async (req, res) => {
     try {
-        // Perform deletion and get result
         const result = await Notification.deleteMany({ user: req.user._id });
 
         if (result.deletedCount === 0) {
@@ -136,14 +150,8 @@ const clearNotifications = asyncHandler(async (req, res) => {
             throw new Error('Socket.IO instance not found');
         }
 
-        // Log the emission attempt
-        console.log(`Attempting to emit clear notifications for user ${req.user._id}`);
-
-        // Emit empty notifications and zero count
-        io.to(req.user._id.toString()).emit('notifications', []);
-        io.to(req.user._id.toString()).emit('unreadCount', 0);
-
-        console.log(`Successfully cleared notifications for user ${req.user._id}`);
+        // Emit empty state
+        await emitNotificationEvents(io, req.user._id.toString());
 
         res.json({
             message: 'All notifications cleared',
