@@ -29,7 +29,12 @@ const emitNotificationEvents = async (io, userId, notification = null) => {
     try {
         // Get room size to verify connection
         const roomSize = io.sockets.adapter.rooms.get(userId)?.size || 0;
-        console.log(`Emitting to user ${userId}. Room size: ${roomSize}`);
+        console.log(`Emitting to user ${userId}. Active connections in room: ${roomSize}`);
+
+        if (roomSize === 0) {
+            console.log(`No active connections for user ${userId}`);
+            return false;
+        }
 
         // Get latest notifications and count
         const notifications = await Notification.find({ user: userId })
@@ -41,14 +46,33 @@ const emitNotificationEvents = async (io, userId, notification = null) => {
             read: false,
         });
 
-        // Emit events
-        if (notification) {
-            io.to(userId).emit('newNotification', notification);
-        }
-        io.to(userId).emit('notifications', notifications);
-        io.to(userId).emit('unreadCount', unreadCount);
+        // Emit events with acknowledgment
+        const emitWithAck = (event, data) => {
+            return new Promise((resolve) => {
+                io.to(userId).emit(event, data, (error) => {
+                    if (error) {
+                        console.error(`Error emitting ${event}:`, error);
+                        resolve(false);
+                    } else {
+                        console.log(`Successfully emitted ${event} to user ${userId}`);
+                        resolve(true);
+                    }
+                });
+            });
+        };
 
-        console.log(`Successfully emitted notifications to user ${userId}`);
+        // Emit all events
+        const emitPromises = [
+            emitWithAck('notifications', notifications),
+            emitWithAck('unreadCount', unreadCount)
+        ];
+
+        if (notification) {
+            emitPromises.push(emitWithAck('newNotification', notification));
+        }
+
+        await Promise.all(emitPromises);
+        console.log(`Successfully emitted all events to user ${userId}`);
         return true;
     } catch (error) {
         console.error(`Error emitting notification events for user ${userId}:`, error);
@@ -60,44 +84,60 @@ const emitNotificationEvents = async (io, userId, notification = null) => {
 // @route   PUT /api/notifications/:id/read
 // @access  Private
 const markAsRead = asyncHandler(async (req, res) => {
-    const notification = await Notification.findOne({
-        _id: req.params.id,
-        user: req.user._id,
-    });
+    try {
+        const notification = await Notification.findOneAndUpdate(
+            {
+                _id: req.params.id,
+                user: req.user._id,
+            },
+            { read: true },
+            { new: true }
+        );
 
-    if (!notification) {
-        res.status(404);
-        throw new Error('Notification not found');
+        if (!notification) {
+            res.status(404);
+            throw new Error('Notification not found');
+        }
+
+        // Get Socket.IO instance and emit updates
+        const io = req.app.get('io');
+        if (io) {
+            const emitted = await emitNotificationEvents(io, req.user._id.toString());
+            console.log(`Notification events emission status: ${emitted}`);
+        }
+
+        res.json(notification);
+    } catch (error) {
+        console.error('Error in markAsRead:', error);
+        throw error;
     }
-
-    notification.read = true;
-    await notification.save();
-
-    // Get Socket.IO instance and emit updates
-    const io = req.app.get('io');
-    if (io) {
-        await emitNotificationEvents(io, req.user._id.toString());
-    }
-
-    res.json(notification);
 });
 
 // @desc    Mark all notifications as read
 // @route   PUT /api/notifications/mark-all-read
 // @access  Private
 const markAllAsRead = asyncHandler(async (req, res) => {
-    await Notification.updateMany(
-        { user: req.user._id, read: false },
-        { read: true }
-    );
+    try {
+        const result = await Notification.updateMany(
+            { user: req.user._id, read: false },
+            { read: true }
+        );
 
-    // Get Socket.IO instance and emit updates
-    const io = req.app.get('io');
-    if (io) {
-        await emitNotificationEvents(io, req.user._id.toString());
+        // Get Socket.IO instance and emit updates
+        const io = req.app.get('io');
+        if (io) {
+            const emitted = await emitNotificationEvents(io, req.user._id.toString());
+            console.log(`Notification events emission status: ${emitted}`);
+        }
+
+        res.json({
+            message: 'All notifications marked as read',
+            modifiedCount: result.modifiedCount
+        });
+    } catch (error) {
+        console.error('Error in markAllAsRead:', error);
+        throw error;
     }
-
-    res.json({ message: 'All notifications marked as read' });
 });
 
 // @desc    Create a notification

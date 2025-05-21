@@ -273,14 +273,15 @@ const NotificationDropdown = () => {
         await fetchNotifications();
         await fetchUnreadCount();
 
-        // Create socket connection
+        // Create socket connection with acknowledgments
         socketRef.current = io(SOCKET_URL, {
           withCredentials: true,
           reconnection: true,
           reconnectionDelay: 1000,
           reconnectionDelayMax: 5000,
           reconnectionAttempts: 5,
-          transports: ["websocket", "polling"], // Try WebSocket first
+          transports: ["websocket", "polling"],
+          forceNew: true,
         });
 
         const socket = socketRef.current;
@@ -289,9 +290,18 @@ const NotificationDropdown = () => {
           console.log("Socket connected successfully with ID:", socket.id);
           if (mounted) {
             setSocketConnected(true);
+            // Join user's room and request initial data
+            socket.emit("join", userInfo._id, (error) => {
+              if (error) {
+                console.error("Error joining room:", error);
+              } else {
+                console.log("Successfully joined room");
+                // Request fresh data after joining room
+                fetchNotifications();
+                fetchUnreadCount();
+              }
+            });
           }
-          // Join user's room
-          socket.emit("join", userInfo._id);
         });
 
         socket.on("connect_error", (error) => {
@@ -312,15 +322,31 @@ const NotificationDropdown = () => {
           console.log(`Socket reconnected after ${attemptNumber} attempts`);
           if (mounted) {
             setSocketConnected(true);
-            // Re-join room on reconnection
+            // Re-join room and refresh data on reconnection
             socket.emit("join", userInfo._id);
+            fetchNotifications();
+            fetchUnreadCount();
           }
         });
 
-        // Bind event handlers
-        socket.on("newNotification", handleNewNotification);
-        socket.on("notifications", handleNotificationsUpdate);
-        socket.on("unreadCount", handleUnreadCountUpdate);
+        // Bind event handlers with acknowledgments
+        socket.on("newNotification", (notification, callback) => {
+          console.log("Received new notification:", notification);
+          handleNewNotification(notification);
+          if (callback) callback();
+        });
+
+        socket.on("notifications", (updatedNotifications, callback) => {
+          console.log("Received notifications update:", updatedNotifications);
+          handleNotificationsUpdate(updatedNotifications);
+          if (callback) callback();
+        });
+
+        socket.on("unreadCount", (count, callback) => {
+          console.log("Received unread count update:", count);
+          handleUnreadCountUpdate(count);
+          if (callback) callback();
+        });
       } catch (error) {
         console.error("Error initializing socket:", error);
         if (mounted) {
@@ -337,9 +363,9 @@ const NotificationDropdown = () => {
       if (socketRef.current) {
         console.log("Cleaning up socket connection");
         const socket = socketRef.current;
-        socket.off("newNotification", handleNewNotification);
-        socket.off("notifications", handleNotificationsUpdate);
-        socket.off("unreadCount", handleUnreadCountUpdate);
+        socket.off("newNotification");
+        socket.off("notifications");
+        socket.off("unreadCount");
         socket.disconnect();
         socketRef.current = null;
         setSocketConnected(false);
@@ -367,8 +393,21 @@ const NotificationDropdown = () => {
   const handleNotificationClick = async (notification) => {
     try {
       if (!notification.read) {
-        await authAxios.put(`/api/notifications/${notification._id}/read`);
+        const { data } = await authAxios.put(
+          `/api/notifications/${notification._id}/read`
+        );
+
+        // Update the notification in the local state
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n._id === notification._id ? { ...n, read: true } : n
+          )
+        );
+
+        // Update unread count locally
+        setUnreadCount((prev) => Math.max(0, prev - 1));
       }
+
       if (notification.link) {
         navigate(notification.link);
       }
@@ -381,6 +420,10 @@ const NotificationDropdown = () => {
   const handleMarkAllRead = async () => {
     try {
       await authAxios.put("/api/notifications/mark-all-read");
+
+      // Update all notifications in local state
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+      setUnreadCount(0);
     } catch (error) {
       console.error("Error marking all notifications as read:", error);
     }
@@ -397,6 +440,15 @@ const NotificationDropdown = () => {
       console.error("Error clearing notifications:", error);
     }
   };
+
+  // Add debug logging for state changes
+  useEffect(() => {
+    console.log("Notifications state updated:", notifications);
+  }, [notifications]);
+
+  useEffect(() => {
+    console.log("Unread count updated:", unreadCount);
+  }, [unreadCount]);
 
   return (
     <DropdownContainer>
