@@ -73,10 +73,19 @@ const createNotification = asyncHandler(async (req, res) => {
     res.status(201).json(notification);
 });
 
+// @desc    Clear all notifications
+// @route   DELETE /api/notifications
+// @access  Private
+const clearNotifications = asyncHandler(async (req, res) => {
+    await Notification.deleteMany({ user: req.user._id });
+    res.json({ message: 'All notifications cleared' });
+});
+
 module.exports = {
     getUserNotifications,
     getUnreadCount,
     markAsRead,
     markAllAsRead,
     createNotification,
+    clearNotifications,
 }; 

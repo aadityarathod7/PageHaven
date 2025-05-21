@@ -6,13 +6,15 @@ const {
     markAsRead,
     markAllAsRead,
     createNotification,
+    clearNotifications,
 } = require('../controllers/notificationController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
 // Get user notifications and create new notification
 router.route('/')
     .get(protect, getUserNotifications)
-    .post(protect, admin, createNotification);
+    .post(protect, admin, createNotification)
+    .delete(protect, clearNotifications);
 
 // Get unread notification count
 router.get('/unread-count', protect, getUnreadCount);

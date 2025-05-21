@@ -48,7 +48,7 @@ const NotificationButton = styled.button`
     right: 2px;
     min-width: 18px;
     height: 18px;
-    background: ${colors.accent};
+    background: #dc2626; /* red-600 color */
     border-radius: ${borderRadius.full};
     border: 2px solid ${colors.background.primary};
     color: white;
@@ -263,6 +263,16 @@ const NotificationDropdown = () => {
     }
   };
 
+  const handleClearNotifications = async () => {
+    try {
+      await authAxios.delete("/api/notifications");
+      setNotifications([]);
+      setUnreadCount(0);
+    } catch (error) {
+      console.error("Error clearing notifications:", error);
+    }
+  };
+
   return (
     <DropdownContainer>
       <NotificationButton
@@ -293,7 +303,7 @@ const NotificationDropdown = () => {
             )}
             {notifications.length > 0 && (
               <ClearButton
-                onClick={() => setNotifications([])}
+                onClick={handleClearNotifications}
                 title="Clear all notifications"
               >
                 <FaTrash />
