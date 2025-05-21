@@ -259,6 +259,8 @@ const NotificationDropdown = () => {
           reconnectionAttempts: 5,
           transports: ["websocket", "polling"],
           forceNew: true,
+          timeout: 10000,
+          autoConnect: true,
         });
 
         const socket = socketRef.current;
@@ -270,6 +272,9 @@ const NotificationDropdown = () => {
             socket.emit("join", userInfo._id, (error) => {
               if (error) {
                 console.error("Error joining room:", error);
+                setTimeout(() => {
+                  socket.emit("join", userInfo._id);
+                }, 1000);
               } else {
                 console.log("Successfully joined room");
               }
@@ -281,6 +286,15 @@ const NotificationDropdown = () => {
           console.error("Socket connection error:", error);
           if (mounted) {
             setSocketConnected(false);
+            const reconnectDelay = Math.min(
+              1000 * Math.pow(2, socket.io.reconnectionAttempts),
+              5000
+            );
+            setTimeout(() => {
+              if (mounted && !socket.connected) {
+                socket.connect();
+              }
+            }, reconnectDelay);
           }
         });
 
@@ -288,6 +302,9 @@ const NotificationDropdown = () => {
           console.log("Socket disconnected:", reason);
           if (mounted) {
             setSocketConnected(false);
+            if (reason !== "io client disconnect") {
+              socket.connect();
+            }
           }
         });
 
@@ -295,12 +312,23 @@ const NotificationDropdown = () => {
           console.log(`Socket reconnected after ${attemptNumber} attempts`);
           if (mounted) {
             setSocketConnected(true);
-            initialFetchDone.current = false; // Reset flag on reconnect
+            initialFetchDone.current = false;
             socket.emit("join", userInfo._id);
+            fetchData();
           }
         });
 
-        // Bind event handlers
+        socket.on("reconnect_error", (error) => {
+          console.error("Socket reconnection error:", error);
+        });
+
+        socket.on("reconnect_failed", () => {
+          console.error("Socket reconnection failed after all attempts");
+          if (mounted) {
+            setSocketConnected(false);
+          }
+        });
+
         socket.on("newNotification", (notification, callback) => {
           console.log("Received new notification:", notification);
           if (mounted) {
