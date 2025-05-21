@@ -121,14 +121,38 @@ const createNotification = asyncHandler(async (req, res) => {
 // @route   DELETE /api/notifications
 // @access  Private
 const clearNotifications = asyncHandler(async (req, res) => {
-    await Notification.deleteMany({ user: req.user._id });
+    try {
+        // Perform deletion and get result
+        const result = await Notification.deleteMany({ user: req.user._id });
 
-    // Emit empty notifications and zero count
-    const io = req.app.get('io');
-    io.to(req.user._id.toString()).emit('notifications', []);
-    io.to(req.user._id.toString()).emit('unreadCount', 0);
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: 'No notifications found to delete' });
+        }
 
-    res.json({ message: 'All notifications cleared' });
+        // Get Socket.IO instance
+        const io = req.app.get('io');
+        if (!io) {
+            console.error('Socket.IO instance not found in clearNotifications');
+            throw new Error('Socket.IO instance not found');
+        }
+
+        // Log the emission attempt
+        console.log(`Attempting to emit clear notifications for user ${req.user._id}`);
+
+        // Emit empty notifications and zero count
+        io.to(req.user._id.toString()).emit('notifications', []);
+        io.to(req.user._id.toString()).emit('unreadCount', 0);
+
+        console.log(`Successfully cleared notifications for user ${req.user._id}`);
+
+        res.json({
+            message: 'All notifications cleared',
+            deletedCount: result.deletedCount
+        });
+    } catch (error) {
+        console.error('Error in clearNotifications:', error);
+        throw error;
+    }
 });
 
 module.exports = {

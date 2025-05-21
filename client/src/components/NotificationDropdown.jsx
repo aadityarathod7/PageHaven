@@ -249,40 +249,65 @@ const NotificationDropdown = () => {
 
   useEffect(() => {
     if (userInfo) {
-      // Initial fetch
-      fetchNotifications();
-      fetchUnreadCount();
+      let socket;
+      try {
+        // Initial fetch
+        fetchNotifications();
+        fetchUnreadCount();
 
-      // Connect to socket.io
-      const socket = io(SOCKET_URL, {
-        withCredentials: true,
-      });
+        // Connect to socket.io
+        socket = io(SOCKET_URL, {
+          withCredentials: true,
+          reconnection: true,
+          reconnectionDelay: 1000,
+          reconnectionDelayMax: 5000,
+          reconnectionAttempts: 5,
+        });
 
-      // Add connection error handling
-      socket.on("connect_error", (error) => {
-        console.error("Socket connection error:", error);
-      });
+        // Add connection error handling
+        socket.on("connect_error", (error) => {
+          console.error("Socket connection error:", error);
+        });
 
-      socket.on("connect", () => {
-        console.log("Socket connected successfully");
-      });
+        socket.on("connect", () => {
+          console.log("Socket connected successfully");
+          // Re-join room on reconnection
+          socket.emit("join", userInfo._id);
+        });
 
-      // Join user's room
-      socket.emit("join", userInfo._id);
+        socket.on("connect_timeout", () => {
+          console.error("Socket connection timeout");
+        });
 
-      // Listen for updates with memoized handlers
-      socket.on("newNotification", handleNewNotification);
-      socket.on("notifications", handleNotificationsUpdate);
-      socket.on("unreadCount", handleUnreadCountUpdate);
+        socket.on("reconnect", (attemptNumber) => {
+          console.log(`Socket reconnected after ${attemptNumber} attempts`);
+        });
 
-      // Cleanup on unmount
-      return () => {
-        console.log("Cleaning up socket connection");
-        socket.off("newNotification", handleNewNotification);
-        socket.off("notifications", handleNotificationsUpdate);
-        socket.off("unreadCount", handleUnreadCountUpdate);
-        socket.disconnect();
-      };
+        socket.on("reconnect_error", (error) => {
+          console.error("Socket reconnection error:", error);
+        });
+
+        // Join user's room
+        socket.emit("join", userInfo._id);
+
+        // Listen for updates with memoized handlers
+        socket.on("newNotification", handleNewNotification);
+        socket.on("notifications", handleNotificationsUpdate);
+        socket.on("unreadCount", handleUnreadCountUpdate);
+
+        // Cleanup on unmount
+        return () => {
+          console.log("Cleaning up socket connection");
+          if (socket) {
+            socket.off("newNotification", handleNewNotification);
+            socket.off("notifications", handleNotificationsUpdate);
+            socket.off("unreadCount", handleUnreadCountUpdate);
+            socket.disconnect();
+          }
+        };
+      } catch (error) {
+        console.error("Error in notification socket setup:", error);
+      }
     }
   }, [
     userInfo,
@@ -320,6 +345,10 @@ const NotificationDropdown = () => {
   const handleClearNotifications = async () => {
     try {
       await authAxios.delete("/api/notifications");
+      // Update local state after successful deletion
+      setNotifications([]);
+      setUnreadCount(0);
+      setIsOpen(false); // Close the dropdown after clearing
     } catch (error) {
       console.error("Error clearing notifications:", error);
     }
