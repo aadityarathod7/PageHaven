@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const Book = require('../models/bookModel');
 const Progress = require('../models/progressModel');
+const Notification = require('../models/notificationModel');
 
 // @desc    Create a new book
 // @route   POST /api/books
@@ -382,30 +383,72 @@ const downloadBookAsPDF = asyncHandler(async (req, res) => {
 // @route   POST /api/books/:id/progress
 // @access  Private
 const trackReadingProgress = asyncHandler(async (req, res) => {
-  const { currentChapter, currentPosition, isFavorite } = req.body;
+  const { currentChapter, currentPosition } = req.body;
+  const bookId = req.params.id;
 
-  // Find existing progress or create new
-  let progress = await Progress.findOne({
-    user: req.user._id,
-    book: req.params.id,
-  });
-
-  if (progress) {
-    progress.currentChapter = currentChapter || progress.currentChapter;
-    progress.currentPosition = currentPosition || progress.currentPosition;
-    progress.isFavorite = isFavorite !== undefined ? isFavorite : progress.isFavorite;
-    await progress.save();
-  } else {
-    progress = await Progress.create({
+  try {
+    let progress = await Progress.findOne({
       user: req.user._id,
-      book: req.params.id,
-      currentChapter,
-      currentPosition,
-      isFavorite: isFavorite || false,
+      book: bookId
     });
-  }
 
-  res.json(progress);
+    const book = await Book.findById(bookId);
+    if (!book) {
+      res.status(404);
+      throw new Error('Book not found');
+    }
+
+    if (!progress) {
+      progress = await Progress.create({
+        user: req.user._id,
+        book: bookId,
+        currentChapter,
+        currentPosition,
+        isPurchased: false,
+        isFavorite: false
+      });
+
+      // Create first-time reading notification
+      await Notification.create({
+        user: req.user._id,
+        title: 'Started Reading!',
+        message: `You've started reading "${book.title}". Enjoy your reading journey!`,
+        type: 'info',
+        link: `/read/${bookId}`
+      });
+    } else {
+      // Check if this update represents a significant milestone (e.g., 25%, 50%, 75%, 100%)
+      const previousProgress = progress.currentPosition;
+      const newProgress = currentPosition;
+      const totalLength = book.totalChapters || 100; // Fallback to 100 if totalChapters not set
+
+      const previousPercentage = Math.floor((previousProgress / totalLength) * 100);
+      const newPercentage = Math.floor((newProgress / totalLength) * 100);
+
+      // Check if we've crossed any milestone
+      const milestones = [25, 50, 75, 100];
+      for (const milestone of milestones) {
+        if (previousPercentage < milestone && newPercentage >= milestone) {
+          await Notification.create({
+            user: req.user._id,
+            title: `${milestone}% Complete!`,
+            message: `You're ${milestone}% through "${book.title}". Keep going!`,
+            type: 'success',
+            link: `/read/${bookId}`
+          });
+          break;
+        }
+      }
+
+      progress.currentChapter = currentChapter;
+      progress.currentPosition = currentPosition;
+      await progress.save();
+    }
+
+    res.json(progress);
+  } catch (error) {
+    throw error;
+  }
 });
 
 // @desc    Get user's reading progress
@@ -503,6 +546,56 @@ const getFavoriteBooks = asyncHandler(async (req, res) => {
   res.json(booksWithPurchaseStatus);
 });
 
+// @desc    Toggle favorite status
+// @route   POST /api/books/:id/favorite
+// @access  Private
+const toggleFavorite = asyncHandler(async (req, res) => {
+  const bookId = req.params.id;
+  const { isFavorite } = req.body;
+
+  try {
+    let progress = await Progress.findOne({
+      user: req.user._id,
+      book: bookId
+    });
+
+    const book = await Book.findById(bookId);
+    if (!book) {
+      res.status(404);
+      throw new Error('Book not found');
+    }
+
+    if (!progress) {
+      progress = await Progress.create({
+        user: req.user._id,
+        book: bookId,
+        currentChapter: 0,
+        currentPosition: 0,
+        isPurchased: false,
+        isFavorite: isFavorite
+      });
+    } else {
+      progress.isFavorite = isFavorite;
+      await progress.save();
+    }
+
+    // Create notification when adding to favorites
+    if (isFavorite) {
+      await Notification.create({
+        user: req.user._id,
+        title: 'Added to Favorites',
+        message: `"${book.title}" has been added to your favorites!`,
+        type: 'success',
+        link: `/book/${bookId}`
+      });
+    }
+
+    res.json(progress);
+  } catch (error) {
+    throw error;
+  }
+});
+
 module.exports = {
   createBook,
   getBooks,
@@ -516,4 +609,5 @@ module.exports = {
   getReadingProgress,
   searchBooks,
   getFavoriteBooks,
+  toggleFavorite,
 };

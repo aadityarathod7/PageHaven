@@ -28,6 +28,7 @@ import {
 } from "../styles/theme";
 import { Link } from "react-router-dom";
 import { memo } from "react";
+import NotificationDropdown from "./NotificationDropdown";
 
 const StyledNavbar = styled(Navbar)`
   background: ${colors.background.primary}80;
@@ -57,7 +58,7 @@ const StyledNavbar = styled(Navbar)`
 `;
 
 const Brand = styled(Navbar.Brand)`
-  font-family: 'Playfair Display', ${typography.fonts.heading};
+  font-family: "Playfair Display", ${typography.fonts.heading};
   font-weight: ${typography.fontWeights.bold};
   font-size: 1.85rem;
   color: ${colors.text.primary} !important;
@@ -67,7 +68,11 @@ const Brand = styled(Navbar.Brand)`
   transition: ${transitions.default};
   letter-spacing: -0.02em;
   text-transform: none;
-  background: linear-gradient(135deg, ${colors.text.primary}, ${colors.primary});
+  background: linear-gradient(
+    135deg,
+    ${colors.text.primary},
+    ${colors.primary}
+  );
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -424,10 +429,7 @@ const Header = () => {
               >
                 <FaHeart />
               </IconButton>
-              <IconButton title="Notifications">
-                <FaBell />
-                {hasNotifications && <div className="notification-dot" />}
-              </IconButton>
+              <NotificationDropdown />
             </NavIcons>
           )}
 

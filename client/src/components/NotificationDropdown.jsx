@@ -1,0 +1,277 @@
+import React, { useState, useEffect, useContext } from "react";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { FaBell, FaCheck, FaCircle } from "react-icons/fa";
+import { AuthContext } from "../context/AuthContext";
+import {
+  colors,
+  typography,
+  shadows,
+  transitions,
+  borderRadius,
+} from "../styles/theme";
+import { format } from "date-fns";
+
+const DropdownContainer = styled.div`
+  position: relative;
+  display: inline-block;
+`;
+
+const NotificationButton = styled.button`
+  position: relative;
+  background: none;
+  border: none;
+  color: ${colors.text.secondary};
+  width: 40px;
+  height: 40px;
+  border-radius: ${borderRadius.full};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: ${transitions.default};
+  cursor: pointer;
+
+  svg {
+    font-size: 1.2rem;
+    transition: ${transitions.default};
+  }
+
+  &:hover {
+    background: ${colors.background.secondary};
+    color: ${colors.secondary};
+    transform: translateY(-2px);
+  }
+
+  .notification-dot {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    background: ${colors.accent};
+    border-radius: 50%;
+    border: 2px solid ${colors.background.primary};
+  }
+`;
+
+const DropdownContent = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: ${colors.background.primary};
+  border: 1px solid ${colors.background.accent};
+  border-radius: ${borderRadius.xl};
+  box-shadow: ${shadows.xl};
+  z-index: 1000;
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  display: ${(props) => (props.$isOpen ? "block" : "none")};
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: ${colors.background.secondary};
+    border-radius: ${borderRadius.full};
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: ${colors.background.accent};
+    border-radius: ${borderRadius.full};
+  }
+`;
+
+const NotificationHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-bottom: 1px solid ${colors.background.accent};
+  margin-bottom: 0.75rem;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: ${typography.fontWeights.semibold};
+    color: ${colors.text.primary};
+  }
+`;
+
+const MarkAllRead = styled.button`
+  background: none;
+  border: none;
+  color: ${colors.secondary};
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: ${transitions.default};
+
+  &:hover {
+    color: ${colors.primary};
+    text-decoration: underline;
+  }
+`;
+
+const NotificationItem = styled.div`
+  padding: 0.75rem;
+  border-radius: ${borderRadius.lg};
+  background: ${(props) =>
+    props.$read ? "transparent" : colors.background.secondary};
+  cursor: pointer;
+  transition: ${transitions.default};
+  margin-bottom: 0.5rem;
+
+  &:hover {
+    background: ${colors.background.accent}40;
+  }
+
+  .title {
+    font-weight: ${typography.fontWeights.semibold};
+    color: ${colors.text.primary};
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+  }
+
+  .message {
+    color: ${colors.text.secondary};
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: ${colors.text.light};
+
+    .unread-indicator {
+      color: ${colors.accent};
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+  }
+`;
+
+const EmptyState = styled.div`
+  text-align: center;
+  padding: 2rem 1rem;
+  color: ${colors.text.secondary};
+  font-size: 0.9rem;
+`;
+
+const NotificationDropdown = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const { authAxios } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const fetchNotifications = async () => {
+    try {
+      const { data } = await authAxios.get("/api/notifications");
+      setNotifications(data);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  const fetchUnreadCount = async () => {
+    try {
+      const { data } = await authAxios.get("/api/notifications/unread-count");
+      setUnreadCount(data.count);
+    } catch (error) {
+      console.error("Error fetching unread count:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    fetchUnreadCount();
+  }, []);
+
+  const handleNotificationClick = async (notification) => {
+    try {
+      if (!notification.read) {
+        await authAxios.put(`/api/notifications/${notification._id}/read`);
+        fetchUnreadCount();
+        setNotifications(
+          notifications.map((n) =>
+            n._id === notification._id ? { ...n, read: true } : n
+          )
+        );
+      }
+      if (notification.link) {
+        navigate(notification.link);
+      }
+      setIsOpen(false);
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  };
+
+  const handleMarkAllRead = async () => {
+    try {
+      await authAxios.put("/api/notifications/mark-all-read");
+      setNotifications(notifications.map((n) => ({ ...n, read: true })));
+      setUnreadCount(0);
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+    }
+  };
+
+  return (
+    <DropdownContainer>
+      <NotificationButton
+        onClick={() => setIsOpen(!isOpen)}
+        title="Notifications"
+      >
+        <FaBell />
+        {unreadCount > 0 && <div className="notification-dot" />}
+      </NotificationButton>
+
+      <DropdownContent $isOpen={isOpen}>
+        <NotificationHeader>
+          <h3>Notifications</h3>
+          {unreadCount > 0 && (
+            <MarkAllRead onClick={handleMarkAllRead}>
+              Mark all as read
+            </MarkAllRead>
+          )}
+        </NotificationHeader>
+
+        {notifications.length > 0 ? (
+          notifications.map((notification) => (
+            <NotificationItem
+              key={notification._id}
+              $read={notification.read}
+              onClick={() => handleNotificationClick(notification)}
+            >
+              <div className="title">{notification.title}</div>
+              <div className="message">{notification.message}</div>
+              <div className="meta">
+                <span>
+                  {format(new Date(notification.createdAt), "MMM d, h:mm a")}
+                </span>
+                {!notification.read && (
+                  <span className="unread-indicator">
+                    <FaCircle size={8} />
+                    New
+                  </span>
+                )}
+              </div>
+            </NotificationItem>
+          ))
+        ) : (
+          <EmptyState>No notifications yet</EmptyState>
+        )}
+      </DropdownContent>
+    </DropdownContainer>
+  );
+};
+
+export default NotificationDropdown;

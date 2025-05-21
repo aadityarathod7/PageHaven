@@ -1,6 +1,8 @@
 const asyncHandler = require('express-async-handler');
 const Order = require('../models/orderModel');
 const Progress = require('../models/progressModel');
+const Notification = require('../models/notificationModel');
+const Book = require('../models/bookModel');
 
 // @desc    Get user orders
 // @route   GET /api/orders
@@ -61,6 +63,18 @@ const createOrder = asyncHandler(async (req, res) => {
                 isFavorite: false
             });
         }
+
+        // Get book details for the notification
+        const book = await Book.findById(bookId).select('title');
+
+        // Create a notification for the purchase
+        await Notification.create({
+            user: req.user._id,
+            title: 'Purchase Successful!',
+            message: `You have successfully purchased "${book.title}". Start reading now!`,
+            type: 'success',
+            link: `/read/${bookId}`
+        });
 
         res.status(201).json(order);
     } catch (error) {
