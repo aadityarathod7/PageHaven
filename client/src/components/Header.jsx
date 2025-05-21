@@ -143,16 +143,19 @@ const NavLink = styled(Nav.Link)`
 `;
 
 const StyledDropdown = styled(NavDropdown)`
+  position: relative;
+
   .dropdown-toggle {
     color: ${colors.text.secondary} !important;
     font-weight: ${typography.fontWeights.medium};
-    padding: 0.75rem 1.25rem !important;
+    padding: 0.5rem 0.75rem !important;
     border-radius: ${borderRadius.lg};
     transition: ${transitions.default};
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
     margin: 0 0.25rem;
+    font-size: 0.9rem;
 
     &:hover {
       color: ${colors.text.primary} !important;
@@ -161,7 +164,7 @@ const StyledDropdown = styled(NavDropdown)`
     }
 
     &::after {
-      margin-left: 0.5rem;
+      margin-left: 0.25rem;
       transition: ${transitions.default};
     }
 
@@ -179,12 +182,22 @@ const StyledDropdown = styled(NavDropdown)`
     border: 1px solid ${colors.background.accent};
     border-radius: ${borderRadius.xl};
     box-shadow: ${shadows.xl};
-    padding: 0.75rem;
-    min-width: 220px;
-    margin-top: 0.75rem;
+    padding: 0.5rem;
+    min-width: 200px;
+    margin-top: 0.5rem;
     animation: dropdownFade 0.2s ease;
     background: ${colors.background.primary}f8;
     backdrop-filter: blur(10px);
+    right: 0;
+    left: auto !important;
+
+    @media (max-width: 992px) {
+      position: relative !important;
+      right: auto;
+      left: 0 !important;
+      width: 100%;
+      transform: none !important;
+    }
 
     @keyframes dropdownFade {
       from {
@@ -201,19 +214,22 @@ const StyledDropdown = styled(NavDropdown)`
   .dropdown-item {
     color: ${colors.text.secondary};
     font-weight: ${typography.fontWeights.medium};
-    padding: 0.875rem 1.25rem;
+    padding: 0.625rem 1rem;
     border-radius: ${borderRadius.lg};
     display: flex;
     align-items: center;
-    gap: 0.875rem;
+    gap: 0.75rem;
     transition: ${transitions.default};
     position: relative;
     overflow: hidden;
+    font-size: 0.875rem;
+    white-space: nowrap;
 
     svg {
-      font-size: 1.2rem;
+      font-size: 1rem;
       color: ${colors.text.light};
       transition: ${transitions.default};
+      flex-shrink: 0;
     }
 
     &:hover {
@@ -231,23 +247,28 @@ const StyledDropdown = styled(NavDropdown)`
       background: ${gradients.hover};
     }
   }
+
+  .dropdown-divider {
+    margin: 0.375rem 0;
+    border-color: ${colors.background.accent};
+  }
 `;
 
 const UserAvatar = styled.div`
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   border-radius: ${borderRadius.full};
   background: ${colors.background.secondary};
   display: flex;
   align-items: center;
   justify-content: center;
   color: ${colors.secondary};
-  margin-right: 0.75rem;
+  margin-right: 0.5rem;
   transition: ${transitions.default};
   border: 2px solid transparent;
 
   svg {
-    font-size: 1.2rem;
+    font-size: 1rem;
     transition: ${transitions.default};
   }
 
