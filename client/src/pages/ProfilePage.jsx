@@ -415,7 +415,7 @@ const StatCard = styled.div`
 `;
 
 const ProfilePage = () => {
-  const { userInfo, authAxios } = useContext(AuthContext);
+  const { userInfo, authAxios, updateProfile } = useContext(AuthContext);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -493,21 +493,11 @@ const ProfilePage = () => {
     try {
       setLoadingProfile(true);
 
-      const { data } = await authAxios.put("/api/users/profile", {
+      await updateProfile({
         name,
         email,
         password: password ? password : undefined,
       });
-
-      // Update local storage with new user info
-      localStorage.setItem(
-        "userInfo",
-        JSON.stringify({
-          ...userInfo,
-          name: data.name,
-          email: data.email,
-        })
-      );
 
       setSuccess(true);
       setLoadingProfile(false);
