@@ -14,6 +14,7 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 connectDB();
 const app = express();
@@ -94,6 +95,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Frontend build in production
 if (process.env.NODE_ENV === 'production') {
