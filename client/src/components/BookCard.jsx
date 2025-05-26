@@ -16,9 +16,7 @@ import {
   typography,
   shadows,
   transitions,
-  borderRadius,
   commonStyles,
-  gradients,
 } from "../styles/theme";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
@@ -27,17 +25,11 @@ import { getImageUrl, handleImageError } from "../utils/imageUtils";
 import { memo } from "react";
 
 const StyledCard = styled(Card)`
-  ${(props) =>
-    props.theme.commonStyles?.cardStyle ||
-    `
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: ${borderRadius.xl};
-    box-shadow: ${shadows.md};
-    transition: all 0.3s ease-in-out;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  `}
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: none;
   height: 100%;
   overflow: hidden;
   display: flex;
@@ -46,72 +38,14 @@ const StyledCard = styled(Card)`
 
   &:hover {
     transform: translateY(-5px);
-    box-shadow: ${shadows.lg};
-    background: rgba(255, 255, 255, 0.08);
-
-    .card-img-wrapper:before {
-      opacity: 1;
-      transform: perspective(1000px) rotateX(0deg) translateY(0);
-    }
-
-    .card-img-top {
-      transform: scale(1.05) translateY(-5px);
-    }
-
-    &:before {
-      opacity: 1;
-    }
-  }
-
-  &:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: ${borderRadius.xl};
-    border: 2px solid transparent;
-    background: linear-gradient(
-      45deg,
-      ${colors.secondary}50,
-      #3cd88f50,
-      ${colors.secondary}50
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) padding-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
   }
 `;
 
 const ImageWrapper = styled.div`
   position: relative;
   overflow: hidden;
-  border-radius: ${borderRadius.xl} ${borderRadius.xl} 0 0;
-  height: 250px;
-
-  &:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-      135deg,
-      rgba(60, 216, 143, 0.4) 0%,
-      rgba(60, 216, 143, 0.1) 50%,
-      rgba(255, 255, 255, 0.1) 100%
-    );
-    z-index: 1;
-    opacity: 0;
-    transform: perspective(1000px) rotateX(10deg) translateY(-10px);
-    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-    backdrop-filter: blur(2px);
-  }
+  height: 280px;
 
   &:after {
     content: "";
@@ -119,11 +53,10 @@ const ImageWrapper = styled.div`
     bottom: 0;
     left: 0;
     right: 0;
-    height: 60%;
+    height: 40%;
     background: linear-gradient(
       to top,
       rgba(0, 0, 0, 0.7) 0%,
-      rgba(0, 0, 0, 0.5) 30%,
       transparent 100%
     );
     z-index: 1;
@@ -134,9 +67,11 @@ const CoverImage = styled(Card.Img)`
   height: 100%;
   width: 100%;
   object-fit: cover;
-  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-  transform-origin: center;
-  filter: brightness(0.95) contrast(1.1);
+  transition: transform 0.5s ease;
+
+  ${StyledCard}:hover & {
+    transform: scale(1.05);
+  }
 `;
 
 const ImagePlaceholder = styled.div`
@@ -162,17 +97,13 @@ const BookBadge = styled.div`
   position: absolute;
   top: 1rem;
   left: 1rem;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.75);
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: 6px;
   color: white;
-  font-weight: ${typography.fontWeights.bold};
+  font-weight: 500;
   font-size: 0.9rem;
   z-index: 2;
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  pointer-events: none;
 `;
 
 const PurchaseBadge = styled.div`
@@ -194,45 +125,25 @@ const PurchaseBadge = styled.div`
 `;
 
 const CardBody = styled(Card.Body)`
-  padding: 1.75rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.03) 0%,
-    rgba(255, 255, 255, 0.02) 50%,
-    transparent 100%
-  );
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid #f1f1f1;
 `;
 
 const BookTitle = styled(Link)`
-  font-family: ${typography.fonts.heading};
-  font-weight: ${typography.fontWeights.bold};
-  font-size: 1.35rem;
-  color: ${colors.text.primary};
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2d3748;
   text-decoration: none;
   margin-bottom: 0.5rem;
   display: block;
-  transition: ${transitions.default};
-  line-height: 1.3;
-  background: ${gradients.text};
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  transition: color 0.2s ease;
+  line-height: 1.4;
 
   &:hover {
-    color: ${colors.secondary};
-    text-shadow: 0 0 20px rgba(60, 216, 143, 0.3);
-  }
-
-  ${StyledCard}:hover & {
-    background: ${gradients.hover};
-    -webkit-background-clip: text;
-    background-clip: text;
+    color: #7c3aed;
   }
 `;
 
@@ -263,22 +174,20 @@ const AuthorName = styled.p`
 `;
 
 const CategoryBadge = styled(Badge)`
-  background: ${gradients.primary} !important;
-  color: white;
-  font-weight: ${typography.fontWeights.medium};
-  font-size: 0.8rem;
-  padding: 0.5rem 1rem;
-  border-radius: ${borderRadius.full};
+  background: #f3f4f6 !important;
+  color: #4b5563;
+  font-weight: 500;
+  font-size: 0.75rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
   margin-right: 0.5rem;
   margin-bottom: 0.5rem;
   border: none;
-  box-shadow: 0 2px 4px rgba(34, 34, 59, 0.2);
   transition: all 0.2s ease;
 
   &:hover {
+    background: #e5e7eb !important;
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(124, 58, 237, 0.3);
-    background: ${gradients.hover} !important;
   }
 `;
 
@@ -301,90 +210,47 @@ const StatsContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 1rem;
-  margin-top: auto;
-  background: rgba(255, 255, 255, 0.02);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 0 0 ${borderRadius.xl} ${borderRadius.xl};
-  padding: 1rem 1.75rem;
-  margin: 1.75rem -1.75rem -1.75rem -1.75rem;
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
+  padding: 1rem 1.5rem;
+  margin: 1rem -1.5rem -1.5rem;
+  background: #fafafa;
+  border-top: 1px solid #f1f1f1;
 `;
 
 const StatItem = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: ${colors.text.secondary};
-  font-size: 0.9rem;
-  font-weight: ${typography.fontWeights.medium};
-  padding: 0.5rem 0.75rem;
-  border-radius: ${borderRadius.lg};
-  transition: all 0.2s ease;
-  background: rgba(255, 255, 255, 0.03);
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
 
   svg {
-    color: ${colors.primary};
-    transition: all 0.2s ease;
-  }
-
-  &:hover {
-    background: ${colors.primary}10;
-    transform: translateY(-1px);
-    svg {
-      transform: scale(1.1);
-      color: ${colors.primary};
-    }
+    color: #7c3aed;
+    font-size: 1rem;
   }
 `;
 
 const FavoriteButton = styled.button`
-  background: rgba(255, 99, 132, 0.1);
-  border: none;
-  width: 42px;
-  height: 42px;
-  border-radius: ${borderRadius.lg};
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${(props) => (props.$isFavorite ? "#ff6384" : colors.text.secondary)};
+  color: ${(props) => (props.$isFavorite ? "#dc2626" : "#9ca3af")};
   cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  transition: all 0.2s ease;
 
-  &:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, #ff6384, #ff8c94);
-    opacity: 0;
-    transition: all 0.3s ease;
+  &:hover {
+    background: ${(props) => (props.$isFavorite ? "#fef2f2" : "#f9fafb")};
+    border-color: ${(props) => (props.$isFavorite ? "#ef4444" : "#d1d5db")};
+    color: ${(props) => (props.$isFavorite ? "#ef4444" : "#7C3AED")};
   }
 
   svg {
-    position: relative;
-    z-index: 1;
-    transition: all 0.3s ease;
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 99, 132, 0.3);
-
-    &:before {
-      opacity: ${(props) => (props.$isFavorite ? 1 : 0)};
-    }
-
-    svg {
-      color: ${(props) =>
-        props.$isFavorite ? "white" : colors.text.secondary};
-      transform: scale(1.1);
-    }
+    font-size: 1.1rem;
   }
 `;
 
