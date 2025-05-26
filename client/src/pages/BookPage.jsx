@@ -149,53 +149,77 @@ const ButtonGroup = styled.div`
   display: flex;
   gap: 0.75rem;
   margin-bottom: 1.5rem;
+  flex-wrap: nowrap;
+  align-items: center;
 
   @media (max-width: 768px) {
-    flex-direction: column;
+    flex-direction: row;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+
+    /* Hide scrollbar but keep functionality */
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 `;
 
-const Button = styled.button`
+const BookButton = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.6rem 1.25rem;
-  border-radius: ${borderRadius.lg};
-  font-weight: ${typography.fontWeights.semibold};
-  font-size: 0.95rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
-  transition: ${transitions.default};
-  color: white;
-  background: ${(props) =>
-    props.$variant === "danger"
-      ? colors.danger
-      : props.$variant === "success"
-      ? colors.secondary
-      : colors.primary};
+  transition: all 0.2s ease;
+  min-height: 2.5rem;
+  color: #fff;
+  width: ${(props) => (props.$fullWidth ? "100%" : "auto")};
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  box-shadow: 0 2px 4px rgba(124, 58, 237, 0.15);
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: ${shadows.md};
-    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(124, 58, 237, 0.2);
+    background: linear-gradient(135deg, #6d28d9, #5b21b6);
   }
 
   &:disabled {
-    background: ${colors.text.light};
+    opacity: 0.7;
     cursor: not-allowed;
     transform: none;
   }
+
+  @media (max-width: 768px) {
+    width: auto;
+    white-space: nowrap;
+  }
+`;
+
+const PurchasedBadge = styled.div`
+  color: #7c3aed;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(124, 58, 237, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
 `;
 
 const AdminActions = styled.div`
   display: flex;
   gap: 1rem;
-  margin-left: auto;
 
   @media (max-width: 768px) {
     margin-left: 0;
-    width: 100%;
   }
 `;
 
@@ -428,54 +452,47 @@ const BookPage = () => {
 
               <ButtonGroup>
                 {isPurchased && (
-                  <div
-                    style={{
-                      color: colors.success,
-                      fontWeight: typography.fontWeights.bold,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
-                      background: `${colors.success}15`,
-                      padding: "0.5rem 1rem",
-                      borderRadius: borderRadius.lg,
-                    }}
-                  >
+                  <PurchasedBadge>
                     <FaBookOpen /> Purchased
-                  </div>
+                  </PurchasedBadge>
                 )}
                 {isPurchased ? (
                   <>
-                    <Button onClick={readBookHandler}>
+                    <BookButton $variant="read" onClick={readBookHandler}>
                       <FaBook /> Read Now
-                    </Button>
+                    </BookButton>
 
-                    <Button
-                      $variant="success"
+                    <BookButton
+                      $variant="download"
                       onClick={downloadPDFHandler}
                       disabled={downloadingPdf}
                     >
                       <FaDownload />
                       {downloadingPdf ? "Downloading..." : "Download PDF"}
-                    </Button>
+                    </BookButton>
                   </>
                 ) : (
-                  <Button
+                  <BookButton
+                    $variant="read"
                     onClick={handlePurchase}
-                    $variant="success"
                     disabled={!book.price}
                   >
                     ₹{book.price ? book.price.toFixed(2) : "0.00"} - Buy Now
-                  </Button>
+                  </BookButton>
                 )}
 
                 {userInfo && userInfo.role === "admin" && (
                   <AdminActions>
-                    <Button as={Link} to={`/admin/book/${book._id}/edit`}>
+                    <BookButton
+                      $variant="edit"
+                      as={Link}
+                      to={`/admin/book/${book._id}/edit`}
+                    >
                       <FaEdit /> Edit
-                    </Button>
-                    <Button onClick={deleteBookHandler} $variant="danger">
+                    </BookButton>
+                    <BookButton $variant="delete" onClick={deleteBookHandler}>
                       <FaTrash /> Delete Book
-                    </Button>
+                    </BookButton>
                   </AdminActions>
                 )}
               </ButtonGroup>

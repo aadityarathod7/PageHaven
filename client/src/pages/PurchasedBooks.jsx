@@ -112,8 +112,8 @@ const ActionButton = styled(Link)`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.6rem 1rem;
-  border-radius: ${borderRadius.lg};
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
   font-size: 0.85rem;
   font-weight: ${typography.fontWeights.medium};
   text-decoration: none;

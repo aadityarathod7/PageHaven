@@ -164,7 +164,7 @@ const BookBadge = styled.div`
   left: 1rem;
   background: rgba(0, 0, 0, 0.85);
   padding: 0.5rem 1rem;
-  border-radius: ${borderRadius.lg};
+  border-radius: 8px;
   color: white;
   font-weight: ${typography.fontWeights.bold};
   font-size: 0.9rem;
@@ -185,7 +185,7 @@ const PurchaseBadge = styled.div`
   font-weight: bold;
   z-index: 100;
   margin: 1rem;
-  border-radius: ${borderRadius.lg};
+  border-radius: 8px;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -394,7 +394,7 @@ const Rating = styled.div`
   right: 1rem;
   background: rgba(0, 0, 0, 0.75);
   padding: 0.5rem 0.75rem;
-  border-radius: ${borderRadius.lg};
+  border-radius: 8px;
   display: flex;
   align-items: center;
   gap: 0.25rem;
