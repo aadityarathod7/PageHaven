@@ -9,6 +9,7 @@ import {
   FaStar,
   FaBookOpen,
   FaImage,
+  FaChevronRight,
 } from "react-icons/fa";
 import styled from "styled-components";
 import {
@@ -26,26 +27,27 @@ import { memo } from "react";
 
 const StyledCard = styled(Card)`
   background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   border: none;
   height: 100%;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   position: relative;
+  backdrop-filter: blur(10px);
 
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
   }
 `;
 
 const ImageWrapper = styled.div`
   position: relative;
   overflow: hidden;
-  height: 280px;
+  height: 300px;
 
   &:after {
     content: "";
@@ -53,10 +55,10 @@ const ImageWrapper = styled.div`
     bottom: 0;
     left: 0;
     right: 0;
-    height: 40%;
+    height: 50%;
     background: linear-gradient(
       to top,
-      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.8) 0%,
       transparent 100%
     );
     z-index: 1;
@@ -67,10 +69,10 @@ const CoverImage = styled(Card.Img)`
   height: 100%;
   width: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.7s ease;
 
   ${StyledCard}:hover & {
-    transform: scale(1.05);
+    transform: scale(1.08);
   }
 `;
 
@@ -88,69 +90,74 @@ const ImagePlaceholder = styled.div`
   color: ${colors.text.light};
 
   svg {
-    font-size: 3rem;
-    opacity: 0.5;
+    font-size: 3.5rem;
+    opacity: 0.6;
   }
 `;
 
 const BookBadge = styled.div`
   position: absolute;
-  top: 1rem;
-  left: 1rem;
-  background: rgba(0, 0, 0, 0.75);
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  color: white;
-  font-weight: 500;
-  font-size: 0.9rem;
+  top: 1.25rem;
+  left: 1.25rem;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.3rem 1rem;
+  border-radius: 8px;
+  color: ${colors.primary};
+  font-weight: 600;
+  font-size: 1rem;
   z-index: 2;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
 `;
 
 const PurchaseBadge = styled.div`
   position: absolute;
   top: 0;
   right: 0;
-  background: ${colors.success};
+  background: linear-gradient(135deg, ${colors.success}, #2dd4bf);
   color: white;
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 1rem;
   font-weight: bold;
   z-index: 100;
-  margin: 1rem;
+  margin: 1.25rem;
   border-radius: 8px;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  box-shadow: ${shadows.md};
+  box-shadow: ${shadows.lg};
   pointer-events: none;
+  backdrop-filter: blur(5px);
 `;
 
 const CardBody = styled(Card.Body)`
-  padding: 1.5rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  border-top: 1px solid #f1f1f1;
+  border-top: 1px solid rgba(241, 241, 241, 0.5);
+  background: rgba(255, 255, 255, 0.95);
 `;
 
 const BookTitle = styled(Link)`
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #2d3748;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1a1a1a;
   text-decoration: none;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   display: block;
-  transition: color 0.2s ease;
+  transition: color 0.3s ease;
   line-height: 1.4;
+  letter-spacing: -0.02em;
 
   &:hover {
-    color: #7c3aed;
+    color: ${colors.primary};
   }
 `;
 
 const AuthorName = styled.p`
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: ${colors.text.secondary};
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   font-weight: ${typography.fontWeights.medium};
   display: flex;
   align-items: center;
@@ -159,116 +166,145 @@ const AuthorName = styled.p`
   &:before {
     content: "by";
     color: ${colors.text.light};
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-style: italic;
   }
 
   span {
     color: ${colors.text.primary};
     transition: ${transitions.default};
+    font-weight: 600;
 
     &:hover {
-      color: ${colors.secondary};
+      color: ${colors.primary};
     }
   }
 `;
 
 const CategoryBadge = styled(Badge)`
-  background: #f3f4f6 !important;
-  color: #4b5563;
-  font-weight: 500;
-  font-size: 0.75rem;
-  padding: 0.4rem 0.8rem;
-  border-radius: 4px;
-  margin-right: 0.5rem;
-  margin-bottom: 0.5rem;
-  border: none;
-  transition: all 0.2s ease;
+  background: linear-gradient(135deg, ${colors.success}, #2dd4bf);
+  color: white;
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  margin-right: 0.6rem;
+  margin-bottom: 0.6rem;
+  border: 1px solid rgba(124, 58, 237, 0.1);
+  transition: all 0.3s ease;
 
   &:hover {
-    background: #e5e7eb !important;
-    transform: translateY(-1px);
+    background: ${colors.primary}15 !important;
+    transform: translateY(-2px);
   }
 `;
 
 const Description = styled.p`
   color: ${colors.text.secondary};
   font-size: 0.95rem;
-  line-height: ${typography.lineHeights.relaxed};
-  margin-bottom: 1.5rem;
+  line-height: 1.7;
+  margin-bottom: 0.5rem;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: ${(props) => (props.$expanded ? "unset" : "2")};
   -webkit-box-orient: vertical;
   overflow: hidden;
-  flex-grow: 1;
   position: relative;
   padding-left: 1rem;
-  border-left: 2px solid ${colors.primary}40;
+  border-left: 3px solid ${colors.primary}30;
+`;
+
+const ReadMoreButton = styled.button`
+  background: none;
+  border: none;
+  color: ${colors.primary};
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+
+  &:hover {
+    color: white;
+  }
 `;
 
 const StatsContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
-  margin: 1rem -1.5rem -1.5rem;
-  background: #fafafa;
-  border-top: 1px solid #f1f1f1;
+  padding: 1rem;
+  margin: 0 -1rem -1rem;
+  background: ${colors.background.light};
+  border-top: 1px solid rgba(178, 153, 237, 0.8);
+  min-height: 60px;
+`;
+
+const StatsGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 `;
 
 const StatItem = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: #6b7280;
-  font-size: 0.875rem;
-  font-weight: 500;
+  gap: 0.6rem;
+  color: ${colors.text.secondary};
+  font-size: 0.9rem;
+  font-weight: 600;
+  min-width: 70px;
 
   svg {
-    color: #7c3aed;
-    font-size: 1rem;
+    color: ${colors.primary};
+    font-size: 1.1rem;
+    flex-shrink: 0;
   }
 `;
 
 const FavoriteButton = styled.button`
-  background: transparent;
-  border: 1px solid #e5e7eb;
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
+  background: ${(props) => (props.$isFavorite ? "#fef2f2" : "white")};
+  border: 1px solid ${(props) => (props.$isFavorite ? "#fecaca" : "#e5e7eb")};
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: ${(props) => (props.$isFavorite ? "#dc2626" : "#9ca3af")};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 
   &:hover {
-    background: ${(props) => (props.$isFavorite ? "#fef2f2" : "#f9fafb")};
-    border-color: ${(props) => (props.$isFavorite ? "#ef4444" : "#d1d5db")};
-    color: ${(props) => (props.$isFavorite ? "#ef4444" : "#7C3AED")};
+    background: ${(props) => (props.$isFavorite ? "#fee2e2" : "#f9fafb")};
+    border-color: ${(props) => (props.$isFavorite ? "#fca5a5" : "#d1d5db")};
+    color: ${(props) => (props.$isFavorite ? "#ef4444" : colors.primary)};
+    transform: scale(1.05);
   }
 
   svg {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
   }
 `;
 
 const Rating = styled.div`
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: rgba(0, 0, 0, 0.75);
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  color: #ffd700;
+  gap: 0.4rem;
+  color: #eab308;
   font-weight: ${typography.fontWeights.bold};
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
   z-index: 1;
-  pointer-events: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 `;
 
 const CardContainer = styled.div`
@@ -279,6 +315,7 @@ const BookCard = ({ book, onFavoriteChange }) => {
   const { authAxios, userInfo } = useContext(AuthContext);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isPurchased, setIsPurchased] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     const checkBookStatus = async () => {
@@ -334,6 +371,11 @@ const BookCard = ({ book, onFavoriteChange }) => {
     }
   };
 
+  const handleReadMore = (e) => {
+    e.preventDefault();
+    setIsExpanded(!isExpanded);
+  };
+
   const coverImageUrl = getImageUrl(book.coverImage);
 
   return (
@@ -373,17 +415,28 @@ const BookCard = ({ book, onFavoriteChange }) => {
           </div>
         )}
 
-        <Description>{book.description}</Description>
+        <Description $expanded={isExpanded}>{book.description}</Description>
+        {book.description && book.description.length > 100 && (
+          <ReadMoreButton onClick={handleReadMore}>
+            {isExpanded ? "Show Less" : "Read More"}
+            <FaChevronRight
+              style={{
+                transform: isExpanded ? "rotate(90deg)" : "none",
+                transition: "transform 0.2s ease",
+              }}
+            />
+          </ReadMoreButton>
+        )}
 
         <StatsContainer>
-          <div className="d-flex gap-2">
+          <StatsGroup>
             <StatItem>
               <FaEye /> {book.readCount || 0}
             </StatItem>
             <StatItem>
               <FaDownload /> {book.downloads || 0}
             </StatItem>
-          </div>
+          </StatsGroup>
           <FavoriteButton
             onClick={handleFavoriteClick}
             $isFavorite={isFavorite}
