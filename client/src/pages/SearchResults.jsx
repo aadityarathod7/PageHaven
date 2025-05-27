@@ -1,16 +1,34 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Container, Alert } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
-import BookCard from '../components/BookCard';
-import Loader from '../components/Loader';
-import styled from 'styled-components';
-import { colors, typography, shadows, borderRadius, transitions } from '../styles/theme';
-import { API_URL } from '../config/config';
-import { FixedSizeGrid as Grid } from 'react-window';
-
+import React, { useState, useEffect, useRef } from "react";
+import { Container, Alert } from "react-bootstrap";
+import { useParams } from "react-router-dom";
+import BookCard from "../components/BookCard";
+import Loader from "../components/Loader";
+import styled from "styled-components";
+import { API_URL } from "../config/config";
+import { FixedSizeGrid as Grid } from "react-window";
+import { gradients, typography, colors } from "../styles/theme";
 const SearchHeader = styled.div`
-  margin: 2rem 0;
+  margin-bottom: 2rem;
+  margin-top: 8rem;
   text-align: center;
+
+  h1 {
+    background: ${gradients.text};
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: ${typography.fonts.heading};
+    font-size: 1.75rem;
+    font-weight: ${typography.fontWeights.bold};
+    display: inline-block;
+  }
+
+  p {
+    font-size: 1rem;
+    color: ${colors.text.secondary};
+    max-width: 600px;
+    margin: 0 auto;
+  }
 `;
 
 const GridWrapper = styled.div`
@@ -36,9 +54,11 @@ const SearchResults = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`${API_URL}/api/books/search?query=${encodeURIComponent(query)}`);
+        const response = await fetch(
+          `${API_URL}/api/books/search?query=${encodeURIComponent(query)}`
+        );
         if (!response.ok) {
-          throw new Error('Failed to fetch search results');
+          throw new Error("Failed to fetch search results");
         }
         const data = await response.json();
         setBooks(data);
@@ -55,7 +75,7 @@ const SearchResults = () => {
 
   // Responsive columns
   const getColumnCount = () => {
-    if (typeof window === 'undefined') return MAX_COLUMNS;
+    if (typeof window === "undefined") return MAX_COLUMNS;
     const width = window.innerWidth;
     if (width < 600) return 1;
     if (width < 1000) return 2;
@@ -69,7 +89,15 @@ const SearchResults = () => {
     const index = rowIndex * columnCount + columnIndex;
     if (index >= books.length) return null;
     return (
-      <div style={{ ...style, left: style.left + GUTTER / 2, top: style.top + GUTTER / 2, width: style.width - GUTTER, height: style.height - GUTTER }}>
+      <div
+        style={{
+          ...style,
+          left: style.left + GUTTER / 2,
+          top: style.top + GUTTER / 2,
+          width: style.width - GUTTER,
+          height: style.height - GUTTER,
+        }}
+      >
         <BookCard book={books[index]} />
       </div>
     );
@@ -86,9 +114,7 @@ const SearchResults = () => {
   if (error) {
     return (
       <Container className="py-5">
-        <Alert variant="danger">
-          Error: {error}
-        </Alert>
+        <Alert variant="danger">Error: {error}</Alert>
       </Container>
     );
   }
@@ -123,4 +149,4 @@ const SearchResults = () => {
   );
 };
 
-export default SearchResults; 
+export default SearchResults;
