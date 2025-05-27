@@ -225,7 +225,7 @@ const Footer = () => {
               <FaInstagram />
             </SocialIcon>
             <SocialIcon
-              href="https://facebook.com/aadityarathod7"
+              href="https://www.facebook.com/share/1AaQ57ENMC/?mibextid=wwXIfr"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Facebook"
