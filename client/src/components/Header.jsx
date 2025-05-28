@@ -427,6 +427,10 @@ const Header = () => {
     navigate("/favorites");
   };
 
+  const handleNavItemClick = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <MobileMenuContext.Provider
       value={{ isMobileMenuOpen, setIsMobileMenuOpen }}
@@ -489,28 +493,53 @@ const Header = () => {
                   }
                   id="username"
                 >
-                  <NavDropdown.Item as={Link} to="/my-books">
+                  <NavDropdown.Item
+                    as={Link}
+                    to="/my-books"
+                    onClick={handleNavItemClick}
+                  >
                     <FaBook /> My Books
                   </NavDropdown.Item>
-                  <NavDropdown.Item as={Link} to="/orders">
+                  <NavDropdown.Item
+                    as={Link}
+                    to="/orders"
+                    onClick={handleNavItemClick}
+                  >
                     <FaShoppingBag /> My Orders
                   </NavDropdown.Item>
-                  <NavDropdown.Item as={Link} to="/favorites">
+                  <NavDropdown.Item
+                    as={Link}
+                    to="/favorites"
+                    onClick={handleNavItemClick}
+                  >
                     <FaHeart /> Favorites
                   </NavDropdown.Item>
-                  <NavDropdown.Item as={Link} to="/profile">
+                  <NavDropdown.Item
+                    as={Link}
+                    to="/profile"
+                    onClick={handleNavItemClick}
+                  >
                     <FaUser /> Profile
                   </NavDropdown.Item>
                   {userInfo.role === "admin" && (
                     <>
                       <NavDropdown.Divider />
-                      <NavDropdown.Item as={Link} to="/admin/dashboard">
+                      <NavDropdown.Item
+                        as={Link}
+                        to="/admin/dashboard"
+                        onClick={handleNavItemClick}
+                      >
                         <FaCog /> Admin Dashboard
                       </NavDropdown.Item>
                     </>
                   )}
                   <NavDropdown.Divider />
-                  <NavDropdown.Item onClick={logout}>
+                  <NavDropdown.Item
+                    onClick={() => {
+                      handleNavItemClick();
+                      logout();
+                    }}
+                  >
                     <FaSignOutAlt />
                     Logout
                   </NavDropdown.Item>
@@ -518,7 +547,7 @@ const Header = () => {
               ) : (
                 !isAuthPage && (
                   <LinkContainer to="/login">
-                    <NavLink>
+                    <NavLink onClick={handleNavItemClick}>
                       <FaUser />
                       Sign In
                     </NavLink>
