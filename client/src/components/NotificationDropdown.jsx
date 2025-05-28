@@ -265,15 +265,15 @@ const NotificationDropdown = () => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [socketConnected, setSocketConnected] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const { authAxios, userInfo } = useContext(AuthContext);
   const navigate = useNavigate();
   const socketRef = useRef(null);
   const initialFetchDone = useRef(false);
 
-  const fetchData = async () => {
-    if (!socketConnected || !userInfo || initialFetchDone.current) return;
-
+  const fetchInitialData = async () => {
+    if (!userInfo || initialFetchDone.current) return;
+    
     try {
       setIsLoading(true);
       const [notificationsRes, countRes] = await Promise.all([
@@ -281,20 +281,23 @@ const NotificationDropdown = () => {
         authAxios.get("/api/notifications/unread-count"),
       ]);
 
-      // console.log("Initial data fetch:", {
-      //   notifications: notificationsRes.data,
-      //   unreadCount: countRes.data.count,
-      // });
-
       setNotifications(notificationsRes.data);
       setUnreadCount(countRes.data.count);
       initialFetchDone.current = true;
     } catch (error) {
       // console.error("Error fetching initial data:", error);
+      setNotifications([]);
+      setUnreadCount(0);
+      initialFetchDone.current = true;
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Effect for initial data fetch
+  useEffect(() => {
+    fetchInitialData();
+  }, [userInfo]);
 
   // Effect for socket connection
   useEffect(() => {
@@ -304,7 +307,6 @@ const NotificationDropdown = () => {
       if (!userInfo || socketRef.current) return;
 
       try {
-        // console.log("Initializing socket connection...");
         socketRef.current = io(SOCKET_URL, {
           withCredentials: true,
           reconnection: true,
@@ -320,40 +322,21 @@ const NotificationDropdown = () => {
         const socket = socketRef.current;
 
         socket.on("connect", () => {
-          // console.log("Socket connected successfully with ID:", socket.id);
           if (mounted) {
             setSocketConnected(true);
-            socket.emit("join", userInfo._id, (error) => {
-              if (error) {
-                // console.error("Error joining room:", error);
-                setTimeout(() => {
-                  socket.emit("join", userInfo._id);
-                }, 1000);
-              } else {
-                // console.log("Successfully joined room");
-              }
-            });
+            socket.emit("join", userInfo._id);
           }
         });
 
         socket.on("connect_error", (error) => {
-          // console.error("Socket connection error:", error);
           if (mounted) {
             setSocketConnected(false);
-            const reconnectDelay = Math.min(
-              1000 * Math.pow(2, socket.io.reconnectionAttempts),
-              5000
-            );
-            setTimeout(() => {
-              if (mounted && !socket.connected) {
-                socket.connect();
-              }
-            }, reconnectDelay);
+            // Ensure we still show content even if socket fails
+            fetchInitialData();
           }
         });
 
         socket.on("disconnect", (reason) => {
-          // console.log("Socket disconnected:", reason);
           if (mounted) {
             setSocketConnected(false);
             if (reason !== "io client disconnect") {
@@ -363,12 +346,11 @@ const NotificationDropdown = () => {
         });
 
         socket.on("reconnect", (attemptNumber) => {
-          // console.log(`Socket reconnected after ${attemptNumber} attempts`);
           if (mounted) {
             setSocketConnected(true);
             initialFetchDone.current = false;
             socket.emit("join", userInfo._id);
-            fetchData();
+            fetchInitialData();
           }
         });
 
@@ -377,14 +359,12 @@ const NotificationDropdown = () => {
         });
 
         socket.on("reconnect_failed", () => {
-          // console.error("Socket reconnection failed after all attempts");
           if (mounted) {
             setSocketConnected(false);
           }
         });
 
         socket.on("newNotification", (notification, callback) => {
-          // console.log("Received new notification:", notification);
           if (mounted) {
             setNotifications((prev) => {
               const exists = prev.some((n) => n._id === notification._id);
@@ -397,7 +377,6 @@ const NotificationDropdown = () => {
         });
 
         socket.on("notifications", (updatedNotifications, callback) => {
-          // console.log("Received notifications update:", updatedNotifications);
           if (mounted) {
             setNotifications(updatedNotifications);
           }
@@ -405,16 +384,16 @@ const NotificationDropdown = () => {
         });
 
         socket.on("unreadCount", (count, callback) => {
-          // console.log("Received unread count update:", count);
           if (mounted) {
             setUnreadCount(count);
           }
           if (callback) callback();
         });
       } catch (error) {
-        // console.error("Error initializing socket:", error);
         if (mounted) {
           setSocketConnected(false);
+          // Ensure we still show content even if socket fails
+          fetchInitialData();
         }
       }
     };
@@ -424,7 +403,6 @@ const NotificationDropdown = () => {
     return () => {
       mounted = false;
       if (socketRef.current) {
-        // console.log("Cleaning up socket connection");
         const socket = socketRef.current;
         socket.off("newNotification");
         socket.off("notifications");
@@ -435,19 +413,6 @@ const NotificationDropdown = () => {
       }
     };
   }, [userInfo]);
-
-  // Effect for data fetching after socket connection
-  useEffect(() => {
-    fetchData();
-  }, [socketConnected, userInfo]);
-
-  // Debug logging
-  useEffect(() => {
-    // console.log(
-    //   "Socket connection status:",
-    //   socketConnected ? "Connected" : "Disconnected"
-    // );
-  }, [socketConnected]);
 
   const handleNotificationClick = async (notification) => {
     try {
@@ -555,7 +520,7 @@ const NotificationDropdown = () => {
             </HeaderActions>
           </NotificationHeader>
 
-          {isLoading ? (
+          {isLoading && !notifications.length ? (
             <EmptyState>
               <LoadingSpinner />
               Loading notifications...
