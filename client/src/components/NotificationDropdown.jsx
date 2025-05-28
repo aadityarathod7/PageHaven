@@ -18,6 +18,21 @@ const DropdownContainer = styled.div`
   display: inline-block;
 `;
 
+const Backdrop = styled.div`
+  display: none;
+
+  @media (max-width: 768px) {
+    display: ${(props) => (props.$isOpen ? "block" : "none")};
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+`;
+
 const NotificationButton = styled.button`
   position: relative;
   background: none;
@@ -77,6 +92,20 @@ const DropdownContent = styled.div`
   margin-top: 0.75rem;
   padding: 0.75rem;
   display: ${(props) => (props.$isOpen ? "block" : "none")};
+
+  @media (max-width: 768px) {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: 80vh;
+    margin: 0;
+    border-radius: ${borderRadius.xl} ${borderRadius.xl} 0 0;
+    border-bottom: none;
+    z-index: 1000;
+  }
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -227,16 +256,16 @@ const NotificationDropdown = () => {
         authAxios.get("/api/notifications/unread-count"),
       ]);
 
-      console.log("Initial data fetch:", {
-        notifications: notificationsRes.data,
-        unreadCount: countRes.data.count,
-      });
+      // console.log("Initial data fetch:", {
+      //   notifications: notificationsRes.data,
+      //   unreadCount: countRes.data.count,
+      // });
 
       setNotifications(notificationsRes.data);
       setUnreadCount(countRes.data.count);
       initialFetchDone.current = true;
     } catch (error) {
-      console.error("Error fetching initial data:", error);
+      // console.error("Error fetching initial data:", error);
     } finally {
       setIsLoading(false);
     }
@@ -250,7 +279,7 @@ const NotificationDropdown = () => {
       if (!userInfo || socketRef.current) return;
 
       try {
-        console.log("Initializing socket connection...");
+        // console.log("Initializing socket connection...");
         socketRef.current = io(SOCKET_URL, {
           withCredentials: true,
           reconnection: true,
@@ -266,24 +295,24 @@ const NotificationDropdown = () => {
         const socket = socketRef.current;
 
         socket.on("connect", () => {
-          console.log("Socket connected successfully with ID:", socket.id);
+          // console.log("Socket connected successfully with ID:", socket.id);
           if (mounted) {
             setSocketConnected(true);
             socket.emit("join", userInfo._id, (error) => {
               if (error) {
-                console.error("Error joining room:", error);
+                // console.error("Error joining room:", error);
                 setTimeout(() => {
                   socket.emit("join", userInfo._id);
                 }, 1000);
               } else {
-                console.log("Successfully joined room");
+                // console.log("Successfully joined room");
               }
             });
           }
         });
 
         socket.on("connect_error", (error) => {
-          console.error("Socket connection error:", error);
+          // console.error("Socket connection error:", error);
           if (mounted) {
             setSocketConnected(false);
             const reconnectDelay = Math.min(
@@ -299,7 +328,7 @@ const NotificationDropdown = () => {
         });
 
         socket.on("disconnect", (reason) => {
-          console.log("Socket disconnected:", reason);
+          // console.log("Socket disconnected:", reason);
           if (mounted) {
             setSocketConnected(false);
             if (reason !== "io client disconnect") {
@@ -309,7 +338,7 @@ const NotificationDropdown = () => {
         });
 
         socket.on("reconnect", (attemptNumber) => {
-          console.log(`Socket reconnected after ${attemptNumber} attempts`);
+          // console.log(`Socket reconnected after ${attemptNumber} attempts`);
           if (mounted) {
             setSocketConnected(true);
             initialFetchDone.current = false;
@@ -319,18 +348,18 @@ const NotificationDropdown = () => {
         });
 
         socket.on("reconnect_error", (error) => {
-          console.error("Socket reconnection error:", error);
+          // console.error("Socket reconnection error:", error);
         });
 
         socket.on("reconnect_failed", () => {
-          console.error("Socket reconnection failed after all attempts");
+          // console.error("Socket reconnection failed after all attempts");
           if (mounted) {
             setSocketConnected(false);
           }
         });
 
         socket.on("newNotification", (notification, callback) => {
-          console.log("Received new notification:", notification);
+          // console.log("Received new notification:", notification);
           if (mounted) {
             setNotifications((prev) => {
               const exists = prev.some((n) => n._id === notification._id);
@@ -343,7 +372,7 @@ const NotificationDropdown = () => {
         });
 
         socket.on("notifications", (updatedNotifications, callback) => {
-          console.log("Received notifications update:", updatedNotifications);
+          // console.log("Received notifications update:", updatedNotifications);
           if (mounted) {
             setNotifications(updatedNotifications);
           }
@@ -351,14 +380,14 @@ const NotificationDropdown = () => {
         });
 
         socket.on("unreadCount", (count, callback) => {
-          console.log("Received unread count update:", count);
+          // console.log("Received unread count update:", count);
           if (mounted) {
             setUnreadCount(count);
           }
           if (callback) callback();
         });
       } catch (error) {
-        console.error("Error initializing socket:", error);
+        // console.error("Error initializing socket:", error);
         if (mounted) {
           setSocketConnected(false);
         }
@@ -370,7 +399,7 @@ const NotificationDropdown = () => {
     return () => {
       mounted = false;
       if (socketRef.current) {
-        console.log("Cleaning up socket connection");
+        // console.log("Cleaning up socket connection");
         const socket = socketRef.current;
         socket.off("newNotification");
         socket.off("notifications");
@@ -389,10 +418,10 @@ const NotificationDropdown = () => {
 
   // Debug logging
   useEffect(() => {
-    console.log(
-      "Socket connection status:",
-      socketConnected ? "Connected" : "Disconnected"
-    );
+    // console.log(
+    //   "Socket connection status:",
+    //   socketConnected ? "Connected" : "Disconnected"
+    // );
   }, [socketConnected]);
 
   const handleNotificationClick = async (notification) => {
@@ -414,7 +443,7 @@ const NotificationDropdown = () => {
       }
       setIsOpen(false);
     } catch (error) {
-      console.error("Error marking notification as read:", error);
+      // console.error("Error marking notification as read:", error);
     }
   };
 
@@ -430,7 +459,7 @@ const NotificationDropdown = () => {
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
       setUnreadCount(0);
     } catch (error) {
-      console.error("Error marking all notifications as read:", error);
+      // console.error("Error marking all notifications as read:", error);
     }
   };
 
@@ -442,84 +471,96 @@ const NotificationDropdown = () => {
       setUnreadCount(0);
       setIsOpen(false); // Close the dropdown after clearing
     } catch (error) {
-      console.error("Error clearing notifications:", error);
+      // console.error("Error clearing notifications:", error);
     }
   };
 
   // Add debug logging for state changes
   useEffect(() => {
-    console.log("Notifications state updated:", notifications);
+    // console.log("Notifications state updated:", notifications);
   }, [notifications]);
 
   useEffect(() => {
-    console.log("Unread count updated:", unreadCount);
+    // console.log("Unread count updated:", unreadCount);
   }, [unreadCount]);
 
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      setIsOpen(false);
+    }
+  };
+
   return (
-    <DropdownContainer>
-      <NotificationButton onClick={handleToggleDropdown} title="Notifications">
-        <FaBell />
-        {unreadCount > 0 && (
-          <div className="notification-dot">
-            {unreadCount > 99 ? "99+" : unreadCount}
-          </div>
-        )}
-      </NotificationButton>
+    <>
+      <DropdownContainer>
+        <NotificationButton
+          onClick={handleToggleDropdown}
+          title="Notifications"
+        >
+          <FaBell />
+          {unreadCount > 0 && (
+            <div className="notification-dot">
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </div>
+          )}
+        </NotificationButton>
 
-      <DropdownContent $isOpen={isOpen}>
-        <NotificationHeader>
-          <h3>
-            Notifications
-            {notifications.length > 0 && (
-              <span className="count">({unreadCount} unread)</span>
-            )}
-          </h3>
-          <HeaderActions>
-            {unreadCount > 0 && (
-              <MarkAllRead onClick={handleMarkAllRead}>
-                Mark all as read
-              </MarkAllRead>
-            )}
-            {notifications.length > 0 && (
-              <ClearButton
-                onClick={handleClearNotifications}
-                title="Clear all notifications"
+        <DropdownContent $isOpen={isOpen}>
+          <NotificationHeader>
+            <h3>
+              Notifications
+              {notifications.length > 0 && (
+                <span className="count">({unreadCount} unread)</span>
+              )}
+            </h3>
+            <HeaderActions>
+              {unreadCount > 0 && (
+                <MarkAllRead onClick={handleMarkAllRead}>
+                  Mark all as read
+                </MarkAllRead>
+              )}
+              {notifications.length > 0 && (
+                <ClearButton
+                  onClick={handleClearNotifications}
+                  title="Clear all notifications"
+                >
+                  <FaTrash />
+                </ClearButton>
+              )}
+            </HeaderActions>
+          </NotificationHeader>
+
+          {isLoading ? (
+            <EmptyState>Loading notifications...</EmptyState>
+          ) : notifications.length > 0 ? (
+            notifications.map((notification) => (
+              <NotificationItem
+                key={notification._id}
+                $read={notification.read}
+                onClick={() => handleNotificationClick(notification)}
               >
-                <FaTrash />
-              </ClearButton>
-            )}
-          </HeaderActions>
-        </NotificationHeader>
-
-        {isLoading ? (
-          <EmptyState>Loading notifications...</EmptyState>
-        ) : notifications.length > 0 ? (
-          notifications.map((notification) => (
-            <NotificationItem
-              key={notification._id}
-              $read={notification.read}
-              onClick={() => handleNotificationClick(notification)}
-            >
-              <div className="title">{notification.title}</div>
-              <div className="message">{notification.message}</div>
-              <div className="meta">
-                <span>
-                  {format(new Date(notification.createdAt), "MMM d, h:mm a")}
-                </span>
-                {!notification.read && (
-                  <span className="unread-indicator">
-                    <FaCircle size={8} />
-                    New
+                <div className="title">{notification.title}</div>
+                <div className="message">{notification.message}</div>
+                <div className="meta">
+                  <span>
+                    {format(new Date(notification.createdAt), "MMM d, h:mm a")}
                   </span>
-                )}
-              </div>
-            </NotificationItem>
-          ))
-        ) : (
-          <EmptyState>No notifications yet</EmptyState>
-        )}
-      </DropdownContent>
-    </DropdownContainer>
+                  {!notification.read && (
+                    <span className="unread-indicator">
+                      <FaCircle size={8} />
+                      New
+                    </span>
+                  )}
+                </div>
+              </NotificationItem>
+            ))
+          ) : (
+            <EmptyState>No notifications yet</EmptyState>
+          )}
+        </DropdownContent>
+      </DropdownContainer>
+      <Backdrop $isOpen={isOpen} onClick={handleBackdropClick} />
+    </>
   );
 };
 
