@@ -16,6 +16,10 @@ import { format } from "date-fns";
 const DropdownContainer = styled.div`
   position: relative;
   display: inline-block;
+
+  @media (max-width: 768px) {
+    position: static;
+  }
 `;
 
 const Backdrop = styled.div`
@@ -28,8 +32,9 @@ const Backdrop = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.2);
     z-index: 999;
+    backdrop-filter: blur(2px);
   }
 `;
 
@@ -94,17 +99,11 @@ const DropdownContent = styled.div`
   display: ${(props) => (props.$isOpen ? "block" : "none")};
 
   @media (max-width: 768px) {
-    position: fixed;
-    top: auto;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
+    width: calc(100vw - 32px);
+    max-width: 250px;
     max-height: 80vh;
-    margin: 0;
-    border-radius: ${borderRadius.xl} ${borderRadius.xl} 0 0;
-    border-bottom: none;
-    z-index: 1000;
+    right: 2rem;
+    position: absolute;
   }
 
   &::-webkit-scrollbar {
