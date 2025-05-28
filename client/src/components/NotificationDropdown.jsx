@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { FaBell, FaCheck, FaCircle, FaTrash } from "react-icons/fa";
+import { FaBell, FaCheck, FaCircle, FaTrash, FaTimes } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 import { io } from "socket.io-client";
 import {
@@ -146,10 +146,38 @@ const NotificationHeader = styled.div`
   }
 `;
 
+const CloseButton = styled.button`
+  background: none;
+  border: none;
+  color: ${colors.text.light};
+  width: 32px;
+  height: 32px;
+  border-radius: ${borderRadius.full};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: ${transitions.default};
+  margin-left: 0.5rem;
+
+  &:hover {
+    background: ${colors.background.secondary};
+    color: ${colors.secondary};
+  }
+
+  svg {
+    font-size: 1.1rem;
+  }
+
+  @media (min-width: 769px) {
+    display: none;
+  }
+`;
+
 const HeaderActions = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 `;
 
 const MarkAllRead = styled.button`
@@ -273,7 +301,7 @@ const NotificationDropdown = () => {
 
   const fetchInitialData = async () => {
     if (!userInfo || initialFetchDone.current) return;
-    
+
     try {
       setIsLoading(true);
       const [notificationsRes, countRes] = await Promise.all([
@@ -517,6 +545,12 @@ const NotificationDropdown = () => {
                   <FaTrash />
                 </ClearButton>
               )}
+              <CloseButton
+                onClick={() => setIsOpen(false)}
+                title="Close notifications"
+              >
+                <FaTimes />
+              </CloseButton>
             </HeaderActions>
           </NotificationHeader>
 
