@@ -296,7 +296,7 @@ const Rating = styled.div`
   right: 1.25rem;
   background: rgba(255, 255, 255, 0.95);
   padding: 0.6rem 1rem;
-  border-radius: 12px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   gap: 0.4rem;
