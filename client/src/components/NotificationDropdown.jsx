@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { FaBell, FaCheck, FaCircle, FaTrash, FaTimes } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
+import { MobileMenuContext } from "../components/Header";
 import { io } from "socket.io-client";
 import {
   colors,
@@ -291,9 +292,9 @@ const NotificationDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [socketConnected, setSocketConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { authAxios, userInfo } = useContext(AuthContext);
+  const { setIsMobileMenuOpen } = useContext(MobileMenuContext);
   const navigate = useNavigate();
   const socketRef = useRef(null);
   const initialFetchDone = useRef(false);
@@ -350,35 +351,25 @@ const NotificationDropdown = () => {
 
         socket.on("connect", () => {
           if (mounted) {
-            setSocketConnected(true);
             socket.emit("join", userInfo._id);
           }
         });
 
         socket.on("connect_error", (error) => {
-          if (mounted) {
-            setSocketConnected(false);
-            // Ensure we still show content even if socket fails
-            fetchInitialData();
-          }
+          // Ensure we still show content even if socket fails
+          fetchInitialData();
         });
 
         socket.on("disconnect", (reason) => {
-          if (mounted) {
-            setSocketConnected(false);
-            if (reason !== "io client disconnect") {
-              socket.connect();
-            }
+          if (reason !== "io client disconnect") {
+            socket.connect();
           }
         });
 
         socket.on("reconnect", (attemptNumber) => {
-          if (mounted) {
-            setSocketConnected(true);
-            initialFetchDone.current = false;
-            socket.emit("join", userInfo._id);
-            fetchInitialData();
-          }
+          initialFetchDone.current = false;
+          socket.emit("join", userInfo._id);
+          fetchInitialData();
         });
 
         socket.on("reconnect_error", (error) => {
@@ -386,42 +377,32 @@ const NotificationDropdown = () => {
         });
 
         socket.on("reconnect_failed", () => {
-          if (mounted) {
-            setSocketConnected(false);
-          }
+          // Ensure we still show content even if socket fails
+          fetchInitialData();
         });
 
         socket.on("newNotification", (notification, callback) => {
-          if (mounted) {
-            setNotifications((prev) => {
-              const exists = prev.some((n) => n._id === notification._id);
-              if (exists) return prev;
-              return [notification, ...prev].slice(0, 50);
-            });
-            setUnreadCount((prev) => prev + 1);
-          }
+          setNotifications((prev) => {
+            const exists = prev.some((n) => n._id === notification._id);
+            if (exists) return prev;
+            return [notification, ...prev].slice(0, 50);
+          });
+          setUnreadCount((prev) => prev + 1);
           if (callback) callback();
         });
 
         socket.on("notifications", (updatedNotifications, callback) => {
-          if (mounted) {
-            setNotifications(updatedNotifications);
-          }
+          setNotifications(updatedNotifications);
           if (callback) callback();
         });
 
         socket.on("unreadCount", (count, callback) => {
-          if (mounted) {
-            setUnreadCount(count);
-          }
+          setUnreadCount(count);
           if (callback) callback();
         });
       } catch (error) {
-        if (mounted) {
-          setSocketConnected(false);
-          // Ensure we still show content even if socket fails
-          fetchInitialData();
-        }
+        // Ensure we still show content even if socket fails
+        fetchInitialData();
       }
     };
 
@@ -436,7 +417,6 @@ const NotificationDropdown = () => {
         socket.off("unreadCount");
         socket.disconnect();
         socketRef.current = null;
-        setSocketConnected(false);
       }
     };
   }, [userInfo]);
@@ -465,6 +445,7 @@ const NotificationDropdown = () => {
   };
 
   const handleToggleDropdown = () => {
+    // Toggle notifications without affecting mobile menu
     setIsOpen(!isOpen);
   };
 
@@ -504,6 +485,7 @@ const NotificationDropdown = () => {
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       setIsOpen(false);
+      setIsMobileMenuOpen(false);
     }
   };
 

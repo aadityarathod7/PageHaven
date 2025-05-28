@@ -1,5 +1,5 @@
 // client/src/components/Header.jsx
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, createContext } from "react";
 import { Navbar, Nav, Container, NavDropdown, Form } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -29,6 +29,9 @@ import {
 import { Link } from "react-router-dom";
 import { memo } from "react";
 import NotificationDropdown from "./NotificationDropdown";
+
+// Create context for mobile menu state
+export const MobileMenuContext = createContext();
 
 const StyledNavbar = styled(Navbar)`
   background: ${colors.background.primary}80;
@@ -387,7 +390,7 @@ const Header = () => {
   const { userInfo, logout } = useContext(AuthContext);
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [hasNotifications] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Check if we're on login or signup pages
   const isAuthPage =
@@ -412,101 +415,118 @@ const Header = () => {
     }
   };
 
+  const handleMobileMenuToggle = () => {
+    // Simply toggle mobile menu state
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleFavoritesClick = () => {
+    if (isMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+    }
+    navigate("/favorites");
+  };
+
   return (
-    <StyledNavbar expand="lg" className={scrolled ? "scrolled" : ""}>
-      <Container>
-        <LinkContainer to="/">
-          <Brand>
-            <FaBook /> PageHaven
-          </Brand>
-        </LinkContainer>
+    <MobileMenuContext.Provider
+      value={{ isMobileMenuOpen, setIsMobileMenuOpen }}
+    >
+      <StyledNavbar expand="lg" className={scrolled ? "scrolled" : ""}>
+        <Container>
+          <LinkContainer to="/">
+            <Brand>
+              <FaBook /> PageHaven
+            </Brand>
+          </LinkContainer>
 
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          {!isAuthPage && (
-            <Form
-              onSubmit={handleSearch}
-              className="d-flex flex-grow-1 mx-lg-4"
-            >
-              <SearchContainer>
-                <SearchInput
-                  type="text"
-                  placeholder="Search books..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <SearchIcon>
-                  <FaSearch />
-                </SearchIcon>
-              </SearchContainer>
-            </Form>
-          )}
-
-          {userInfo && (
-            <NavIcons>
-              <IconButton
-                title="Favorites"
-                onClick={() => navigate("/favorites")}
+          <Navbar.Toggle
+            aria-controls="basic-navbar-nav"
+            onClick={handleMobileMenuToggle}
+            expanded={isMobileMenuOpen}
+          />
+          <Navbar.Collapse id="basic-navbar-nav" in={isMobileMenuOpen}>
+            {!isAuthPage && (
+              <Form
+                onSubmit={handleSearch}
+                className="d-flex flex-grow-1 mx-lg-4"
               >
-                <FaHeart />
-              </IconButton>
-              <NotificationDropdown />
-            </NavIcons>
-          )}
-
-          <Nav>
-            {userInfo ? (
-              <StyledDropdown
-                title={
-                  <span className="d-flex align-items-center">
-                    <UserAvatar>
-                      <FaUser />
-                    </UserAvatar>
-                    {userInfo.name}
-                  </span>
-                }
-                id="username"
-              >
-                <NavDropdown.Item as={Link} to="/my-books">
-                  <FaBook /> My Books
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/orders">
-                  <FaShoppingBag /> My Orders
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/favorites">
-                  <FaHeart /> Favorites
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/profile">
-                  <FaUser /> Profile
-                </NavDropdown.Item>
-                {userInfo.role === "admin" && (
-                  <>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item as={Link} to="/admin/dashboard">
-                      <FaCog /> Admin Dashboard
-                    </NavDropdown.Item>
-                  </>
-                )}
-                <NavDropdown.Divider />
-                <NavDropdown.Item onClick={logout}>
-                  <FaSignOutAlt />
-                  Logout
-                </NavDropdown.Item>
-              </StyledDropdown>
-            ) : (
-              !isAuthPage && (
-                <LinkContainer to="/login">
-                  <NavLink>
-                    <FaUser />
-                    Sign In
-                  </NavLink>
-                </LinkContainer>
-              )
+                <SearchContainer>
+                  <SearchInput
+                    type="text"
+                    placeholder="Search books..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  <SearchIcon>
+                    <FaSearch />
+                  </SearchIcon>
+                </SearchContainer>
+              </Form>
             )}
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </StyledNavbar>
+
+            {userInfo && (
+              <NavIcons>
+                <IconButton title="Favorites" onClick={handleFavoritesClick}>
+                  <FaHeart />
+                </IconButton>
+                <NotificationDropdown />
+              </NavIcons>
+            )}
+
+            <Nav>
+              {userInfo ? (
+                <StyledDropdown
+                  title={
+                    <span className="d-flex align-items-center">
+                      <UserAvatar>
+                        <FaUser />
+                      </UserAvatar>
+                      {userInfo.name}
+                    </span>
+                  }
+                  id="username"
+                >
+                  <NavDropdown.Item as={Link} to="/my-books">
+                    <FaBook /> My Books
+                  </NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/orders">
+                    <FaShoppingBag /> My Orders
+                  </NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/favorites">
+                    <FaHeart /> Favorites
+                  </NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/profile">
+                    <FaUser /> Profile
+                  </NavDropdown.Item>
+                  {userInfo.role === "admin" && (
+                    <>
+                      <NavDropdown.Divider />
+                      <NavDropdown.Item as={Link} to="/admin/dashboard">
+                        <FaCog /> Admin Dashboard
+                      </NavDropdown.Item>
+                    </>
+                  )}
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item onClick={logout}>
+                    <FaSignOutAlt />
+                    Logout
+                  </NavDropdown.Item>
+                </StyledDropdown>
+              ) : (
+                !isAuthPage && (
+                  <LinkContainer to="/login">
+                    <NavLink>
+                      <FaUser />
+                      Sign In
+                    </NavLink>
+                  </LinkContainer>
+                )
+              )}
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </StyledNavbar>
+    </MobileMenuContext.Provider>
   );
 };
 
