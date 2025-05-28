@@ -231,6 +231,31 @@ const EmptyState = styled.div`
   padding: 2rem 1rem;
   color: ${colors.text.secondary};
   font-size: 0.9rem;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 768px) {
+    min-height: 200px;
+  }
+`;
+
+const LoadingSpinner = styled.div`
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  border: 2px solid ${colors.background.accent};
+  border-radius: 50%;
+  border-top-color: ${colors.primary};
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 `;
 
 const SOCKET_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -531,7 +556,10 @@ const NotificationDropdown = () => {
           </NotificationHeader>
 
           {isLoading ? (
-            <EmptyState>Loading notifications...</EmptyState>
+            <EmptyState>
+              <LoadingSpinner />
+              Loading notifications...
+            </EmptyState>
           ) : notifications.length > 0 ? (
             notifications.map((notification) => (
               <NotificationItem
