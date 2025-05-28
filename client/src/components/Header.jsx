@@ -431,7 +431,11 @@ const Header = () => {
     <MobileMenuContext.Provider
       value={{ isMobileMenuOpen, setIsMobileMenuOpen }}
     >
-      <StyledNavbar expand="lg" className={scrolled ? "scrolled" : ""}>
+      <StyledNavbar
+        expand="lg"
+        className={scrolled ? "scrolled" : ""}
+        expanded={isMobileMenuOpen}
+      >
         <Container>
           <LinkContainer to="/">
             <Brand>
@@ -442,9 +446,8 @@ const Header = () => {
           <Navbar.Toggle
             aria-controls="basic-navbar-nav"
             onClick={handleMobileMenuToggle}
-            expanded={isMobileMenuOpen}
           />
-          <Navbar.Collapse id="basic-navbar-nav" in={isMobileMenuOpen}>
+          <Navbar.Collapse id="basic-navbar-nav">
             {!isAuthPage && (
               <Form
                 onSubmit={handleSearch}
